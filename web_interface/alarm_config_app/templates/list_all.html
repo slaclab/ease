@@ -1,0 +1,23 @@
+<h1>Welcome to the debug page</h1>
+<h3>Now Using .html</h3>
+
+<h2>PVs:</h2>
+{% if pv_list %}
+<ul>
+{% for pv in pv_list %}
+    <li>{{ pv.name }}</li>
+{% endfor %}
+</ul>
+{% else %}
+    <p>No PVs</p>
+{% endif %}
+<h2>Alarms:</h2>
+{% if alarm_list %}
+<ul>
+{% for alarm in alarm_list %}
+    <li>{{ alarm.name }}</li>
+{% endfor %}
+</ul>
+{% else %}
+    <p>No alarmss</p>
+{% endif %}
