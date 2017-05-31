@@ -55,7 +55,7 @@ ROOT_URLCONF = 'web_interface.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['./templates/bases',],
+        'DIRS': ['./templates/bases','./templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -123,4 +123,8 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR,'static'),
 )
 STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
+
+
+LOGIN_REDIRECT_URL = '/debug'
+
 
