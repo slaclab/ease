@@ -8,13 +8,11 @@
 
 <!-- Local compled Bootstrap-->
 <link rel="stylesheet" href="{% static 'dist-bootstrap-4.0.0/css/bootstrap.min.css' %}">
+<!-- jQuery library -->
+<script src="{% static 'jquery-3.2.1.min.js' %}"></script>
 
 <!-- Need tether.io for bootstrap4 (js) -->
 <script src="{% static 'dist-tether-1.4.0/js/tether.min.js' %}"></script>
-
-
-<!-- jQuery library -->
-<script src="{% static 'jquery-3.2.1.min.js' %}"></script>
 
 <!-- Local compiled JavaScript -->
 <script src="{% static 'dist-bootstrap-4.0.0/js/bootstrap.min.js' %}"></script>
@@ -93,38 +91,48 @@
 -->
 
 
+
+
+<style>
+body {
+padding-top: 1em;
+}
+</style>
 <div class="container-fluid">
-        
-<nav class="navbar fixed-top navbar-fullnavbar-toggleable-xl navbar-light bg-faded">
-<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#nav-content" aria-controls="nav-content" aria-expanded="false" aria-label="Toggle navigation">
-<span class="navbar-toggler-icon"></span>
-</button>
+<nav class="navbar navbar-toggleable-xl navbar-inverse bg-inverse">
+    <!--<a class="navbar-brand" href="#">Navbar</a>-->
+    <h1 class="navbar-brand mb-0" >Navbar2</h1>
+    <div class="navbar-collapse collapse">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+        </ul>
+    </div>
 
-<!-- Brand -->
-<a class="navbar-brand" href="#">EASE</a>
-
-<!-- Links -->
-<div class="collapse navbar-collapse" id="nav-content">   
-<ul class="navbar-nav">
-<li class="nav-item">
-<a class="nav-link" href="#">Link 1</a>
-</li>
-<li class="nav-item">
-<a class="nav-link" href="#">Link 2</a>
-</li>
-<li class="nav-item">
-<a class="nav-link" href="#">Link 3</a>
-</li>
-</ul>
-</div>
 </nav>
+     
 
-</div>
+
 
 {% block sidebar %}
 {% endblock %}
-<p>EASE</p>
 {% block content %}
 {% endblock %}
 </body>
+</div>
 </html>
