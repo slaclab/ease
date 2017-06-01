@@ -39,6 +39,16 @@ class alerts_all(generic.ListView):
     template_name = 'alerts_all.html'
     paginate_by = 10
 
+class pvs_all(generic.ListView):
+    model = Pv
+    template_name = 'pvs_all.html'
+    paginate_by = 10
+
+class pv_detail(generic.DetailView):
+    model = Pv
+    context_object_name='pv'
+    template_name = 'pv_detail.html'
+
 class alert_detail(generic.DetailView):
     model = Alarm
     context_object_name='alert'
