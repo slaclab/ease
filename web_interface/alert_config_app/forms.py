@@ -1,5 +1,19 @@
 from django import forms
-from .models import Alert, Pv
+from .models import Alert, Pv, Trigger
+
+
+
+class configTrigger(forms.Form):
+    new_name = forms.CharField(
+        label = 'Trigger name',
+        max_length = Trigger.name_max_length,
+        widget = forms.TextInput( 
+            attrs = {
+                'class':'form-control',
+                'type':'text',
+            }
+        )
+    )
 
 
 class configAlert(forms.Form):
@@ -7,12 +21,11 @@ class configAlert(forms.Form):
         model = Alert
 
     new_name = forms.CharField(
-        label = 'New Alert name',
+        label = 'Alert name',
         max_length = Alert.name_max_length,
         widget = forms.TextInput( 
             attrs = {
                 'class':'form-control',
-                'name':'some_random_name',
                 'type':'text',
             }
         )

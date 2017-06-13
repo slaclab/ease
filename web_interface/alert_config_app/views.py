@@ -2,8 +2,8 @@ from django.shortcuts import render
 
 from django.views import generic
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Alert, Pv
-from .forms import configAlert
+from .models import Alert, Pv, Trigger
+from .forms import configAlert, configTrigger
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -12,6 +12,9 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 
 from django.core.urlresolvers import reverse
+
+from django.forms.formsets import formset_factory
+from django.db import transaction, IntegrityError
 
 
 
@@ -87,14 +90,35 @@ def alert_config(request,pk=None,*args,**kwargs):
         except Http404:
             return HttpResponseRedirect(reverse('alert_create'))
 
+
     if request.path != reverse('alert_create'):
         create = True
     else:
         create = False
 
+    
+    
+
+    triggerFormSet = formset_factory(configTrigger)
+
+    if request.method == 'POST':
+        pass
+
+    else:
+        pass
+    
     initial = {}
     form = configAlert(initial = initial)
     
+
+
+
+
+
+
+
+
+
 
     return render(request, "alert_config.html", {'form':form})
 
