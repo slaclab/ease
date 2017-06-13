@@ -21,7 +21,7 @@ Alerts list
     <tbody>
       {% for alert in alert_list %}
       <tr>
-				<td><a href="{% url 'alert_detail' alert.pk %}"> {{alert.name}}</a></td> 
+				<td><a href="{% url 'alert_config' alert.pk %}"> {{alert.name}}</a></td> 
         <td>{{alert.pk}}</td>
       </tr>
       {% endfor %}

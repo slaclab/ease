@@ -83,6 +83,9 @@ class alert_detail(generic.DetailView):
 @login_required()
 def alert_config(request,pk=None,*args,**kwargs):
     # if pk == None:
+
+    alert_initial = {}
+    trigger_initial = []
     if pk != None:
         try:
             alert_inst = get_object_or_404(Alert,pk=pk)
@@ -91,35 +94,73 @@ def alert_config(request,pk=None,*args,**kwargs):
             return HttpResponseRedirect(reverse('alert_create'))
 
 
-    if request.path != reverse('alert_create'):
+    if request.path == reverse('alert_create'):
         create = True
     else:
         create = False
 
-    
-    
-
     triggerFormSet = formset_factory(configTrigger)
 
     if request.method == 'POST':
-        pass
+        form = configAlert(request.POST,)
+        triggerForm = triggerFormSet(request.POST, prefix='tg')
+        
+        if form.is_valid() and triggerForm.is_valid():
+            if create:
+                alert_inst = Alert()
+            
+            else:
+                pass
 
+            alert_inst.name = form.cleaned_data['new_name']
+            alert_inst.save()
+
+            new_triggers = []
+            for single_trigger_form in triggerForm:
+                new_triggers.append(
+                    Trigger(
+                        name = single_trigger_form.cleaned_data.get('new_name'),
+                        alert = alert_inst,
+                    )
+                )
+
+            try:
+                with transaction.atomic():
+                    alert_inst.trigger_set.all().delete()
+                    Trigger.objects.bulk_create(new_triggers)
+
+            except IntegrityError:
+                print("UPDATE FAILURE")
+
+
+        else:
+            print("BAD FORM")
+
+        return HttpResponseRedirect(reverse('alerts_page_all'))
+        
     else:
-        pass
-    
-    initial = {}
-    form = configAlert(initial = initial)
-    
+        if create:
+            pass
+
+        else:
+            alert_initial = {
+                'new_name': alert_inst.name,
+            }
+            trigger_initial = [
+                {'new_name': l.name} for l in alert_inst.trigger_set.all()
+            ]
+
+        form = configAlert(initial = alert_initial)
+        triggerForm = triggerFormSet(
+            initial = trigger_initial,
+            prefix='tg'
+        )
 
 
-
-
-
-
-
-
-
-
-    return render(request, "alert_config.html", {'form':form})
+    return render(
+        request, 
+        "alert_config.html", 
+        {'form':form,'triggerForm':triggerForm,},
+    )
 
 

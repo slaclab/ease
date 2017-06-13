@@ -15,6 +15,10 @@ class configTrigger(forms.Form):
         )
     )
 
+    def clean_new_name(self):
+        data = self.cleaned_data['new_name']
+        return data
+
 
 class configAlert(forms.Form):
     class Meta:
