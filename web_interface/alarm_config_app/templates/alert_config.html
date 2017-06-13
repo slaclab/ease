@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Alert configuration page
+{% endblock %}
+
+
+{% block content %}
+
+
+<form action="" method="post">
+    <div class="container">
+    {% for entry in form %}
+    <br>
+    <div class="form-group row">
+         <label for="" class="col-sm-4 col-form-label"> {{entry.label}} </label>
+        <div class="col-sm-8"> {{entry}} </div>
+    </div>
+    {% endfor %}
+    </div>
+    <br>
+
+    <input class="btn btn-primary" type="submit" value="Submit"/>
+</form>
+<br>
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
+

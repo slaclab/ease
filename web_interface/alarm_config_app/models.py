@@ -5,9 +5,11 @@ from django.db import models
 
 
 class Alarm(models.Model):
-    name = models.CharField(max_length=100)
+    name_max_length = 100
+    name = models.CharField(max_length = name_max_length)
 
 class Pv(models.Model):
-    name = models.CharField(max_length=100)
+    name_max_length = 100
+    name = models.CharField(max_length = name_max_length)
 
     

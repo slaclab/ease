@@ -1,10 +1,21 @@
 from django.shortcuts import render
 
 from django.views import generic
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from .models import Alarm, Pv
+from .forms import configAlert
+
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
+from django.shortcuts import get_object_or_404
+from django.http import Http404
+
+from django.core.urlresolvers import reverse
 
 
+
+login_url = "/login/"
 
 
 # Create your views here.
@@ -22,36 +33,61 @@ def title(request):
     context['user'] = request.user
     return render( request, 'title.html', context)
 
-def pvs(request):
-    context = {}
-    context['pv_list'] = Pv.objects.all()
-    context['user'] = request.user
-    return render( request, 'pvs.html', context)
+# def pvs(request):
+#     context = {}
+#     context['pv_list'] = Pv.objects.all()
+#     context['user'] = request.user
+#     return render( request, 'pvs.html', context)
 
-def alerts(request):
-    context = {}
-    context['alert_list'] = Alarm.objects.all()
-    context['user'] = request.user
-    return render( request, 'alerts.html', context)
+# def alerts(request):
+#     context = {}
+#     context['alert_list'] = Alarm.objects.all()
+#     context['user'] = request.user
+#     return render( request, 'alerts.html', context)
     
+@method_decorator(login_required, name = 'dispatch')
 class alerts_all(generic.ListView):
     model = Alarm
     template_name = 'alerts_all.html'
-    paginate_by = 10
+    paginate_by = 30
 
+@method_decorator(login_required, name = 'dispatch')
 class pvs_all(generic.ListView):
     model = Pv
     template_name = 'pvs_all.html'
-    paginate_by = 10
+    paginate_by = 30
 
+@method_decorator(login_required, name = 'dispatch')
 class pv_detail(generic.DetailView):
     model = Pv
     context_object_name='pv'
     template_name = 'pv_detail.html'
 
+@method_decorator(login_required, name = 'dispatch')
 class alert_detail(generic.DetailView):
     model = Alarm
     context_object_name='alert'
     template_name = 'alert_detail.html'
+
+@login_required()
+def alert_config(request,pk=None,*args,**kwargs):
+    # if pk == None:
+    if pk != None:
+        try:
+            alert_inst = get_object_or_404(Alarm,pk=pk)
+        
+        except Http404:
+            return HttpResponseRedirect(reverse('alert_create'))
+
+    if request.path != reverse('alert_create'):
+        create = True
+    else:
+        create = False
+
+    initial = {}
+    form = configAlert(initial = initial)
+    
+
+    return render(request, "alert_config.html", {'form':form})
 
 
