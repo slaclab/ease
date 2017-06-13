@@ -24,10 +24,10 @@
   {% endif %}
     
   <h2>Alerts:</h2>
-  {% if alarm_list %}
+  {% if alert_list %}
     <ul>
-    {% for alarm in alarm_list %}
-      <li>{{ alarm.name }}</li>
+    {% for alert in alert_list %}
+      <li>{{ alert.name }}</li>
     {% endfor %}
     </ul>
   {% else %}

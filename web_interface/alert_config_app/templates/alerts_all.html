@@ -8,7 +8,7 @@ Alerts list
 {% block content %}
 
 <div class="container-fluid">
-  {% if alarm_list %}
+  {% if alert_list %}
   <h2>Alerts</h2>
   <p>paragraph</p>            
   <table class="table table-sm">
@@ -19,7 +19,7 @@ Alerts list
       </tr>
     </thead>
     <tbody>
-      {% for alert in alarm_list %}
+      {% for alert in alert_list %}
       <tr>
 				<td><a href="{% url 'alert_detail' alert.pk %}"> {{alert.name}}</a></td> 
         <td>{{alert.pk}}</td>
