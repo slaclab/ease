@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block script %}
+{% endblock %}
+{% block title %}
+Delete Alert
+{% endblock %}
+{% block content %}
+<br>
+  <form action="" method="post">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col text-center">
+        <h3>
+          Delete alert "{{alert.name}}"?
+        </h3>
+        <input class="btn btn-danger" type="submit" value="Confirm"/> 
+      </div>
+    </div>
+  </form>
+  <br>
+{% endblock %}

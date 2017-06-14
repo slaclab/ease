@@ -40,3 +40,8 @@ class configAlert(forms.Form):
             }
         )
     )
+
+class deleteAlert(forms.Form):
+    class Meta:
+        model = Alert
+        fields = []

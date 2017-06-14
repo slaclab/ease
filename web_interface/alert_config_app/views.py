@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.views import generic
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Alert, Pv, Trigger
-from .forms import configAlert, configTrigger
+from .forms import configAlert, configTrigger, deleteAlert
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -125,7 +125,7 @@ def alert_config(request,pk=None,*args,**kwargs):
                         )
                     )
             
-            print(new_triggers)
+            # print(new_triggers)
             try:
                 with transaction.atomic():
                     alert_inst.trigger_set.all().delete()
@@ -163,7 +163,38 @@ def alert_config(request,pk=None,*args,**kwargs):
     return render(
         request, 
         "alert_config.html", 
-        {'form':form,'triggerForm':triggerForm,},
+        {'form':form,'triggerForm':triggerForm,'alert':alert_inst},
     )
 
 
+@login_required()
+def alert_delete(request,pk=None,*args,**kwargs):
+    for x in sorted(request.POST):
+        print(x,"\t",request.POST[x])
+    try:
+        alert_inst = get_object_or_404(Alert,pk=pk)
+    
+    except Http404:
+        return HttpResponseRedirect(reverse('alerts_page_all'))
+
+    if request.method == "POST":
+        deleteForm = deleteAlert(request.POST, )
+        print("post detected")
+
+        if deleteForm.is_valid():
+            print("deleting")
+            Alert.objects.filter(pk=pk).delete()
+            return HttpResponseRedirect(reverse('alerts_page_all'))
+
+        else:
+            print("BAD FORM")
+
+    else:
+        deleteForm = deleteAlert()
+    
+
+    return render(
+        request,
+        "alert_delete.html",
+        {'form':deleteForm,'alert':alert_inst},
+    )
