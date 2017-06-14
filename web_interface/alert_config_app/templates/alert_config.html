@@ -1,5 +1,63 @@
 {% extends 'base.html' %}
 
+
+
+{% block script %}
+$(document).ready(function(){
+
+
+    var next_contents_no = $('input[name=tg-TOTAL_FORMS]').val();
+
+
+    $("#add_trigger_btn").click(function(){
+        var new_contents = $("#contents_section").children().last().clone();
+        new_contents.find("input[id*=id_tg-]").attr('id','id_tg-'+next_contents_no.toString()+'-new_name');
+        new_contents.find("input[name*=tg-]").attr('name','tg-'+next_contents_no.toString()+'-new_name');
+        new_contents.find("input[name*=tg-]").val("");
+        $("#contents_section").append(new_contents);
+
+        var cache = $("input[name=tg-TOTAL_FORMS]").val();
+        console.log(cache);
+        $("input[name=tg-TOTAL_FORMS]").val(Number(cache)+1);
+
+        next_contents_no ++;
+        console.log("click2");
+
+
+        new_contents.find(".delete-btn").click(delete_handler);
+
+
+    });
+
+
+
+    function delete_handler() {
+        if ( $('input[name=tg-TOTAL_FORMS]').val() <= 1 ){
+            return;
+        }
+        //var test = $(this);
+        console.log(this);
+        console.log($(this));
+        $(this).attr('class',"btn btn-danger text-muted")
+        //this.innerHTML = "keep this!";
+        $(this).parent().parent().remove();
+        //console.log($(this)[0].innerHTML); 
+        console.log("click_del");
+        var cache = $("input[name=tg-TOTAL_FORMS]").val();
+        console.log(cache);
+        $("input[name=tg-TOTAL_FORMS]").val(Number(cache)-1);
+    }
+
+
+    // handle line deletion
+
+    $(".delete-btn").click(delete_handler);
+
+
+});
+
+{% endblock %}
+
 {% block title %}
 Alert configuration page
 {% endblock %}
@@ -43,13 +101,13 @@ Alert configuration page
         <th class="w-25">Trigger Name</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody id="contents_section">
             {% for entry in triggerForm %}
             <tr>
             <td class="w-50">{{ entry.new_name }}</td>
             <td class="w-25"></td>
             <td class="w-25">
-                <button class="btn btn-outline-warning btn-delete" type="button">Delete Row</button>
+                <button class="btn btn-outline-warning delete-btn" type="button">Delete Row</button>
             </td>
             </tr>
             {% endfor %}

@@ -102,6 +102,10 @@ def alert_config(request,pk=None,*args,**kwargs):
     triggerFormSet = formset_factory(configTrigger)
 
     if request.method == 'POST':
+
+        for x in sorted(request.POST):
+            print(x, "\t",request.POST[x])
+            
         form = configAlert(request.POST,)
         triggerForm = triggerFormSet(request.POST, prefix='tg')
         
@@ -117,17 +121,20 @@ def alert_config(request,pk=None,*args,**kwargs):
 
             new_triggers = []
             for single_trigger_form in triggerForm:
-                new_triggers.append(
-                    Trigger(
-                        name = single_trigger_form.cleaned_data.get('new_name'),
-                        alert = alert_inst,
+                if single_trigger_form.cleaned_data.get('new_name') != None:
+                    new_triggers.append(
+                        Trigger(
+                            name = single_trigger_form.cleaned_data.get('new_name'),
+                            alert = alert_inst,
+                        )
                     )
-                )
-
+            
+            print(new_triggers)
             try:
                 with transaction.atomic():
                     alert_inst.trigger_set.all().delete()
                     Trigger.objects.bulk_create(new_triggers)
+                    pass
 
             except IntegrityError:
                 print("UPDATE FAILURE")

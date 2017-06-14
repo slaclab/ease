@@ -17,6 +17,12 @@ class configTrigger(forms.Form):
 
     def clean_new_name(self):
         data = self.cleaned_data['new_name']
+        # print("DATA:",data)
+        # if len(data) <= 0 or data == None:
+        #     raise forms.ValidationError(
+        #         'Links must have unique anchors and URLs.',
+        #         code='duplicate_links'
+        #     )
         return data
 
 
