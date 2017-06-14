@@ -9,8 +9,20 @@ Alerts list
 
 <div class="container-fluid">
   {% if alert_list %}
-  <h2>Alerts</h2>
-  <p>paragraph</p>            
+  <br>
+  <div class="row">
+    <div class="col">
+      <h2>Alerts</h2>
+    </div>
+    <div class="col text-right">
+    <!--<input class="btn btn-primary pull-right" type="button" id="add_trigger_btn" value="Add Trigger"/>    -->
+    <a href="{% url 'alert_create' %}">
+    <button type="button" class="btn btn-success btn-lg text-right">Add alert
+    </button>
+    </a>
+    </div>
+  </div>
+  <br>
   <table class="table table-sm">
     <thead>
       <tr>
@@ -47,6 +59,7 @@ Alerts list
 	</div>
 {% endif %}
 
+<br>
 
 
 

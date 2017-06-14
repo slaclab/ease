@@ -101,11 +101,7 @@ def alert_config(request,pk=None,*args,**kwargs):
 
     triggerFormSet = formset_factory(configTrigger)
 
-    if request.method == 'POST':
-
-        for x in sorted(request.POST):
-            print(x, "\t",request.POST[x])
-            
+    if request.method == 'POST':            
         form = configAlert(request.POST,)
         triggerForm = triggerFormSet(request.POST, prefix='tg')
         
