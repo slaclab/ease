@@ -82,7 +82,8 @@ class alert_detail(generic.DetailView):
 
 @login_required()
 def alert_config(request,pk=None,*args,**kwargs):
-    # if pk == None:
+    for x in sorted(request.POST):
+        print(x,"\t",request.POST[x])
 
     alert_initial = {}
     trigger_initial = []
@@ -104,8 +105,9 @@ def alert_config(request,pk=None,*args,**kwargs):
     if request.method == 'POST':            
         form = configAlert(request.POST,)
         triggerForm = triggerFormSet(request.POST, prefix='tg')
-        
-        if form.is_valid() and triggerForm.is_valid():
+
+        # if form.is_valid() and triggerForm.is_valid():
+        if form.is_valid():
             if create:
                 alert_inst = Alert()
             
@@ -117,11 +119,19 @@ def alert_config(request,pk=None,*args,**kwargs):
 
             new_triggers = []
             for single_trigger_form in triggerForm:
-                if single_trigger_form.cleaned_data.get('new_name') != None:
+                # if single_trigger_form.cleaned_data.get('new_name') != None:
+                print(single_trigger_form.data)
+                if single_trigger_form.is_valid():
+                    print(single_trigger_form.cleaned_data.get('new_pv'))
+                    if int(single_trigger_form.cleaned_data.get('new_pv')) == -1:
+                        new_trigger_pv = None
+                    else:
+                        new_trigger_pv = Pv.objects.get(pk=int(single_trigger_form.cleaned_data.get('new_pv')))
                     new_triggers.append(
                         Trigger(
                             name = single_trigger_form.cleaned_data.get('new_name'),
                             alert = alert_inst,
+                            pv = new_trigger_pv,
                         )
                     )
             
@@ -138,6 +148,10 @@ def alert_config(request,pk=None,*args,**kwargs):
 
         else:
             print("BAD FORM")
+            print(triggerForm.errors)
+            for single_trigger_form in triggerForm:
+                # print(dir(single_trigger_form))
+                print(single_trigger_form.is_valid())
 
         return HttpResponseRedirect(reverse('alerts_page_all'))
         
@@ -150,7 +164,7 @@ def alert_config(request,pk=None,*args,**kwargs):
                 'new_name': alert_inst.name,
             }
             trigger_initial = [
-                {'new_name': l.name} for l in alert_inst.trigger_set.all()
+                {'new_name': l.name,'new_pv': l.pv.pk if l.pv else None} for l in alert_inst.trigger_set.all()
             ]
 
         form = configAlert(initial = alert_initial)
@@ -159,11 +173,17 @@ def alert_config(request,pk=None,*args,**kwargs):
             prefix='tg'
         )
 
-
+    if create:
+        alert_inst = None
     return render(
         request, 
         "alert_config.html", 
-        {'form':form,'triggerForm':triggerForm,'alert':alert_inst},
+        {
+            'form':form,
+            'triggerForm':triggerForm,
+            'alert':alert_inst,
+            'create':create,
+        },
     )
 
 
