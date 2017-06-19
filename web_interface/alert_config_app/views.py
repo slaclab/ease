@@ -119,9 +119,11 @@ def alert_config(request,pk=None,*args,**kwargs):
 
             new_triggers = []
             for single_trigger_form in triggerForm:
-                # if single_trigger_form.cleaned_data.get('new_name') != None:
+
                 print(single_trigger_form.data)
                 if single_trigger_form.is_valid():
+                    if single_trigger_form.cleaned_data.get('new_pv') == None:
+                        continue;
                     print(single_trigger_form.cleaned_data.get('new_pv'))
                     if int(single_trigger_form.cleaned_data.get('new_pv')) == -1:
                         new_trigger_pv = None
