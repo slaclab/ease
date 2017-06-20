@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'alert_config_app',
+    'account_mgr_app',
 ]
 
 MIDDLEWARE = [
@@ -125,6 +126,7 @@ STATICFILES_DIRS = (
 STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 
 
-LOGIN_REDIRECT_URL = '/title'
+LOGIN_REDIRECT_URL = '/alert/title'
+LOGIN_URL = '/acct/login'
 
 

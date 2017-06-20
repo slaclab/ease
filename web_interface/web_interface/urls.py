@@ -19,7 +19,9 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     #url(r'^admin/', admin.site.urls),
-    url(r'^', include('alert_config_app.urls')),
-    url(r'^login/$', auth_views.login, name='login'),
-    url(r'^logout/$', auth_views.logout, name='logout'),
+    url(r'^alert/', include('alert_config_app.urls')),
+    url(r'^acct/', include('account_mgr_app.urls')),
+
+    # url(r'^login/$', auth_views.login, name='login'),
+    # url(r'^logout/$', auth_views.logout, name='logout'),
 ]

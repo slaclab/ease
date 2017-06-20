@@ -18,11 +18,13 @@ from django.db import transaction, IntegrityError
 
 
 
-login_url = "/login/"
+# login_url = reverse('login')
+# login_url = '/acct/login/'
+
 
 
 # Create your views here.
-
+@login_required()
 def list_all(request):
     context = {}
     context['pv_list'] = Pv.objects.all()
@@ -31,6 +33,7 @@ def list_all(request):
     return render( request, 'debug_list_all.html', context)
     #return HttpResponse("<h1>Page is alive</h1>")
 
+@login_required()
 def title(request):
     context = {}
     context['user'] = request.user
