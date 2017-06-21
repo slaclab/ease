@@ -16,7 +16,12 @@ class Alert(models.Model):
     )
 
     def __repr__(self):
-        return "{}(name={},)".format(self.__class__.__name__, self.name)
+        return "{}( name={}, subscriber={}, owner={})".format(
+            self.__class__.__name__,
+            self.name,
+            self.subscriber,
+            self.owner
+        )
 
     def __str__(self):
         return(str(self.name))
