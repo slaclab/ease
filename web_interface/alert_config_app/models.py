@@ -46,9 +46,37 @@ class Trigger(models.Model):
         blank=True,
         null=True,
     )
+    
+    value = models.FloatField(
+        blank = True,
+        null = True,
+    )
+
+    compare_choices = [
+        ('==','=='),
+        ('<=','<='),
+        ('>=','>='),
+        ('<','<'),
+        ('>','>'),
+        ('!=','!='),
+    ]
+
+    compare = models.CharField(
+        choices = compare_choices,
+        max_length = 2,
+        blank = True,
+        null = True,
+    ) 
+
 
     def __repr__(self):
-        return "{}(name={},alert={})".format(self.__class__.__name__, self.name, self.alert)
+        return "{}(name={},alert={},value={},compare={})".format(
+            self.__class__.__name__, 
+            self.name, 
+            self.alert,
+            self.value,
+            sefl.compare,
+        )
 
     def __str__(self):
         return(str(self.name))

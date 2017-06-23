@@ -12,10 +12,10 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __repr__(self):
-        return "{}(user={},)".format(self.__class__.__name__, self.user)
+        return("{}(user={},)".format(self.__class__.__name__, self.user))
 
     def __str__(self):
-        return("Profile: ", str(self.user))
+        return("Profile: " + str(self.user))
 
 
 @receiver(post_save, sender = User)

@@ -1,6 +1,6 @@
 from django import forms
 from .models import Alert, Pv, Trigger
-
+from account_mgr_app.models import Profile
 
 
 class configTrigger(forms.Form):
@@ -27,11 +27,30 @@ class configTrigger(forms.Form):
             }
         )
     )
+    
+    new_value = forms.FloatField(
+        label = 'Value',
+        required = False,
+        widget = forms.NumberInput(
+            attrs = {
+                'class':'form-control',
+            }
+        )
+    )
+
+    new_compare = forms.ChoiceField(
+        label = 'Comparison',
+        choices = [(-1,None)] + Trigger.compare_choices,
+        widget = forms.Select(
+            attrs = {
+                'class':'custom-select',
+            }
+        )
+    )
 
 
     def clean_new_name(self):
         data = self.cleaned_data['new_name']
-        print("cleaning name")
         # print("DATA:",data)
         # if len(data) <= 0 or data == None:
         #     raise forms.ValidationError(
@@ -41,9 +60,19 @@ class configTrigger(forms.Form):
         return data
 
     def clean_new_pv(self):
-        print("cleaning PV")
         data = self.cleaned_data['new_pv']
-        if data == -1:
+        if data == str(-1):
+            data = None
+        else:
+            data = Pv.objects.get(pk=int(data))
+
+        return data
+
+    def clean_new_compare(self):
+        data = self.cleaned_data['new_compare']
+        if data == str(-1):
+            data = None
+        if data == "":
             data = None
 
         return data
@@ -63,6 +92,66 @@ class configAlert(forms.Form):
             }
         )
     )
+
+    new_owners = forms.MultipleChoiceField(
+        label = 'Owners',
+        # use this to sort alphabetiaclly if necessary
+        # sorted([(np.random.random(),np.random.random()) for x in range(10)],key=lambda s: s[1])
+        choices = [ (x.pk,x.user.username) for x in Profile.objects.all()],
+        # choices = ["a,"b"],
+        widget = forms.CheckboxSelectMultiple(
+            attrs = {
+                'class':'form-control',
+            }
+        )
+    )
+
+    new_subscribe = forms.BooleanField(
+        label = "Subscribed",
+        required = False,
+        widget = forms.CheckboxInput(
+            attrs = {
+                'class':'form-check-input',
+                'type':'checkbox',
+            }
+        )
+    )
+
+    def clean_new_subscribe(self):
+        
+        if self.cleaned_data['new_subscribe']:
+            data = True
+        else:
+            data = False
+
+        return data
+
+
+class subscribeAlert(forms.Form):
+    class Meta:
+        model = Alert
+
+    new_subscribe = forms.BooleanField(
+        label = "Subscribed",
+        required = False,
+        widget = forms.CheckboxInput(
+            attrs = {
+                'class':'form-check-input',
+                'type':'checkbox',
+            }
+        )
+    )
+    def clean_new_subscribe(self):
+        
+        if self.cleaned_data['new_subscribe']:
+            data = True
+        else:
+            data = False
+
+        return data
+    
+
+
 
 class deleteAlert(forms.Form):
     class Meta:

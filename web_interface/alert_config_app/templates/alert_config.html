@@ -7,8 +7,8 @@
 
 {% block script %}
 var dfc_prefix = "tg"
-var dfc_fields = ["new_name","new_pv"]
-var dfc_replace = ["",-1]
+var dfc_fields = ["new_name","new_pv","new_compare","new_value"]
+var dfc_replace = ["",-1,-1,""]
 $(document).ready(dynamic_form_controller);
 
 {% endblock %}
@@ -53,15 +53,24 @@ Alert configuration page
     <table class="table">
         <thead>
         <tr>
-        <th class="w-25">Trigger Name</th>
+        <th class="w-30">Trigger Name</th>
+        <th class="w-10">Linked PV</th>
+        <th class="w-10">Comparison</th>
+        <th class="w-20">Value</th>
+        <th class="w-10"></th>
+
         </tr>
         </thead>
         <tbody id="contents_section">
             {% for entry in triggerForm %}
             <tr>
-            <td class="w-50">{{ entry.new_name }}</td>
-            <td class="w-25">{{ entry.new_pv }}</td>
-            <td class="w-25">
+            <td class="w-30">{{ entry.new_name }}</td>
+            <td class="w-10">{{ entry.new_pv }}</td>
+            <td class="w-10">{{ entry.new_compare }}</td>
+
+            <td class="w-20">{{ entry.new_value }}</td>
+
+            <td class="w-10">
                 <button class="btn btn-outline-warning delete-btn" type="button">Delete Row</button>
             </td>
             </tr>

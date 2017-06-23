@@ -15,7 +15,8 @@ urlpatterns = [
    
     url(r'^pv_detail/(?P<pk>\d+)/$', views.pv_detail.as_view(), name='pv_detail'),
 
-    url(r'^alert_detail/(?P<pk>\d+)/$', views.alert_detail.as_view(), name='alert_detail'),
+    # url(r'^alert_detail/(?P<pk>\d+)/$', views.alert_detail.as_view(), name='alert_detail'),
+    url(r'^alert_detail/(?P<pk>\d+)/$', views.alert_detail, name='alert_detail'),
 
     url(r'^alert_config/(?P<pk>\d+)/$', views.alert_config, name='alert_config'),
     url(r'^alert_create/$', views.alert_config, name='alert_create'),
