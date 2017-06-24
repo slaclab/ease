@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from account_mgr_app.models import Profile
 from .models import Alert, Pv, Trigger
-from .forms import configAlert, configTrigger, deleteAlert, subscribeAlert
+from .forms import configAlert, configTrigger, deleteAlert, subscribeAlert, createPv
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -14,6 +14,8 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 
 from django.core.urlresolvers import reverse
+from django.urls import reverse_lazy
+
 
 from django.forms.formsets import formset_factory
 from django.db import transaction, IntegrityError
@@ -78,6 +80,24 @@ class pv_detail(generic.DetailView):
     model = Pv
     context_object_name='pv'
     template_name = 'pv_detail.html'
+
+@method_decorator(login_required, name = 'dispatch')
+class pv_create(generic.edit.CreateView):
+    model = Pv
+    # context_object_name='pv'
+    template_name = 'pv_create.html'
+    form_class = createPv
+    # fields = []
+    # form_class.fields = [createPv.new_name]
+    # success_url = reverse('pvs_page_all')
+    success_url = reverse_lazy('pvs_page_all')
+    # fields = ['name']
+    def form_valid(self,form):
+        # form.cleaned_data.get('new_name')
+        form.instance.name = form.cleaned_data.get('new_name')
+        form.save()
+        return super(pv_create, self).form_valid(form)
+
 
 # @method_decorator(login_required, name = 'dispatch')
 # class alert_detail(generic.DetailView):

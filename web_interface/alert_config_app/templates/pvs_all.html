@@ -8,9 +8,20 @@ Pvs list
 {% block content %}
 
 <div class="container-fluid">
-  {% if pv_list %}
-  <h2>Pvs</h2>
-  <p>paragraph</p>            
+  <br>
+  <div class="row">
+    <div class="col">
+      <h2>PVs</h2>
+    </div>
+    <div class="col text-right">
+    <a href="{% url 'pv_create' %}">
+    <button type="button" class="btn btn-success btn-lg text-right">Add PV
+    </button>
+    </a>
+    </div>
+  </div>
+  <br>
+        
   <table class="table table-sm">
     <thead>
       <tr>
@@ -19,16 +30,17 @@ Pvs list
       </tr>
     </thead>
     <tbody>
+      {% if pv_list %}
       {% for pv in pv_list %}
       <tr>
 				<td><a href="{% url 'pv_detail' pv.pk %}"> {{pv.name}}</a></td> 
         <td>{{pv.pk}}</td>
       </tr>
       {% endfor %}
+      {% endif %}
 
     </tbody>
   </table>
-  {% endif %}
 </div>
 
 {% if is_paginated %}

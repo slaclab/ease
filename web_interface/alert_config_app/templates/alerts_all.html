@@ -8,7 +8,6 @@ Alerts list
 {% block content %}
 
 <div class="container-fluid">
-  {% if alert_list %}
   <br>
   <div class="row">
     <div class="col">
@@ -23,6 +22,7 @@ Alerts list
     </div>
   </div>
   <br>
+
   <table class="table table-sm">
     <thead>
       <tr>
@@ -31,16 +31,18 @@ Alerts list
       </tr>
     </thead>
     <tbody>
+      {% if alert_list %}
+
       {% for alert in alert_list %}
       <tr>
 				<td><a href="{% url 'alert_config' alert.pk %}"> {{alert.name}}</a></td> 
         <td>{{alert.pk}}</td>
       </tr>
       {% endfor %}
+      {% endif %}
 
     </tbody>
   </table>
-  {% endif %}
 </div>
 
 {% if is_paginated %}

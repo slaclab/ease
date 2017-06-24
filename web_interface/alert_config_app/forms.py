@@ -149,6 +149,23 @@ class subscribeAlert(forms.Form):
             data = False
 
         return data
+
+class createPv(forms.ModelForm):
+    class Meta:
+        model = Pv
+        fields = ['new_name']
+
+    new_name = forms.CharField(
+        label = 'PV name',
+        max_length = Pv.name_max_length,
+        widget = forms.TextInput( 
+            attrs = {
+                'class':'form-control',
+                'type':'text',
+            }
+        )
+    )
+    # forms.ModelForm.Meta.fields.append(new_name)
     
 
 
