@@ -186,7 +186,6 @@ def alert_config(request,pk=None,*args,**kwargs):
         print(alert_inst.owner.all())
         print(request.user.profile not in alert_inst.owner.all())
         if request.user.profile not in alert_inst.owner.all():
-            print("bAAd")
             return HttpResponseRedirect(reverse('alert_detail',kwargs={'pk':pk}))
 
     triggerFormSet = formset_factory(configTrigger)
@@ -201,6 +200,7 @@ def alert_config(request,pk=None,*args,**kwargs):
         if form.is_valid():
             if create:
                 alert_inst = Alert()
+                alert_inst.save()
             
             else:
                 pass
@@ -210,6 +210,7 @@ def alert_config(request,pk=None,*args,**kwargs):
             owners_list = []
             for pk in form.cleaned_data['new_owners']:
                 owners_list.append(Profile.objects.get(pk=pk))
+            print(owners_list,"*******************************************************")
             alert_inst.owner = owners_list
             # alter user subscription relation note: LOGGED IN USER ONLY
             if form.cleaned_data['new_subscribe']:

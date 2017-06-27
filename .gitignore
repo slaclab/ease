@@ -2,3 +2,5 @@
 *.swp
 *.pyc
 .vscode
+secret_key.py
+db.sqlite3

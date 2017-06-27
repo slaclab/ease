@@ -4,6 +4,23 @@ from account_mgr_app.models import Profile
 
 
 class configTrigger(forms.Form):
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.fields['new_pv'] = forms.ChoiceField(
+            label = 'PV name',
+            # use this to sort alphabetiaclly if necessary
+            # sorted([(np.random.random(),np.random.random()) for x in range(10)],key=lambda s: s[1])
+            choices = [(-1,None)] + [ (x.pk,x.name) for x in Pv.objects.all()],
+            # choices = ["a,"b"],
+            widget = forms.Select(
+                attrs = {
+                    'class':'custom-select',
+                }
+            )
+        )
+    
+    
+    
     new_name = forms.CharField(
         label = 'Trigger name',
         max_length = Trigger.name_max_length,
@@ -14,7 +31,7 @@ class configTrigger(forms.Form):
             }
         )
     )
-
+    '''
     new_pv = forms.ChoiceField(
         label = 'PV name',
         # use this to sort alphabetiaclly if necessary
@@ -27,7 +44,7 @@ class configTrigger(forms.Form):
             }
         )
     )
-    
+    '''
     new_value = forms.FloatField(
         label = 'Value',
         required = False,
@@ -82,6 +99,25 @@ class configAlert(forms.Form):
     class Meta:
         model = Alert
 
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+
+        self.fields['new_owners'] = forms.MultipleChoiceField(
+            label = 'Owners',
+            # use this to sort alphabetiaclly if necessary
+            # sorted([(np.random.random(),np.random.random()) for x in range(10)],key=lambda s: s[1])
+            choices = [ (x.pk,x.user.username) for x in Profile.objects.all()],
+            # choices = ["a,"b"],
+            widget = forms.CheckboxSelectMultiple(
+                attrs = {
+                    'class':'form-control',
+                }
+            )
+        )
+
+
+
+
     new_name = forms.CharField(
         label = 'Alert name',
         max_length = Alert.name_max_length,
@@ -93,6 +129,7 @@ class configAlert(forms.Form):
         )
     )
 
+    '''
     new_owners = forms.MultipleChoiceField(
         label = 'Owners',
         # use this to sort alphabetiaclly if necessary
@@ -105,6 +142,7 @@ class configAlert(forms.Form):
             }
         )
     )
+    '''
 
     new_subscribe = forms.BooleanField(
         label = "Subscribed",

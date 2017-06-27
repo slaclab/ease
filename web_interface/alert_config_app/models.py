@@ -16,12 +16,21 @@ class Alert(models.Model):
     )
 
     def __repr__(self):
+        
+        '''
         return "{}( name={}, subscriber={}, owner={})".format(
             self.__class__.__name__,
             self.name,
             self.subscriber,
             self.owner
         )
+        '''
+        # attempting to print subscriber and owner leads to infinite recursive loop
+        return "{}( name={})".format(
+            self.__class__.__name__,
+            self.name,
+        )
+
 
     def __str__(self):
         return(str(self.name))
