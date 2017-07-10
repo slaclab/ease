@@ -1,11 +1,15 @@
-TEST TITLE
-**********
+Djang: alert_config_app
+***********************
 
-this is a test document?
+The alert_config_app builds the django pages and database entries responsible
+for managing the alerts engine.
 
+forms.py
+--------
 .. automodule:: alert_config_app.forms
    :members:
 
-
+views.py
+--------
 .. automodule:: alert_config_app.views
    :members:

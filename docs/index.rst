@@ -3,15 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to web_interface's documentation!
+Welcome to EASE's documentation!
 =========================================
 
 .. toctree::
-   :maxdepth: 5
-   :caption: Contents:
+   :maxdepth: 3
+   :caption: EASE sections:
 
-   alert_config_app.rst
-
+   django_app.rst
+   alerts_engine.rst
 
 Indices and tables
 ==================

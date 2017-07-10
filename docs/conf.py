@@ -52,7 +52,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'web_interface'
+project = 'EASE'
 copyright = '2017, Nolan W. Brown'
 author = 'Nolan W. Brown'
 
