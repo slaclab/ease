@@ -13,3 +13,8 @@ views.py
 --------
 .. automodule:: alert_config_app.views
    :members:
+
+models.py
+---------
+.. automodule:: alert_config_app.models
+   :members:

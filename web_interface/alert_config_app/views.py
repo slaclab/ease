@@ -1,5 +1,5 @@
-"""veiws.py
-Django consults this page to determine the html that should be sent to the user
+"""Django consults this page to determine the html that should be sent
+ to the user
 """
 
 
