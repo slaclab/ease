@@ -1,12 +1,30 @@
 {% extends 'base.html' %}
 
+
 {% block title %}
 <!--{{alert.name}}-->
-PV
+<h1>{{pv.name}} -- pk: {{pv.pk}}</h1> <!-- This automatically changes to the name of the pv -->
 {% endblock %}
 
 
 {% block content %}
+<table id="table_detail table-small">
+  <thead>
+    <tr>
+	  <th>PV Name</th>
+	  <th> Value </th>
+	  <th>pk</th>
+	</tr>
+  </thead>
+  <tbody>
+    <tr>
+	  <td>{{pv.name}}</td>
+	  <td>10</td>
+	  <td>{{pv.pk}}</td>
+	</tr>
+  </tbody>
+</table>
+
 pk: {{pv.pk}}
 {% endblock %}
 
