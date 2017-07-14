@@ -35,6 +35,16 @@ from django.db import transaction, IntegrityError
 # Create your views here.
 @login_required()
 def list_all(request):
+    """Currently unused - Draw a page with a full list of PVs and Alerts.
+
+    Attributes
+    __________
+        request : django.http.HttpRequest
+
+    Returns
+    -------
+        render : django.http.HttpResponse
+    """
     context = {}
     context['pv_list'] = Pv.objects.all()
     context['alert_list'] = Alert.objects.all()
@@ -44,6 +54,16 @@ def list_all(request):
 
 @login_required()
 def title(request):
+    """Blank filler page. First destination after logging in.
+
+    Args
+    ____
+        request : django.http.HttpRequest
+
+    Returns
+    -------
+        render : django.http.HttpResponse
+    """
     context = {}
     context['user'] = request.user
     return render( request, 'title.html', context)
@@ -62,6 +82,16 @@ def title(request):
     
 @method_decorator(login_required, name = 'dispatch')
 class alerts_all(generic.ListView):
+    """Currently unused - Draw a page with a full list of PVs and Alerts
+
+    Args
+    ____
+        request : django.http.HttpRequest
+
+    Returns
+    -------
+        render : django.http.HttpResponse
+    """
     model = Alert
     template_name = 'alerts_all.html'
     paginate_by = 30
@@ -72,22 +102,50 @@ class alerts_all(generic.ListView):
 
 @method_decorator(login_required, name = 'dispatch')
 class pvs_all(generic.ListView):
+    """Draws page listing all PVs. Handles pagination.
+    
+    Attributes
+    __________
+        template_name : string
+            Determines the .html in aler_config_app/templates to use.
+
+        paginate_by : int
+            number of PVs per page
+    """
     model = Pv
     template_name = 'pvs_all.html'
     paginate_by = 30
 
     def get_queryset(self):
+        """Organizes the Pvs Alphabetically
+        """
         new_context = Pv.objects.all().order_by('name')
         return new_context
 
 @method_decorator(login_required, name = 'dispatch')
 class pv_detail(generic.DetailView):
+    """Draws page showing information about PV
+    
+    Attributes
+    __________
+        template_name : string
+            Determines the .html in aler_config_app/templates to use.
+
+    """
     model = Pv
     context_object_name='pv'
     template_name = 'pv_detail.html'
 
 @method_decorator(login_required, name = 'dispatch')
 class pv_create(generic.edit.CreateView):
+    """Draws page for PV creation
+    
+    Attributes
+    __________
+        template_name : string
+            Determines the .html in aler_config_app/templates to use.
+
+    """
     model = Pv
     # context_object_name='pv'
     template_name = 'pv_create.html'
@@ -98,6 +156,8 @@ class pv_create(generic.edit.CreateView):
     success_url = reverse_lazy('pvs_page_all')
     # fields = ['name']
     def form_valid(self,form):
+        """Receives and processes the form
+        """
         # form.cleaned_data.get('new_name')
         form.instance.name = form.cleaned_data.get('new_name')
         form.save()
@@ -112,6 +172,19 @@ class pv_create(generic.edit.CreateView):
 
 @login_required()
 def alert_detail(request,pk,*args,**kwargs):
+    """Draws read-only screen for individual alert
+
+    Args
+    ____
+        pk : int
+            DB index of the displayed alert. PK is sent automatically from the 
+            regex in url. 
+
+    Note
+    ____
+        It may be better to rewrite this function as a class so long as the 
+        class can support the dynamic number of triggers.
+    """
     try:
         alert_inst = get_object_or_404(Alert,pk=pk)
     except Http404:
@@ -164,6 +237,26 @@ def alert_detail(request,pk,*args,**kwargs):
 
 @login_required()
 def alert_config(request,pk=None,*args,**kwargs):
+    """Draws editable screen for individual alert.
+    
+    This page is accesssible only to the owner of the alert.
+
+    Args
+    ____
+        pk : int, None
+            DB index of the displayed alert. PK is sent automatically from the 
+            regex in url. If pk is none, or does not match an existing alert,
+            the user is redirected to to the alert creation url which links
+            back to this function.
+
+    Note
+    ____
+        It may be better to rewrite this function as a class so long as the 
+        class can support the dynamic number of triggers. Having functions 
+        specific to the creation and editing processes could produce much
+        more readable and maintainable code. As it stands, this function is
+        something of a mess.
+    """
     for x in sorted(request.POST):
         print("{:>20}  {:>20}  {:>20}".format(x,str(request.POST[x]),str(type(request.POST[x]))))
 
@@ -335,6 +428,20 @@ def alert_config(request,pk=None,*args,**kwargs):
 
 @login_required()
 def alert_delete(request,pk=None,*args,**kwargs):
+    """Draws deletion page for an alert.
+
+    Args
+    ____
+        pk : int
+            DB index of the displayed alert. PK is sent automatically from the 
+            regex in url. 
+
+    Note
+    ____
+        Having deletion occur on a post request is safer than a get request. 
+        This page is designed solely to present the form required for receiving
+        the post request.
+    """
     for x in sorted(request.POST):
         print(x,"\t",request.POST[x])
     try:

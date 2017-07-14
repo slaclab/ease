@@ -1,9 +1,14 @@
+"""
+
+"""
 from django.db import models
 from account_mgr_app.models import Profile
 
 # Create your models here.
 
 class Alert(models.Model):
+    """This model represents EASE's alerts
+    """
     name_max_length = 100
     name = models.CharField(max_length = name_max_length)
     subscriber = models.ManyToManyField(
