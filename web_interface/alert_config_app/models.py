@@ -1,5 +1,4 @@
-"""
-
+"""Manage alert_config data models
 """
 from django.db import models
 from account_mgr_app.models import Profile
@@ -8,6 +7,11 @@ from account_mgr_app.models import Profile
 
 class Alert(models.Model):
     """This model represents EASE's alerts
+
+    The Alert relates a collection of triggers to subscribers and owners.
+    It is inteded to be directly editable by all users who are owners.
+    When a linked trigger is tripped, alerts are sent to the subscribed
+    users.
     """
     name_max_length = 100
     name = models.CharField(max_length = name_max_length)
@@ -21,26 +25,21 @@ class Alert(models.Model):
     )
 
     def __repr__(self):
-        
-        '''
-        return "{}( name={}, subscriber={}, owner={})".format(
-            self.__class__.__name__,
-            self.name,
-            self.subscriber,
-            self.owner
-        )
-        '''
         # attempting to print subscriber and owner leads to infinite recursive loop
         return "{}( name={})".format(
             self.__class__.__name__,
             self.name,
         )
 
-
     def __str__(self):
         return(str(self.name))
 
 class Pv(models.Model):
+    """Each PV instance is made to match with an EPICS PV.
+
+    Alerts engine consults the table of PVs to decide which
+    entries much be queried from the archiver
+    """
     name_max_length = 100
     name = models.CharField(max_length = name_max_length)
 
@@ -51,6 +50,12 @@ class Pv(models.Model):
         return(str(self.name))
 
 class Trigger(models.Model):
+    """Individual 'trip statemet'
+    
+    Each trigger defines a trip condition relating a numeric value, condition 
+    and PV. Each trigger can be owned by a single Alert. Triggers are not
+    edited directly but through the alerts config page.
+    """
     name_max_length = 100
     name = models.CharField(max_length = name_max_length)
     alert = models.ForeignKey(Alert, on_delete=models.CASCADE)
