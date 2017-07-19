@@ -13,7 +13,7 @@ ____
 """
 
 from django import forms
-from .models import Alert, Pv, Trigger
+from .models import Alert, Pv, Trigger#, PVname
 from account_mgr_app.models import Profile
 
 
@@ -252,6 +252,9 @@ class subscribeAlert(forms.Form):
             data = False
 
         return data
+    
+    
+
 
 class createPv(forms.ModelForm):
     class Meta:
@@ -269,7 +272,7 @@ class createPv(forms.ModelForm):
         )
     )
     # forms.ModelForm.Meta.fields.append(new_name)
-    
+     
 
 
 
