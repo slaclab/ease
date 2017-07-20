@@ -1,12 +1,28 @@
 {% extends 'base.html' %}
-
+{% block head_extra %}
+{% load static %}
+{% endblock %}
+{% block script %}
+{% endblock %}
 {% block title %}
-<!--{{alert.name}}-->
-PV
+<h1>Edit: {{pv.name}}</h1>
 {% endblock %}
 
 
 {% block content %}
-pk: {{pv.pk}}
-{% endblock %}
+<div class="container-fluid" >
+<!-- UPDATE -->
+  <br>
+  <form action="{% url 'pv_config' pv.id %}" method="post">
+    {% csrf_token %}
+    <input class="btn btn-primary" type="submit" value="Update"/>
+  </form>
+  </br>
+<!-- Delete -->
+  <a href="{% url 'pv_delete' pv.id %}">
+    <button type="button" class="btn btn-danger">Delete
+    </button>
+  </a>
 
+
+{% endblock %}

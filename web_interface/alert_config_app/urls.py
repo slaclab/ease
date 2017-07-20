@@ -15,6 +15,9 @@ urlpatterns = [
    
     url(r'^pv_detail/(?P<pk>\d+)/$', views.pv_detail.as_view(), name='pv_detail'),
     url(r'^pv_create/$', views.pv_create.as_view(), name='pv_create'),
+    
+    url(r'^pv_detail/(?P<pk>\d+)/edit/$', views.pv_config.as_view(), name = 'pv_config'),
+    url(r'^pv_detail/(?P<pk>\d+)/delete/$', views.pv_delete.as_view(), name = 'pv_delete'),
 
     # url(r'^alert_detail/(?P<pk>\d+)/$', views.alert_detail.as_view(), name='alert_detail'),
     url(r'^alert_detail/(?P<pk>\d+)/$', views.alert_detail, name='alert_detail'),

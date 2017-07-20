@@ -3,13 +3,16 @@
 """
 
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from django.views import generic
+from django.views.generic import TemplateView
 from django.http import HttpResponse, HttpResponseRedirect
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
 
 from account_mgr_app.models import Profile
-from .models import Alert, Pv, Trigger
+from .models import Alert, Pv, Trigger #PVname #Does this allow you to say "model = Pv....model = Alert..."
 from .forms import configAlert, configTrigger, deleteAlert, subscribeAlert, createPv
 
 from django.contrib.auth.decorators import login_required
@@ -81,27 +84,45 @@ class pvs_all(generic.ListView):
         return new_context
 
 @method_decorator(login_required, name = 'dispatch')
-class pv_detail(generic.DetailView):
-    model = Pv
+class pv_detail(generic.DetailView):#, TemplateView):
+    model = Pv#SHOULD I CHANGE THIS TO PVname
     context_object_name='pv'
     template_name = 'pv_detail.html'
+
+
+@method_decorator(login_required, name = 'dispatch')            
+class pv_config(UpdateView):
+    model = Pv
+    template_name = 'pv_config.html'#WORKDS W/ THIS BEING pv_config.html
+    form_class = createPv
+    context_object_name='pv'
+    success_url = reverse_lazy('pvs_page_all')
+    def form_valid(self,form):
+        # form.cleaned_data.get('new_name')
+        form.instance.name = form.cleaned_data.get('new_name')
+        form.save()
+        return super().form_valid(form)
+
+@method_decorator(login_required, name = 'dispatch')
+class pv_delete(DeleteView):
+    model = Pv
+    template_name = 'pv_delete.html'
+    success_url = reverse_lazy('pvs_page_all')
+
+
 
 @method_decorator(login_required, name = 'dispatch')
 class pv_create(generic.edit.CreateView):
     model = Pv
-    # context_object_name='pv'
     template_name = 'pv_create.html'
     form_class = createPv
-    # fields = []
-    # form_class.fields = [createPv.new_name]
-    # success_url = reverse('pvs_page_all')
     success_url = reverse_lazy('pvs_page_all')
-    # fields = ['name']
     def form_valid(self,form):
         # form.cleaned_data.get('new_name')
         form.instance.name = form.cleaned_data.get('new_name')
         form.save()
         return super(pv_create, self).form_valid(form)
+
 
 
 # @method_decorator(login_required, name = 'dispatch')
