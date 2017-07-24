@@ -13,9 +13,11 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from account_mgr_app.models import Profile
 from .models import Alert, Pv, Trigger #PVname #Does this allow you to say "model = Pv....model = Alert..."
-from .forms import configAlert, configTrigger, deleteAlert, subscribeAlert, createPv
+from .forms import configAlert, configTrigger, deleteAlert, subscribeAlert, createPv, EditProfileForm
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserChangeForm
 from django.utils.decorators import method_decorator
 
 from django.shortcuts import get_object_or_404
@@ -385,3 +387,22 @@ def alert_delete(request,pk=None,*args,**kwargs):
         "alert_delete.html",
         {'form':deleteForm,'alert':alert_inst},
     )
+
+
+def profile(request):
+    args = {'user': request.user}
+    return render(request, 'profile.html', args)
+    
+def edit_profile(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+        
+        if form.is_valid():
+            form.save()
+            return redirect('/alert/profile')
+            
+    else:
+        form = EditProfileForm(instance=request.user)
+        args = {'form': form}
+        return render(request, 'edit_profile.html', args)
+    

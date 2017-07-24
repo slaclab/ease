@@ -26,5 +26,7 @@ urlpatterns = [
     url(r'^alert_create/$', views.alert_config, name='alert_create'),
     url(r'^alert_delete/(?P<pk>\d+)/$', views.alert_delete,name='alert_delete'),
 
+    url(r'^profile/$', views.profile, name='user_profile'),
+    url(r'^profile/edit/$', views.edit_profile, name='edit_profile')
 
 ]
