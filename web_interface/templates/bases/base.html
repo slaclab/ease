@@ -67,20 +67,21 @@
       </ul>
 
       <ul class="navbar-nav ml-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="{% url 'signup' %}">Create Account</a>
-        </li>
+
       {% if user.is_authenticated %}
         <li class="nav-item active">
-          <p class="navbar-text mb-0 nav-link" style"font-size=12px">Logged in as {{user}}</p>
+          <p class="navbar-text mb-0 nav-link" style"font-size=12px">Logged in as: {{user}}</p>
         </li>
         <li class="nav-item active">
           <a class="nav-link" href="{% url 'logout' %}">Logout</a>
         </li>
       {% else %}
         <li class="nav-item active">
-          <a class="nav-link" href="{% url 'login' %}">Login</a>
+          <a class="nav-link" href="{% url 'signup' %}">Create Account</a>
         </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'login' %}">Login</a>
+        </li>		
       {% endif %}
       </ul>
 
