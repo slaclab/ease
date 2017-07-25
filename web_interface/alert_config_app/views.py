@@ -17,7 +17,9 @@ from .forms import configAlert, configTrigger, deleteAlert, subscribeAlert, crea
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.views import password_reset, password_reset_done, password_reset_confirm
 from django.utils.decorators import method_decorator
 
 from django.shortcuts import get_object_or_404
@@ -406,3 +408,19 @@ def edit_profile(request):
         args = {'form': form}
         return render(request, 'edit_profile.html', args)
     
+    
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+        
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            return redirect('/alert/profile')
+        else:
+            return redirect('/alert/profile/change_password')
+    else:
+        form = PasswordChangeForm(user=request.user)
+        args = {'form': form}
+        return render(request, 'change_password.html', args)
+        
