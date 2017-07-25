@@ -13,6 +13,16 @@ PVs List
     <div class="col">
       <h2>PVs</h2>
     </div>
+    <div style="display:inline-block;">
+      <form method='GET' action=''>
+	    <input type='text' name='q' placeholder='Search PVs' />
+	    <input type='submit' value='Search' />
+	      <a href="{% url 'pvs_page_all' %}">
+	      <button type='button' class='btn btn-sm btn-success'> Show All
+	      </button>
+	      </a>
+	  </form>
+    </div>
     <div class="col text-right">
     <a href="{% url 'pv_create' %}">
     <button type="button" class="btn btn-success btn-lg text-right">Add PV
@@ -20,8 +30,9 @@ PVs List
     </a>
     </div>
   </div>
-  <br>
-        
+  <br>  
+
+
   <table class="table table-sm">
     <thead>
       <tr>
