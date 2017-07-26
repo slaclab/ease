@@ -157,9 +157,9 @@ class configAlert(forms.Form):
         new_subscribe : forms.BooleanField
             Determines whether the current user is subscribed. Unike the owners
             field, registering others is not possible to prevent trolling.
-
             
     """
+
     class Meta:
         model = Alert
 
@@ -178,8 +178,6 @@ class configAlert(forms.Form):
                 }
             )
         )
-
-
 
 
     new_name = forms.CharField(
