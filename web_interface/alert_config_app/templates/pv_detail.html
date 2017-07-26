@@ -10,14 +10,17 @@
 
 
 {% block content %}
-<div class="container-fluid" >
-<!-- UPDATE -->
-  <br>
-  <form action="{% url 'pv_config' pv.id %}" method="post">
-    {% csrf_token %}
-    <input class="btn btn-primary" type="submit" value="Update"/>
-  </form>
-  </br>
+<br>
+<div style="display:inline;">
+<form action="" method="POST">
+	{% csrf_token %}
+	
+	<label for="" class="col-sm-2 col-form-label"><b><h4>Edit PV Name:</h4></b></label>
+	<div class="col-sm-2"> {{form.new_name}} </div>
+	<!-- <input type="text" placeholder="{{form.new_name}}" /> -->
+	<br>
+	<button type="submit" class="btn btn-success">Submit</button>
+	
 <!-- Delete -->
   <a href="{% url 'pv_delete' pv.id %}">
     <button type="button" class="btn btn-danger">Delete
@@ -25,4 +28,6 @@
   </a>
 
 
+</form>
+</div>
 {% endblock %}

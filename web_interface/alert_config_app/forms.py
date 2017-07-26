@@ -140,7 +140,7 @@ class configTrigger(forms.Form):
         return data
 
 
-class configAlert(forms.Form):
+class configAlert(forms.Form):#ModelForm
     """Define the fields for an alert
 
     Attributes
