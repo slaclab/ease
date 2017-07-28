@@ -153,19 +153,7 @@ class pvs_all(generic.ListView):
         return new_context
 
 @method_decorator(login_required, name = 'dispatch')
-<<<<<<< HEAD
-class pv_detail(generic.DetailView):
-    """Draws page showing information about PV
-    
-    Attributes
-    __________
-        template_name : string
-            Determines the .html in aler_config_app/templates to use.
-
-    """
-=======
 class pv_detail(generic.DetailView, UpdateView):
->>>>>>> 95954d53f8cb272ab38c33c12edff46ae08677a9
     model = Pv
     context_object_name='pv'
     template_name = 'pv_detail.html'
