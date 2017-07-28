@@ -16,12 +16,28 @@
 	
 	<!-- Local compiled JavaScript -->
 	<script src="{% static 'dist-bootstrap-4.0.0/js/bootstrap.min.js' %}"></script>
-
+  
   <style>
     body {
-      padding-top: 1em;
+      padding-top:1em;
     }
+    .titles {
+      color: blue;
+    }
+	
+	#home_page_title {
+	  color: black;
+	  text-align: center
+	}
+	
+	#home_page_image {
+	  max-width: 40%;
+	  max-height: 40%;
+	}
   </style>
+  
+
+
 
   {% block head_extra %}
   {% endblock %}
@@ -51,20 +67,21 @@
       </ul>
 
       <ul class="navbar-nav ml-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="{% url 'signup' %}">Create Account</a>
-        </li>
+	  
       {% if user.is_authenticated %}
         <li class="nav-item active">
-          <p class="navbar-text mb-0 nav-link" style"font-size=12px">Logged in as {{user}}</p>
+          <p class="navbar-text mb-0 nav-link" style"font-size=12px">Logged in as: {{user}}</p>
         </li>
         <li class="nav-item active">
           <a class="nav-link" href="{% url 'logout' %}">Logout</a>
         </li>
       {% else %}
         <li class="nav-item active">
-          <a class="nav-link" href="{% url 'login' %}">Login</a>
+          <a class="nav-link" href="{% url 'signup' %}">Create Account</a>
         </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'login' %}">Login</a>
+        </li>		
       {% endif %}
       </ul>
 

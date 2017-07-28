@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Alerts list
+<p>Alerts list</p>
 {% endblock %}
 
 
@@ -13,15 +13,26 @@ Alerts list
     <div class="col">
       <h2>Alerts</h2>
     </div>
+    <div style="display:inline-block;">
+      <form method='GET' action=''>
+	    <input type='text' name='q' placeholder='Search Alerts' />
+	    <input type='submit' value='Search' />
+	    <a href="{% url 'alerts_page_all' %}">
+	      <button type='button' class='btn btn-sm btn-success'> Show All
+	      </button>
+	    </a>
+	  </form>
+    </div>
     <div class="col text-right">
     <!--<input class="btn btn-primary pull-right" type="button" id="add_trigger_btn" value="Add Trigger"/>    -->
     <a href="{% url 'alert_create' %}">
-    <button type="button" class="btn btn-success btn-lg text-right">Add alert
+    <button type="button" class="btn btn-success btn-lg text-left">Add Alert
     </button>
     </a>
     </div>
   </div>
   <br>
+  
 
   <table class="table table-sm">
     <thead>
