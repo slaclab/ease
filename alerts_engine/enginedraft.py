@@ -1,7 +1,6 @@
 import logging
 import threading
 import time
-import numpy as np
 #import Queue.queue as queue
 import queue
 from datetime import timedelta
