@@ -1,6 +1,7 @@
 """Manage alert_config data models
 """
 from django.db import models
+from django.urls import reverse
 from account_mgr_app.models import Profile
 
 # Create your models here.
@@ -42,12 +43,16 @@ class Pv(models.Model):
     """
     name_max_length = 100
     name = models.CharField(max_length = name_max_length)
+    
 
     def __repr__(self):
         return "{}(name={},)".format(self.__class__.__name__, self.name)
 
     def __str__(self):
         return(str(self.name))
+    
+    
+
 
 class Trigger(models.Model):
     """Individual 'trip statemet'
@@ -94,7 +99,7 @@ class Trigger(models.Model):
             self.name, 
             self.alert,
             self.value,
-            sefl.compare,
+            self.compare,
         )
 
     def __str__(self):
