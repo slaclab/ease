@@ -1,8 +1,6 @@
 from django.conf.urls import url
 
 from . import views
-from django.contrib.auth.views import password_reset, password_reset_done
-
 
 urlpatterns = [
     # url(r'^$', views.index, name='index'),
@@ -28,10 +26,8 @@ urlpatterns = [
     url(r'^alert_create/$', views.alert_config, name='alert_create'),
     url(r'^alert_delete/(?P<pk>\d+)/$', views.alert_delete,name='alert_delete'),
 
-    url(r'^profile/$', views.profile, name='user_profile'),
-    url(r'^profile/edit/$', views.edit_profile, name='edit_profile'),
-    url(r'^profile/change_password/$', views.change_password, name='change_password'),
-    # url(r'^reset-password/$', password_reset, name='reset_password'),
-    # url(r'^reset-password/done/$', password_reset_done, name='password_reset_done')
+#    url(r'^profile/$', views.profile, name='user_profile'),
+#    url(r'^profile/edit/$', views.edit_profile, name='edit_profile'),
+#    url(r'^profile/change_password/$', views.change_password, name='change_password'),
     
 ]

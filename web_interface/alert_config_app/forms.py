@@ -284,12 +284,12 @@ class deleteAlert(forms.Form):
         fields = []
         
         
-class EditProfileForm(UserChangeForm):
-    
-    class Meta:
-        model = User 
-        fields = {
-            'username',
-            'email',
-            'password'
-        }
+#class EditProfileForm(UserChangeForm):
+#    
+#    class Meta:
+#        model = User 
+#        fields = {
+#            'username',
+#            'email',
+#            'password'
+#        }

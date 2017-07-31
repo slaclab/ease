@@ -153,7 +153,6 @@ STATICFILES_DIRS = (
 STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 
 
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
 LOGIN_REDIRECT_URL = '/alert/title'
-LOGIN_URL = '/acct/login'
-
-
