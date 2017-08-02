@@ -19,14 +19,17 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
+class EndRun(Exception):
+    pass
+
 class EventMgr():
     """
     The EventMgr class manages a single repeated task. The frequency and
     duration of the tasks can be limited. The task is any callable object
     either a function or class method.
     """
-    def __init__(self,  interval, end = None, task=None, block=True, *args, **kwargs):
-        self.interval = interval
+    def __init__(self,  interval, end = None, task=None, block=True, 
+                 *args, **kwargs):
         """
         Initial configuration of EventMgr
 
@@ -55,9 +58,10 @@ class EventMgr():
         ----
             - allow integer end (n runs max)
             - pass *args, **kwargs to task, use a few default variables
-
+            - allow return statuses from task to terminate loop
 
         """
+        self.interval = interval
         if task == None:
             self.task = self.default_task
         else:
@@ -93,7 +97,7 @@ class EventMgr():
     def terminate(self):
         """
         Halts the blocking event loop. Also used as the signal handler.
-
+        
         Note
         ----
             Intended for internal use only.
@@ -125,13 +129,17 @@ class EventMgr():
         else:
             self.no_block_loop = asyncio.get_event_loop()
             for sig in (signal.SIGINT, signal.SIGTERM):
-                self.no_block_loop.add_signal_handler(sig,self.no_block_terminate)
-            future = self.no_block_loop.run_in_executor(None,self.run)
-            return future 
+                self.no_block_loop.add_signal_handler(
+                    sig,self.no_block_terminate
+                )
+            self.future = self.no_block_loop.run_in_executor(None,self.run)
+            return self.future 
+
+   
 
     def end(self):
         """
-        Force the EventMgr to end. 
+        Force the EventMgr to end. Block-agnostic. 
 
         ToDo
         ----
@@ -141,7 +149,22 @@ class EventMgr():
         if self.block:
             self.terminate()
         else:
-            self.no_block_terminate() 
+            self.no_block_terminate()
+
+        self.loop.close()
+
+    '''
+    async def waiter(self):
+        response = await self.future
+        return response
+        #await asyncio.wait_for(self.future)
+
+
+    def collect(self):
+        #print(type(self.__async__waiter))
+        self.no_block_loop.run_until_complete(self.waiter())
+    '''
+
 
     def executor(self,target_time=None):
         """
@@ -158,7 +181,13 @@ class EventMgr():
             Intended for internal use only.
         
         """
-        self.task()
+        try:
+            self.task()
+        except:
+            self.end()
+            return
+        
+        #self.task()
         self.iteration = self.iteration + 1
         if target_time == None:
             target_time = datetime.datetime.now() + self.interval
@@ -170,11 +199,19 @@ class EventMgr():
         if delay < datetime.timedelta():
             logger.warn("task exceeding cycle time")
         delay = max(delay,datetime.timedelta()) 
-        if (now + delay) < self.end_time or self.end_time == None:
-            self.loop.call_later(delay.total_seconds(), self.executor,target_time)
+        if self.end_time != None:
+            if (now + delay) < self.end_time:
+                self.loop.call_later(
+                    delay.total_seconds(),
+                    self.executor,target_time
+                )
+            else:
+                self.loop.stop()
         else:
-            self.loop.stop()
-
+            self.loop.call_later(
+                delay.total_seconds(),
+                self.executor,target_time
+            )
         
     def default_task(self,*args,**kwargs):
         """
