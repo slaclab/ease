@@ -156,3 +156,5 @@ STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 1025
 LOGIN_REDIRECT_URL = '/alert/title'
+
+ACCOUNT_ACTIVATION_DAYS = 7
