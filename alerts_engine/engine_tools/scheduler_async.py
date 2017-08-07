@@ -9,14 +9,15 @@ import datetime
 import logging
 import time
 import signal
-
+'''
 logging.basicConfig(                                                        
     datefmt="%Y-%m-%d %H:%M:%S",                                            
     #format="%(levelname)8s : %(asctime)19s.%(msecs)03d : %(threadName)20s : %(message)s",
     format="%(levelname)8s : %(asctime)19s.%(msecs)03d : %(message)s",
 )
+'''
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+#logger.setLevel(logging.DEBUG)
 
 
 class EndRun(Exception):
@@ -222,8 +223,8 @@ class EventMgr():
             Intended for internal use only.
         
         """
-        print("{:>5}".format(self.iteration),datetime.datetime.now())
-        #logger.debug("DEFAULT TASK")
+        #print("{:>5}".format(self.iteration),datetime.datetime.now())
+        logger.debug("{:>7} DEFAULT TASK".format(self.iteration))
 
 
 class demo:
