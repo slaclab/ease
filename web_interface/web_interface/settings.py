@@ -153,8 +153,8 @@ STATICFILES_DIRS = (
 STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 
 
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
+EMAIL_HOST = 'psmail'
+EMAIL_PORT = 25
 LOGIN_REDIRECT_URL = '/alert/title'
 
 ACCOUNT_ACTIVATION_DAYS = 7
