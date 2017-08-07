@@ -18,9 +18,12 @@ from django.template.loader import render_to_string
 from .tokens import account_activation_token
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
-
+from email.mime.text import MIMEText
+import smtplib 
 
 # Create your views here.
+
+
 
 
 def signup(request):
@@ -33,10 +36,17 @@ def signup(request):
             user.save()
             current_site = get_current_site(request)
             message = render_to_string('acc_active_email.html', {'user':user, 'domain':current_site.domain, 'uid': urlsafe_base64_encode(force_bytes(user.pk)), 'token': account_activation_token.make_token(user)})
-            mail_subject = 'Activate your Ease account.'
-            to_email = form.cleaned_data.get('email')
-            email = EmailMessage(mail_subject, message, to=[to_email])
-            email.send()
+            
+            msg = MIMEText(message)
+
+            msg['subject'] = 'Activate your Ease account.'
+            msg['to'] = form.cleaned_data.get('email')
+            msg['from'] = 'EASE'
+            #email = EmailMessage(mail_subject, message, to=[to_email])
+            #email.send()
+            s = smtplib.SMTP('psmail')
+            s.send_message(msg)
+            s.quit()
             return redirect('account_activation_sent')                
             
 #            username = form.cleaned_data.get('username')
