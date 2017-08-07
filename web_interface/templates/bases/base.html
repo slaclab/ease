@@ -67,15 +67,19 @@
       </ul>
 
       <ul class="navbar-nav ml-auto">
-	  
-      {% if user.is_authenticated %}
+             {% if user.is_authenticated %}
         <li class="nav-item active">
-          <p class="navbar-text mb-0 nav-link" style"font-size=12px">Logged in as: {{user}}</p>
+          <a class="nav-link" href="{% url 'user_profile' %}">{{user}}</a>
+
         </li>
         <li class="nav-item active">
           <a class="nav-link" href="{% url 'logout' %}">Logout</a>
         </li>
       {% else %}
+         <li class="nav-item active">
+            <a class="nav-link" href="{% url 'signup' %}">Create Account</a>
+          </li>
+
         <li class="nav-item active">
           <a class="nav-link" href="{% url 'signup' %}">Create Account</a>
         </li>

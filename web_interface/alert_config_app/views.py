@@ -18,6 +18,10 @@ from .models import Alert, Pv, Trigger #PVname #Does this allow you to say "mode
 from .forms import configAlert, configTrigger, deleteAlert, subscribeAlert, createPv
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.views import password_reset, password_reset_done, password_reset_confirm
 from django.utils.decorators import method_decorator
 
 from django.shortcuts import get_object_or_404
@@ -505,3 +509,38 @@ def alert_delete(request,pk=None,*args,**kwargs):
         "alert_delete.html",
         {'form':deleteForm,'alert':alert_inst},
     )
+
+
+#def profile(request):
+#    args = {'user': request.user}
+#    return render(request, 'profile.html', args)
+#    
+#def edit_profile(request):
+#    if request.method == 'POST':
+#        form = EditProfileForm(request.POST, instance=request.user)
+#        
+#        if form.is_valid():
+#            form.save()
+#            return redirect('/alert/profile')
+#            
+#    else:
+#        form = EditProfileForm(instance=request.user)
+#        args = {'form': form}
+#        return render(request, 'edit_profile.html', args)
+#    
+#    
+#def change_password(request):
+#    if request.method == 'POST':
+#        form = PasswordChangeForm(data=request.POST, user=request.user)
+#        
+#        if form.is_valid():
+#            form.save()
+#            update_session_auth_hash(request, form.user)
+#            return redirect('/alert/profile')
+#        else:
+#            return redirect('/alert/profile/change_password')
+#    else:
+#        form = PasswordChangeForm(user=request.user)
+#        args = {'form': form}
+#        return render(request, 'change_password.html', args)
+#        
