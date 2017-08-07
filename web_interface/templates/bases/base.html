@@ -70,6 +70,7 @@
              {% if user.is_authenticated %}
         <li class="nav-item active">
           <a class="nav-link" href="{% url 'user_profile' %}">{{user}}</a>
+
         </li>
         <li class="nav-item active">
           <a class="nav-link" href="{% url 'logout' %}">Logout</a>
@@ -80,8 +81,11 @@
           </li>
 
         <li class="nav-item active">
-          <a class="nav-link" href="{% url 'login' %}">Login</a>
+          <a class="nav-link" href="{% url 'signup' %}">Create Account</a>
         </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'login' %}">Login</a>
+        </li>		
       {% endif %}
       </ul>
 
