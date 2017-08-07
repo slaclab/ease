@@ -15,6 +15,8 @@ ____
 from django import forms
 from .models import Alert, Pv, Trigger#, PVname
 from account_mgr_app.models import Profile
+from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.models import User
 
 
 class configTrigger(forms.Form):
@@ -278,3 +280,14 @@ class deleteAlert(forms.Form):
     class Meta:
         model = Alert
         fields = []
+        
+        
+#class EditProfileForm(UserChangeForm):
+#    
+#    class Meta:
+#        model = User 
+#        fields = {
+#            'username',
+#            'email',
+#            'password'
+#        }
