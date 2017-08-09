@@ -49,18 +49,24 @@ def main():
     )
 
 
-    logger.debug("start test_db")
-    z = record_scanner.TriggerScan()
-    print(z.dbPvPull())
-    logger.debug("end test_db")
-
-
+    scanner = record_scanner.TriggerScan("pscaa02-dev",rep_t)
     
+    '''
+    logger.debug("start test_db")
+    scanner = record_scanner.TriggerScan("pscaa02-dev",rep_t)
+    print(scanner.dbPvPull())
+    a = scanner.dbPvPull()
+    print(type(a))
+    print(scanner.archPull(a))
+    scanner.scanTask()
+    logger.debug("end test_db")
+    '''
+
     # configure Event Manager
     engine = scheduler_async.EventMgr(
         rep_t,
         block=True,
-        task=None
+        task=scanner.scanTask
     )
 
     logger.debug('ENGINE START')

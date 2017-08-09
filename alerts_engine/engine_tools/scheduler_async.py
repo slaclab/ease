@@ -182,8 +182,9 @@ class EventMgr():
             Intended for internal use only.
         
         """
+        args = {'target_time':target_time}
         try:
-            self.task()
+            self.task(target_time)
         except:
             self.end()
             return
@@ -197,6 +198,8 @@ class EventMgr():
     
         now = datetime.datetime.now()
         delay = target_time - datetime.datetime.now()
+        #logger.debug("EXTRA TIME: {:4.3}f {}s".format(delay/self.interval,delay))
+        logger.info("load: {:7.4f}%".format((1-delay/self.interval)*100))
         if delay < datetime.timedelta():
             logger.warn("task exceeding cycle time")
         delay = max(delay,datetime.timedelta()) 
