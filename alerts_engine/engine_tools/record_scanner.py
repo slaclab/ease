@@ -22,6 +22,7 @@ from archapp.interactive import EpicsArchive
 #import django_connect
 #from .django_connect import prepare
 from . import django_connect
+from . import email_wrapper
 
 #################
 # Configuration #
@@ -60,7 +61,7 @@ class TriggerScan:
         #timing info etc probs useful
         self.arch = EpicsArchive(hostname=hostname)
         self.rep_t = rep_t
-        pass
+        self.emailer = email_wrapper.EmailWrapper("psmail","EASE")
 
     def dbPvPull(self,live=True):
         """
@@ -148,7 +149,9 @@ class TriggerScan:
             return False
         status = False
         if comparison == "==":
-            raise NotImplementedError
+            filtered_xarray = dbtrig.value == archpv[dbpv.name].sel(field='vals')
+            if filtered_xarray.any():
+                status = True
         elif comparison == "<=":
             minimum = archpv[dbpv.name].sel(field='vals').min().item(0)
             if minimum <= dbtrig.value:
@@ -166,9 +169,12 @@ class TriggerScan:
             if maximum > dbtrig.value:
                 status = True
         elif comparison == "!=":
-            raise NotImplementedError
+            filtered_xarray = dbtrig.value != archpv[dbpv.name].sel(field='vals')
+            if filtered_xarray.any():
+                status = True
         else:
-            raise NotImplementedError
+            logger.error("comparator not yet implemented")
+            #raise NotImplementedError
         return status
 
 
@@ -191,14 +197,39 @@ class TriggerScan:
 
         pv_qset = self.dbPvPull()
         arch_data = self.archPull(pv_qset, target_time)
+        
+        tripped_trigger_pk = set()
 
         # loop through all PVs
+        logger.debug("scanning triggers")
         for pv in pv_qset:
             trigger_set = pv.trigger_set.all()
             # all triggers must be compared - ensures all triggers visited once
             for trigger in trigger_set:
                 if(self.compare(pv,trigger,arch_data[pv.name])):
                     logger.debug("TRIPPED")
+                    tripped_trigger_pk.add(trigger.pk)
+
+        tripped_triggers = Trigger.objects.filter(pk__in=tripped_trigger_pk)
+        tripped_alerts = Alert.objects.filter(trigger__in=tripped_triggers)
+        tripped_alerts = tripped_alerts.distinct()
+        print(tripped_alerts)
+
+        for alert in tripped_alerts:
+            specific_triggers = alert.trigger_set.filter(
+                pk__in=tripped_trigger_pk
+            )
+            recipients = []
+            for prof in alert.subscriber.all():
+                recipients.append(prof.user.email)
+
+            print(recipients)
+            self.emailer.send_text(recipients,'test',str(specific_triggers))
+
+
+
+
+
 
 
 

@@ -8,7 +8,7 @@ class counting_test_class:
         self.limit = limit
         self.count = 0
 
-    def task(self):
+    def task(self,*args,**kwargs):
         if self.limit != None:
             if self.count >= self.limit:
                 raise scheduler_async.EndRun()

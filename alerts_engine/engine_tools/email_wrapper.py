@@ -95,11 +95,14 @@ class EmailWrapper:
         
         msgRoot['Subject'] = subj
         msgRoot['From'] = self.host_email
-        msgRoot['To'] = to
- 
-        # Send the message via our own SMTP server.                                     
-        s = smtplib.SMTP(self.host)                                                      
-        s.send_message(msgRoot)                                                             
+        if type(to) == list:
+            msgRoot['To'] = ",".join(to)
+        else:
+            msgRoot['To'] = to
+
+        # Send the message via our own SMTP server.  
+        s = smtplib.SMTP(self.host)  
+        s.send_message(msgRoot)    
         s.quit()
 
     def send_html(self, to, subj, content):
@@ -124,7 +127,11 @@ class EmailWrapper:
         
         msgRoot['Subject'] = subj
         msgRoot['From'] = self.host_email
-        msgRoot['To'] = to
+        if type(to) == list:
+            msgRoot['To'] = ",".join(to)
+        else:
+            msgRoot['To'] = to
+            
  
         # Send the message via our own SMTP server.                                     
         s = smtplib.SMTP(self.host)                                                      
