@@ -1,7 +1,6 @@
 import logging
 import threading
 import time
-import numpy as np
 #import Queue.queue as queue
 import queue
 from datetime import timedelta
@@ -15,7 +14,7 @@ from datetime import timedelta
 
 
 class Processor(threading.Thread):
-    def __init__(self,cv,event,execute):
+    def __init__(self,cv,event,execute,*args,**kwargs):
         threading.Thread.__init__(self)
         self.cv = cv
         self.go = True
@@ -41,13 +40,16 @@ class Processor(threading.Thread):
 
 
 class Timer(threading.Thread):
-    def __init__(self,delay,cv,event,sweep=1):
+    def __init__(self,delay,cv,event,sweep=1,limit=None,*args,**kwargs):
         threading.Thread.__init__(self)
         self.cv = cv
         self.go = True
         self.delay = delay
         self.event = event
         self.sweep = sweep
+        self.limit = limit
+        if not self.limit == None:
+            self.count = 0
 
     def run(self):
         logging.debug('producer initiating')
@@ -66,11 +68,17 @@ class Timer(threading.Thread):
 
             with self.cv:
                 self.cv.notifyAll()
+                if not self.limit == None:
+                    self.count = self.count + 1
+                    if self.count >= self.limit:
+                        self.event.set()
+                        logging.debug('ENDING: LIMIT REACHED')
                 logging.debug('RELEASING')
 
 
-class Launcher():
-    def __init__(self,delay,name=None,sweep=timedelta(seconds=.1)):
+class EventMgr():
+    def __init__(self, delay, name=None, sweep=timedelta(seconds=.1),
+                 execute=None, limit=None, *args, **kwargs):
         if name == None:
             self.name = str(__class__.__name__)+":"+str(delay.total_seconds())
         else:
@@ -78,6 +86,10 @@ class Launcher():
         self.messageq = queue.Queue()
         self.endevent = threading.Event()
         self.cv = threading.Condition()
+
+        if execute == None:
+            self.execute = self.default_execute
+
         self.delay = delay.total_seconds()
         self.sweep = sweep.total_seconds()
         self.timer = Timer(
@@ -85,6 +97,7 @@ class Launcher():
             self.cv,
             self.endevent,
             self.sweep,
+            limit = limit,
         )
         self.timer.name = self.name + ":timer"
         self.proc = Processor(
@@ -107,7 +120,7 @@ class Launcher():
         self.timer.join()
         self.proc.join()
 
-    def execute(self):
+    def default_execute(self):
         logging.debug('EXECUTING')
 
 
@@ -123,7 +136,7 @@ if __name__ == '__main__':
 
 
 
-    s = Launcher(timedelta(seconds=2),sweep = timedelta(seconds=.1))
+    s = EventMgr(timedelta(seconds=2),sweep = timedelta(seconds=.1))
     s.start()
     try:
         s.blocking_hold()
