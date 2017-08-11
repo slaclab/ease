@@ -24,6 +24,16 @@ class Alert(models.Model):
         Profile,
         related_name=None
     )
+    
+    lockout_duration = models.DurationField(
+        blank = True,
+        null = True,
+    )
+
+    last_sent = models.DateTimeField(
+        blank = True,
+        null = True,
+    )
 
     def __repr__(self):
         # attempting to print subscriber and owner leads to infinite recursive loop
@@ -34,6 +44,7 @@ class Alert(models.Model):
 
     def __str__(self):
         return(str(self.name))
+
 
 class Pv(models.Model):
     """Each PV instance is made to match with an EPICS PV.
@@ -50,8 +61,6 @@ class Pv(models.Model):
 
     def __str__(self):
         return(str(self.name))
-    
-    
 
 
 class Trigger(models.Model):
