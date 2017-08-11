@@ -16,10 +16,12 @@ class Alert(models.Model):
     """
     name_max_length = 100
     name = models.CharField(max_length = name_max_length)
+    
     subscriber = models.ManyToManyField(
         Profile,
         related_name="subscriptions"
     )
+    
     owner = models.ManyToManyField(
         Profile,
         related_name=None
