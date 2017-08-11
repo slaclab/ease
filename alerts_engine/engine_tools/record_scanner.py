@@ -177,6 +177,19 @@ class TriggerScan:
             #raise NotImplementedError
         return status
 
+    def utc_to_local(self,utc_dt):
+        """
+        add timezones to any time in local tiemzone 
+        taken from:
+
+        https://stackoverflow.com/questions/4563272/convert-a-python-utc-datetime-to-a-local-datetime-using-only-python-standard-lib
+        
+        """
+
+
+        
+        return utc_dt.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None)
+
 
     def scanTask(self, target_time=None, *args, **kwargs):
         """
@@ -213,19 +226,28 @@ class TriggerScan:
         tripped_triggers = Trigger.objects.filter(pk__in=tripped_trigger_pk)
         tripped_alerts = Alert.objects.filter(trigger__in=tripped_triggers)
         tripped_alerts = tripped_alerts.distinct()
-        print(tripped_alerts)
+        #print(tripped_alerts)
 
         for alert in tripped_alerts:
+            #print(alert.last_sent)
+            #print(target_time)
+            #print(alert.lockout_duration)
+            if alert.last_sent != None:
+                if self.utc_to_local(target_time) \
+                        - self.utc_to_local(alert.last_sent) \
+                        < alert.lockout_duration:
+                    logging.debug("lockout duration stil in effect")
+                    continue
             specific_triggers = alert.trigger_set.filter(
                 pk__in=tripped_trigger_pk
             )
             recipients = []
             for prof in alert.subscriber.all():
                 recipients.append(prof.user.email)
-
-            print(recipients)
+            #print(recipients)
             self.emailer.send_text(recipients,'test',str(specific_triggers))
-
+            alert.last_sent = target_time
+            alert.save()
 
 
 
