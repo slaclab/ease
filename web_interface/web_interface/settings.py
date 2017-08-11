@@ -52,8 +52,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "134.79.165.105",
+    "pswww-dev.slac.stanford.edu",    
+]
 
+if not DEBUG:
+    FORCE_SCRIPT_NAME = '/ease'
 
 # Application definition
 
@@ -77,6 +82,19 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+if not DEBUG:
+    MIDDLEWARE.append(
+        'whitenoise.middleware.WhiteNoiseMiddleware'
+    )
+
+
+#WHITENOISE_STATIC_PREFIX = FORCE_SCRIPT_NAME
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+if not DEBUG:
+    WHITENOISE_STATIC_PREFIX = '/static/'
+
+
 
 ROOT_URLCONF = 'web_interface.urls'
 
@@ -146,7 +164,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
+if not DEBUG:
+    STATIC_URL = FORCE_SCRIPT_NAME + '/static/'
+else:
+    STATIC_URL = '/static/'
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR,'static'),
 )
@@ -155,6 +177,9 @@ STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 
 EMAIL_HOST = 'psmail'
 EMAIL_PORT = 25
-LOGIN_REDIRECT_URL = '/alert/title'
+if not DEBUG:
+    LOGIN_REDIRECT_URL = FORCE_SCRIPT_NAME + '/alert/title'
+else:
+    LOGIN_REDIRECT_URL = '/alert/title'
 
 ACCOUNT_ACTIVATION_DAYS = 7
