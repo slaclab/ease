@@ -143,10 +143,11 @@ class configTrigger(forms.Form):
 
 
 class configAlert(forms.Form):#ModelForm
-    """Define the fields for an alert
+    """Define the fields for an alert. These are the editable fields that
+    presented to users who have ownership over this alert.
 
     Attributes
-    __________
+    ----------
         new_owners : forms.MultipleChoiceField
             Provides dropdown selection of profiles who can own this object.
             The user can give ownership to themselves and others. This does NOT
@@ -204,6 +205,22 @@ class configAlert(forms.Form):#ModelForm
         )
     )
 
+    new_lockout_duration = forms.DurationField(
+        label = "Delay between successive alerts",
+        required = False,
+        widget = forms.TimeInput(
+            attrs = {
+                'class':'form-control',
+                'type':'text',
+                'placeholder':'dd hh:mm:ss',
+                #'data-toggle':'tooltip',
+                #'data-placement':'top',
+                #'title':'tooltip!',
+            }
+        )
+    )
+    
+
     def clean_new_subscribe(self):
         """Validate the subscription option
 
@@ -231,6 +248,9 @@ class configAlert(forms.Form):#ModelForm
 
 
 class subscribeAlert(forms.Form):
+    """Define the fields for an alert. These fields are presented when the user
+    does NOT own this alert. The only option is to subscribe.
+    """
     class Meta:
         model = Alert
 
@@ -254,8 +274,6 @@ class subscribeAlert(forms.Form):
         return data
     
     
-
-
 class createPv(forms.ModelForm):
     class Meta:
         model = Pv
@@ -273,8 +291,6 @@ class createPv(forms.ModelForm):
     )
     # forms.ModelForm.Meta.fields.append(new_name)
      
-
-
 
 class deleteAlert(forms.Form):
     class Meta:

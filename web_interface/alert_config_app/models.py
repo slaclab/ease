@@ -16,13 +16,25 @@ class Alert(models.Model):
     """
     name_max_length = 100
     name = models.CharField(max_length = name_max_length)
+    
     subscriber = models.ManyToManyField(
         Profile,
         related_name="subscriptions"
     )
+    
     owner = models.ManyToManyField(
         Profile,
         related_name=None
+    )
+    
+    lockout_duration = models.DurationField(
+        blank = True,
+        null = True,
+    )
+
+    last_sent = models.DateTimeField(
+        blank = True,
+        null = True,
     )
 
     def __repr__(self):
@@ -34,6 +46,7 @@ class Alert(models.Model):
 
     def __str__(self):
         return(str(self.name))
+
 
 class Pv(models.Model):
     """Each PV instance is made to match with an EPICS PV.
@@ -50,8 +63,6 @@ class Pv(models.Model):
 
     def __str__(self):
         return(str(self.name))
-    
-    
 
 
 class Trigger(models.Model):

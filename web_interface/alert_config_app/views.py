@@ -201,7 +201,6 @@ class pv_create(generic.edit.CreateView):
         return super(pv_create, self).form_valid(form)
 
 
-
 # @method_decorator(login_required, name = 'dispatch')
 # class alert_detail(generic.DetailView):
 #     model = Alert
@@ -348,6 +347,8 @@ def alert_config(request,pk=None,*args,**kwargs):
                 owners_list.append(Profile.objects.get(pk=pk))
             print(owners_list,"*******************************************************")
             alert_inst.owner = owners_list
+            alert_inst.lockout_duration = form.cleaned_data[
+                'new_lockout_duration']
             # alter user subscription relation note: LOGGED IN USER ONLY
             if form.cleaned_data['new_subscribe']:
                 try:
@@ -386,11 +387,15 @@ def alert_config(request,pk=None,*args,**kwargs):
 
                     new_triggers.append(
                         Trigger(
-                            name = single_trigger_form.cleaned_data.get('new_name'),
+                            name = single_trigger_form.cleaned_data.get(
+                                'new_name'),
                             alert = alert_inst,
-                            pv = single_trigger_form.cleaned_data.get('new_pv'),
-                            compare = single_trigger_form.cleaned_data.get('new_compare'),
-                            value = single_trigger_form.cleaned_data.get('new_value'),
+                            pv = single_trigger_form.cleaned_data.get(
+                                'new_pv'),
+                            compare = single_trigger_form.cleaned_data.get(
+                                'new_compare'),
+                            value = single_trigger_form.cleaned_data.get(
+                                'new_value'),
                         )
                     )
             
@@ -429,6 +434,7 @@ def alert_config(request,pk=None,*args,**kwargs):
                 'new_name': alert_inst.name,
                 'new_owners':[x.pk for x in alert_inst.owner.all()],
                 'new_subscribe': subscribed,
+                'new_lockout_duration':alert_inst.lockout_duration,
                  
             }
             trigger_initial = [
