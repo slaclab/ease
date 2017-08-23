@@ -179,6 +179,8 @@ STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 
 EMAIL_HOST = 'psmail'
 EMAIL_PORT = 25
+EMAIL_HOST_USER = 'EASE'
+DEFAULT_FROM_EMAIL = 'EASE'
 if not DEBUG:
     LOGIN_REDIRECT_URL = FORCE_SCRIPT_NAME + '/alert/title'
 else:
