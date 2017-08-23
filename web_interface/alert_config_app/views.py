@@ -193,7 +193,9 @@ class pv_create(generic.edit.CreateView):
     form_class = createPv
     success_url = reverse_lazy('pvs_page_all')
     def form_valid(self,form):
-        """Receives and processes the form
+        """
+        Receives and processes the form
+        
         """
         # form.cleaned_data.get('new_name')
         form.instance.name = form.cleaned_data.get('new_name')
