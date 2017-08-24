@@ -18,6 +18,10 @@ from .models import Alert, Pv, Trigger #PVname #Does this allow you to say "mode
 from .forms import configAlert, configTrigger, deleteAlert, subscribeAlert, createPv
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.views import password_reset, password_reset_done, password_reset_confirm
 from django.utils.decorators import method_decorator
 
 from django.shortcuts import get_object_or_404
@@ -40,12 +44,23 @@ from django.db import transaction, IntegrityError, models
 # Create your views here.
 @login_required()
 def list_all(request):
+    """Currently unused - Draw a page with a full list of PVs and Alerts.
+
+    Attributes
+    __________
+        request : django.http.HttpRequest
+
+    Returns
+    -------
+        render : django.http.HttpResponse
+    """
     context = {}
     context['pv_list'] = Pv.objects.all()
     context['alert_list'] = Alert.objects.all()
     context['user'] = request.user
     return render( request, 'debug_list_all.html', context)
     #return HttpResponse("<h1>Page is alive</h1>")
+
 
 #@login_required()
 #def title(request):
@@ -81,7 +96,6 @@ class Title_page(generic.ListView):
 
 
 
-
 # def pvs(request):
 #     context = {}
 #     context['pv_list'] = Pv.objects.all()
@@ -96,6 +110,16 @@ class Title_page(generic.ListView):
     
 @method_decorator(login_required, name = 'dispatch')
 class alerts_all(generic.ListView):
+    """Currently unused - Draw a page with a full list of PVs and Alerts
+
+    Args
+    ____
+        request : django.http.HttpRequest
+
+    Returns
+    -------
+        render : django.http.HttpResponse
+    """
     model = Alert
     template_name = 'alerts_all.html'
     paginate_by = 30
@@ -109,11 +133,23 @@ class alerts_all(generic.ListView):
 
 @method_decorator(login_required, name = 'dispatch')
 class pvs_all(generic.ListView):
+    """Draws page listing all PVs. Handles pagination.
+    
+    Attributes
+    __________
+        template_name : string
+            Determines the .html in aler_config_app/templates to use.
+
+        paginate_by : int
+            number of PVs per page
+    """
     model = Pv
     template_name = 'pvs_all.html'
     paginate_by = 30
 
     def get_queryset(self):
+        """Organizes the Pvs Alphabetically
+        """
         new_context = Pv.objects.all().order_by('name')
         query = self.request.GET.get("q")
         if query:
@@ -144,16 +180,25 @@ class pv_delete(DeleteView):
 
 @method_decorator(login_required, name = 'dispatch')
 class pv_create(generic.edit.CreateView):
+    """Draws page for PV creation
+    
+    Attributes
+    __________
+        template_name : string
+            Determines the .html in aler_config_app/templates to use.
+
+    """
     model = Pv
     template_name = 'pv_create.html'
     form_class = createPv
     success_url = reverse_lazy('pvs_page_all')
     def form_valid(self,form):
+        """Receives and processes the form
+        """
         # form.cleaned_data.get('new_name')
         form.instance.name = form.cleaned_data.get('new_name')
         form.save()
         return super(pv_create, self).form_valid(form)
-
 
 
 # @method_decorator(login_required, name = 'dispatch')
@@ -164,6 +209,19 @@ class pv_create(generic.edit.CreateView):
 
 @login_required()
 def alert_detail(request,pk,*args,**kwargs):
+    """Draws read-only screen for individual alert
+
+    Args
+    ____
+        pk : int
+            DB index of the displayed alert. PK is sent automatically from the 
+            regex in url. 
+
+    Note
+    ____
+        It may be better to rewrite this function as a class so long as the 
+        class can support the dynamic number of triggers.
+    """
     try:
         alert_inst = get_object_or_404(Alert,pk=pk)
     except Http404:
@@ -216,6 +274,26 @@ def alert_detail(request,pk,*args,**kwargs):
 
 @login_required()
 def alert_config(request,pk=None,*args,**kwargs):
+    """Draws editable screen for individual alert.
+    
+    This page is accesssible only to the owner of the alert.
+
+    Args
+    ____
+        pk : int, None
+            DB index of the displayed alert. PK is sent automatically from the 
+            regex in url. If pk is none, or does not match an existing alert,
+            the user is redirected to to the alert creation url which links
+            back to this function.
+
+    Note
+    ____
+        It may be better to rewrite this function as a class so long as the 
+        class can support the dynamic number of triggers. Having functions 
+        specific to the creation and editing processes could produce much
+        more readable and maintainable code. As it stands, this function is
+        something of a mess.
+    """
     for x in sorted(request.POST):
         print("{:>20}  {:>20}  {:>20}".format(x,str(request.POST[x]),str(type(request.POST[x]))))
 
@@ -269,6 +347,8 @@ def alert_config(request,pk=None,*args,**kwargs):
                 owners_list.append(Profile.objects.get(pk=pk))
             print(owners_list,"*******************************************************")
             alert_inst.owner = owners_list
+            alert_inst.lockout_duration = form.cleaned_data[
+                'new_lockout_duration']
             # alter user subscription relation note: LOGGED IN USER ONLY
             if form.cleaned_data['new_subscribe']:
                 try:
@@ -307,11 +387,15 @@ def alert_config(request,pk=None,*args,**kwargs):
 
                     new_triggers.append(
                         Trigger(
-                            name = single_trigger_form.cleaned_data.get('new_name'),
+                            name = single_trigger_form.cleaned_data.get(
+                                'new_name'),
                             alert = alert_inst,
-                            pv = single_trigger_form.cleaned_data.get('new_pv'),
-                            compare = single_trigger_form.cleaned_data.get('new_compare'),
-                            value = single_trigger_form.cleaned_data.get('new_value'),
+                            pv = single_trigger_form.cleaned_data.get(
+                                'new_pv'),
+                            compare = single_trigger_form.cleaned_data.get(
+                                'new_compare'),
+                            value = single_trigger_form.cleaned_data.get(
+                                'new_value'),
                         )
                     )
             
@@ -350,6 +434,7 @@ def alert_config(request,pk=None,*args,**kwargs):
                 'new_name': alert_inst.name,
                 'new_owners':[x.pk for x in alert_inst.owner.all()],
                 'new_subscribe': subscribed,
+                'new_lockout_duration':alert_inst.lockout_duration,
                  
             }
             trigger_initial = [
@@ -387,6 +472,20 @@ def alert_config(request,pk=None,*args,**kwargs):
 
 @login_required()
 def alert_delete(request,pk=None,*args,**kwargs):
+    """Draws deletion page for an alert.
+
+    Args
+    ____
+        pk : int
+            DB index of the displayed alert. PK is sent automatically from the 
+            regex in url. 
+
+    Note
+    ____
+        Having deletion occur on a post request is safer than a get request. 
+        This page is designed solely to present the form required for receiving
+        the post request.
+    """
     for x in sorted(request.POST):
         print(x,"\t",request.POST[x])
     try:
@@ -416,3 +515,38 @@ def alert_delete(request,pk=None,*args,**kwargs):
         "alert_delete.html",
         {'form':deleteForm,'alert':alert_inst},
     )
+
+
+#def profile(request):
+#    args = {'user': request.user}
+#    return render(request, 'profile.html', args)
+#    
+#def edit_profile(request):
+#    if request.method == 'POST':
+#        form = EditProfileForm(request.POST, instance=request.user)
+#        
+#        if form.is_valid():
+#            form.save()
+#            return redirect('/alert/profile')
+#            
+#    else:
+#        form = EditProfileForm(instance=request.user)
+#        args = {'form': form}
+#        return render(request, 'edit_profile.html', args)
+#    
+#    
+#def change_password(request):
+#    if request.method == 'POST':
+#        form = PasswordChangeForm(data=request.POST, user=request.user)
+#        
+#        if form.is_valid():
+#            form.save()
+#            update_session_auth_hash(request, form.user)
+#            return redirect('/alert/profile')
+#        else:
+#            return redirect('/alert/profile/change_password')
+#    else:
+#        form = PasswordChangeForm(user=request.user)
+#        args = {'form': form}
+#        return render(request, 'change_password.html', args)
+#        

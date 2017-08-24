@@ -5,3 +5,5 @@
 secret_key.py
 db.sqlite3
 docs/_build/*
+web_interface/staticfiles
+pid.txt
