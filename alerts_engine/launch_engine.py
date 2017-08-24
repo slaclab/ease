@@ -49,7 +49,7 @@ def main():
     )
 
 
-    scanner = record_scanner.TriggerScan("pscaa02-dev",rep_t)
+    scanner = record_scanner.TriggerScan("pscaa01-dev",rep_t)
     
     '''
     logger.debug("start test_db")
