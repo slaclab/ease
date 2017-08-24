@@ -206,7 +206,7 @@ class configAlert(forms.Form):#ModelForm
     )
 
     new_lockout_duration = forms.DurationField(
-        label = "Delay between successive alerts",
+        label = "Delay Between Successive Alerts",
         required = False,
         widget = forms.TimeInput(
             attrs = {
