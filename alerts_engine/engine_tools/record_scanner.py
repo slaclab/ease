@@ -233,7 +233,7 @@ class TriggerScan:
             #print(target_time)
             #print(alert.lockout_duration)
             if alert.last_sent != None:
-                if self.utc_to_local(target_time) \
+                if datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc) \
                         - self.utc_to_local(alert.last_sent) \
                         < alert.lockout_duration:
                     logging.debug("lockout duration stil in effect")
@@ -241,11 +241,15 @@ class TriggerScan:
             specific_triggers = alert.trigger_set.filter(
                 pk__in=tripped_trigger_pk
             )
+            trigger_string = ""
+            for x in specific_triggers:
+                trigger_string = trigger_string + "\t" + str(x.name) + "\n"
+            trigger_string = "triggers Tripped:\n" + trigger_string
             recipients = []
             for prof in alert.subscriber.all():
                 recipients.append(prof.user.email)
             #print(recipients)
-            self.emailer.send_text(recipients,'test',str(specific_triggers))
+            self.emailer.send_text(recipients,'test',trigger_string)
             alert.last_sent = target_time
             alert.save()
 
