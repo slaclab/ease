@@ -42,7 +42,8 @@ yay!-->
         {% csrf_token %}
         <div class="form-group row col-sm-12">
         <label for="" class="col-sm-2 col-form-label"> Subscribed </label>
-        <div class="col-sm-10">
+        <!-- This is where the checkbox in readonly page lives-->
+        <div class="col-sm-10" >
             {{form.new_subscribe}}
         </div>
         </div>

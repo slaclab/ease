@@ -197,10 +197,12 @@ class configAlert(forms.Form):#ModelForm
     new_subscribe = forms.BooleanField(
         label = "Subscribed",
         required = False,
+        # This is where the checkbox for alert readonly page shows up... Can't figure out how to change size
         widget = forms.CheckboxInput(
             attrs = {
                 'class':'form-check-input',
                 'type':'checkbox',
+                #'size':'300'
             }
         )
     )
