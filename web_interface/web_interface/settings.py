@@ -117,6 +117,12 @@ TEMPLATES = [
     },
 ]
 
+# set generic lookup location for the fixtures
+# Fixtures prepare the django test database with entires for tests
+FIXTURE_DIRS = [
+    './fixtures',
+]
+
 WSGI_APPLICATION = 'web_interface.wsgi.application'
 
 
@@ -127,6 +133,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+    'fixture': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'fixture.sqlite3'),
     }
 }
 
