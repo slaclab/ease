@@ -13,8 +13,8 @@ install:
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - conda info -a
-  - conda create -f ease-dev.yml -n ease-dev
-  - source activate ease-dev
+  - conda env create -f ease-dev.yml -n ease-env
+  - source activate ease-env
 
 script:
   - cd web_interface
