@@ -1,0 +1,5 @@
+language: python
+sudo: disabled
+
+install:
+    - sudo apt-get update
