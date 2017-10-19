@@ -18,6 +18,7 @@ install:
   - conda info -a
   - conda env create -f ease-env.yml -n ease-env
   - source activate ease-env
+  - curl -L -O https://github.com/mozilla/geckodriver/releases/download/v0.18.0/geckodriver-v0.18.0-linux64.tar.gz
 
 script:
   - cd web_interface
