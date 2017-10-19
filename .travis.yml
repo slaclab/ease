@@ -2,13 +2,17 @@ language: python
 python:
   - "3.6"
 
-sudo: disabled
+sudo: false
+
+git:
+  - depth: 5
 
 install:
   - sudo apt-get update
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
+  - conda info -a
   - conda env create -f ease-dev.yml -n ease-dev
   - source activate ease-dev
 
