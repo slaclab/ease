@@ -16,7 +16,7 @@ install:
   - conda install conda-build anaconda-client
   - conda update -q conda
   - conda info -a
-  - conda env create -f ease-dev.yml -n ease-env
+  - conda env create -f ease-env.yml -n ease-env
   - source activate ease-env
 
 script:
