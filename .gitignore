@@ -8,3 +8,4 @@ docs/_build/*
 web_interface/staticfiles
 pid.txt
 *.json
+gecko*
