@@ -31,13 +31,14 @@ except ImportError:
     # import sys
     # sys.exit()
     
+    '''
     # wait for file to be created - sometimes there's a delay
     import time
     while not os.path.isfile(secret_key_filename):
         time.sleep(.1)
-
     from .secret_key import SECRET_KEY
-
+    '''
+    sys.exit(0)
 
 
 
