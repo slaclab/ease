@@ -32,4 +32,5 @@ script:
   - cd ../
 
 after_success:
+  - cd web_inteface
   - codecov
