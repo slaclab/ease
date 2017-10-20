@@ -21,6 +21,7 @@ install:
   - cd web_interface
   - curl -L -O https://github.com/mozilla/geckodriver/releases/download/v0.18.0/geckodriver-v0.18.0-linux64.tar.gz
   - tar -vzxf geckodriver-v0.18.0-linux64.tar.gz
+  - ./manage.py migrate
   - cd ../
   - pip install coverage codecov
 
