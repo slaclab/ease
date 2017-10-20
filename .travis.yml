@@ -28,9 +28,13 @@ install:
 script:
   - cd web_interface
   - coverage run --source '.' ./manage.py test
-  - coverage report
+  - coverage report -m
   - cd ../
+  - pwd
+  - ls
 
 after_success:
+  - pwd
+  - ls
   - cd web_inteface
   - codecov
