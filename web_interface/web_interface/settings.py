@@ -27,10 +27,17 @@ except ImportError:
             get_random_string(50, all_chars)+
             "'"
         )
-    get_random_string(50, all_chars)
+    #get_random_string(50, all_chars)
     # import sys
     # sys.exit()
+    
+    # wait for file to be created - sometimes there's a delay
+    import time
+    while not os.path.isfile(secret_key_filename):
+        time.sleep(.1)
+
     from .secret_key import SECRET_KEY
+
 
 
 
