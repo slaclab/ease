@@ -36,5 +36,5 @@ script:
 after_success:
   - pwd
   - ls
-  - cd web_inteface
+  - cd web_interface
   - codecov
