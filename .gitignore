@@ -11,3 +11,4 @@ pid.txt
 *.json
 gecko*
 .coverage
+.cache

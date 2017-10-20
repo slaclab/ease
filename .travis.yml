@@ -28,13 +28,12 @@ install:
 script:
   - cd web_interface
   - coverage run --source '.' ./manage.py test
-  - coverage report -m
   - cd ../
-  - pwd
-  - ls
+  - cd alerts_engine
+  - coverage run run_tests.py
+  - cd ../
 
 after_success:
-  - pwd
-  - ls
-  - cd web_interface
+  - coverage combine alerts_engine/.coverage web_interface/.coverage
+  - coverage report -m 
   - codecov

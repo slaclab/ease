@@ -4,3 +4,4 @@ source =
 [report]
 omit =
     *test*
+    
