@@ -39,15 +39,6 @@ class SeleniumViewTests(LiveServerTestCase):
 
         super().tearDownClass()
 
-    def test_false_is_false(self):
-        self.assertFalse(False)
-
-    def test_false_is_false(self):
-        self.assertFalse(True)
-
-    def test_one_plus_one_equals_two(self):
-        self.assertEqual(1 + 1, 2)
-
     def tearDown(self):
         #Clean up run after every test method.
         pass

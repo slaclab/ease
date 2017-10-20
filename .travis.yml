@@ -18,9 +18,17 @@ install:
   - conda info -a
   - conda env create -f ease-env.yml -n ease-env
   - source activate ease-env
+  - cd web_interface
   - curl -L -O https://github.com/mozilla/geckodriver/releases/download/v0.18.0/geckodriver-v0.18.0-linux64.tar.gz
+  - tar -vzxf geckodriver-v0.18.0-linux64.tar.gz
+  - cd ../
+  - pip install coverage codecov
 
 script:
   - cd web_interface
-  - ./manage.py test
+  - coverage run --source '.' ./manage.py test
+  - coverage report
   - cd ../
+
+after_success:
+  - codecov
