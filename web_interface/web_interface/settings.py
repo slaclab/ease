@@ -50,11 +50,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECRET_KEY = ')9yv30i%h9+3hq3f#1-3t+y*!#jz9l5w%)$d2#&8)w27ibeyz0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "134.79.165.105",
-    "pswww-dev.slac.stanford.edu",    
+    "pswww-dev.slac.stanford.edu",
+    "198.129.113.193",
+    "127.0.0.1"    
 ]
 
 if not DEBUG:
@@ -177,6 +179,8 @@ STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 
 EMAIL_HOST = 'psmail'
 EMAIL_PORT = 25
+EMAIL_HOST_USER = 'EASE'
+DEFAULT_FROM_EMAIL = 'EASE'
 if not DEBUG:
     LOGIN_REDIRECT_URL = FORCE_SCRIPT_NAME + '/alert/title'
 else:

@@ -22,27 +22,27 @@ yay!-->
             <input type="text" value="{{alert.name}}"  class="form-control" required="" readonly>
         </div>
     </div>
-
-    <!--OWNERS-->
-    <div class="form-group row col-sm-12">
-        <label for="" class="col-sm-2 col-form-label">Owners</label>
-                <div class="col-sm-10"> 
-
-            <select multiple class="form-control" id="exampleSelect2" readonly="readonly">
-            {% for owner in alert.owner.all %}
-            <option> {{owner.user}} </option>
-            {% endfor %}
-
-            </select>
-        </div>
-
-    </div>
+<!--OWNERS-->
+<!--     <div class="form-group row col-sm-12"> -->
+<!--         <label for="" class="col-sm-2 col-form-label">Owners</label> -->
+<!--                 <div class="col-sm-10">  -->
+<!--  -->
+<!--             <select multiple class="form-control" id="exampleSelect2" readonly="readonly"> -->
+<!--             {% for owner in alert.owner.all %} -->
+<!--             <option> {{owner.user}} </option> -->
+<!--             {% endfor %} -->
+<!--  -->
+<!--             </select> -->
+<!--         </div> -->
+<!--  -->
+<!--     </div> -->
 
     <form action="" method="post">
         {% csrf_token %}
         <div class="form-group row col-sm-12">
         <label for="" class="col-sm-2 col-form-label"> Subscribed </label>
-        <div class="col-sm-10">
+        <!-- This is where the checkbox in readonly page lives-->
+        <div class="col-sm-10" >
             {{form.new_subscribe}}
         </div>
         </div>
