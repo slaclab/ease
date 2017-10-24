@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-<p>Alerts list</p>
+<p>Alerts List</p>
 {% endblock %}
 
 
@@ -37,8 +37,8 @@
   <table class="table table-sm">
     <thead>
       <tr>
-        <th>name</th>
-        <th>pk</th>
+        <th>Name</th>
+        
       </tr>
     </thead>
     <tbody>
@@ -47,7 +47,7 @@
       {% for alert in alert_list %}
       <tr>
 				<td><a href="{% url 'alert_config' alert.pk %}"> {{alert.name}}</a></td> 
-        <td>{{alert.pk}}</td>
+        
       </tr>
       {% endfor %}
       {% endif %}
