@@ -1,4 +1,6 @@
-language: python: "3.6"
+language: 
+python: 
+  - "3.6"
 
 env:
   global:
