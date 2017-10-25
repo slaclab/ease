@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import sys
 
 # https://stackoverflow.com/questions/4664724/distributing-django-projects-with-unique-secret-keys/16630719#16630719
 # Import/regenerate secret key upon downloading source. Live key should never go to repo
@@ -27,10 +28,18 @@ except ImportError:
             get_random_string(50, all_chars)+
             "'"
         )
-    get_random_string(50, all_chars)
+    #get_random_string(50, all_chars)
     # import sys
     # sys.exit()
+    
+    '''
+    # wait for file to be created - sometimes there's a delay
+    import time
+    while not os.path.isfile(secret_key_filename):
+        time.sleep(.1)
     from .secret_key import SECRET_KEY
+    '''
+    sys.exit(0)
 
 
 
@@ -58,6 +67,9 @@ ALLOWED_HOSTS = [
     "198.129.113.193",
     "127.0.0.1"    
 ]
+if DEBUG:
+    ALLOWED_HOSTS.append("127.0.0.1")
+
 
 if not DEBUG:
     FORCE_SCRIPT_NAME = '/ease'
@@ -116,6 +128,12 @@ TEMPLATES = [
     },
 ]
 
+# set generic lookup location for the fixtures
+# Fixtures prepare the django test database with entires for tests
+FIXTURE_DIRS = [
+    './fixtures',
+]
+
 WSGI_APPLICATION = 'web_interface.wsgi.application'
 
 
@@ -126,6 +144,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+    'fixture': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'fixture.sqlite3'),
     }
 }
 

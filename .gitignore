@@ -1,4 +1,5 @@
 .DS_store
+*.swo
 *.swp
 *.pyc
 .vscode
@@ -7,3 +8,7 @@ db.sqlite3
 docs/_build/*
 web_interface/staticfiles
 pid.txt
+*.json
+gecko*
+.coverage
+.cache

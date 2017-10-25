@@ -1,0 +1,7 @@
+[run]
+source =
+    ../
+[report]
+omit =
+    *test*
+    
