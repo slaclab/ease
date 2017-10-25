@@ -39,7 +39,7 @@ script:
   - coverage run run_tests.py
   - cd ../
   - |
-    if [[ && $TRAVIS_REPO_SLUG == $OFFICIAL_REPO]]; then
+    if [[ $TRAVIS_REPO_SLUG == $OFFICIAL_REPO ]]; then
       set -e
       pip install doctr
       cd docs
