@@ -45,7 +45,7 @@ script:
       cd docs
       make html
       cd ../
-      doctr deploy . --built-docs docs/_build/html
+      doctr deploy . --built-docs docs/_build/html --command "touch .nojekyll; git add .nojekyll"
     fi
 
 after_success:
