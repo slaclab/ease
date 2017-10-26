@@ -11,3 +11,4 @@ Authors: Nolan Brown, Victor Nieto, Ryan Dudschus, Daniel Douty
 
 Epics remote alert system
 
+See the `docs <https://slaclab.github.io/ease/>`_ for info.
