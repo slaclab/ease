@@ -5,12 +5,11 @@
 
 from django.shortcuts import render, redirect
 
-from django.views import generic
+from django.views import generic,View
 from django.views.generic import TemplateView
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-
+from django.views.generic.edit import (CreateView, UpdateView, DeleteView)
 
 from account_mgr_app.models import Profile
 import account_mgr_app
@@ -274,8 +273,92 @@ def alert_detail(request,pk,*args,**kwargs):
     )
 
 
+
+
+
+@method_decorator(login_required, name = 'dispatch')
+class alert_config(View):
+    def get(self, request, *args, **kwargs):
+        """Draw the page when create or config is loaded by the user
+        """
+        self.pk = kwargs.pop("pk",None)
+        if self.pk == None:
+            create = True
+        else:
+            create = False
+            # attempt to fetch database entry for alert, redirect on fail 
+            try:
+                alert_inst = get_object_or_404(Alert,pk=self.pk)
+            except Http404:
+                return HttpResponseRedirect(reverse('alert_create'))
+
+        # reject non-owner users
+        if not create:
+            if request.user.profile not in alert_inst.owner.all():
+                return HttpResponseRedirect(reverse(
+                    'alert_detail',
+                    kwargs={'pk':self.pk}))
+
+        if create:
+            alert_inst = None
+            alert_initial = {}
+            trigger_initial = []
+        else:
+            if request.user.profile in alert_inst.subscriber.all():
+                subscribed = True
+            else:
+                subscribed = False
+            alert_initial = {
+                'new_name': alert_inst.name,
+                'new_owners':[x.pk for x in alert_inst.owner.all()],
+                'new_subscribe': subscribed,
+                'new_lockout_duration':alert_inst.lockout_duration,    
+            }
+            trigger_initial = [
+                {   
+                    'new_name': l.name,
+                    'new_pv': l.pv.pk if l.pv else None,
+                    'new_value':l.value,
+                    'new_compare':l.compare,
+                } 
+                for l in alert_inst.trigger_set.all()
+            ]
+
+        triggerFormSet = formset_factory(configTrigger)
+        
+        form = configAlert(initial = alert_initial)
+        triggerForm = triggerFormSet(
+            initial = trigger_initial,
+            prefix='tg'
+        )
+
+        return render(
+            request = request, 
+            template_name = "alert_config.html", 
+            context = {
+                'form':form,
+                'triggerForm':triggerForm,
+                'alert':alert_inst,
+                'create':create,
+            },
+        )
+
+    def post(self, request, *args, **kwargs):
+        # DEBUG ONLY --------------------------------------
+        print("")
+        for x in sorted(request.POST):
+            print("{:>20}  {:>20}  {:>20}".format(  
+                x,
+                str(request.POST[x]),
+                str(type(request.POST[x]))))
+        print("")
+        # DEBUG ONLY --------------------------------------
+        return HttpResponseRedirect(reverse('alerts_page_all'))
+        
+
+
 @login_required()
-def alert_config(request,pk=None,*args,**kwargs):
+def alert_config_o(request,pk=None,*args,**kwargs):
     """Draws editable screen for individual alert.
     
     This page is accesssible only to the owner of the alert.
