@@ -10,6 +10,14 @@ class ExampleClass(TestCase):
         print("setUpTestData: Run once to set up non-modified data for all class methods.")
         pass
 
+    @classmethod 
+    def setUpClass(cls):
+        pass
+
+    @classmethod
+    def tearDownClass(cls):
+        pass
+
     def setUp(self):
         print("setUp: Run once for every test method to setup clean data.")
         pass

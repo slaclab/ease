@@ -1,5 +1,5 @@
 from django.test import TestCase, RequestFactory, Client
-from unittest import skip
+from unittest import skip, expectedFailure
 
 import alert_config_app.views as views
 from alert_config_app.models import *
@@ -35,6 +35,7 @@ class test_alert_config_form(TestCase):
         cls.factory = RequestFactory()
         cls.c = Client()
 
+    
     def setUp(self):
         """Log the test user in before each test method.
         """
@@ -124,7 +125,6 @@ class test_alert_config_form(TestCase):
             username = self.secondary.username,
             password = self.secondary_pass)
 
-
         for single_alert in self.alerts:
             pk = single_alert.pk
             response = self.c.get(
@@ -137,18 +137,42 @@ class test_alert_config_form(TestCase):
                     kwargs={'pk':pk}),
                 302) in response.redirect_chain)
 
-
+    @expectedFailure
     def test_create(self):
-        """ UNDER WORK FOR ALERT CREATION
-            
-
+        """ check that alert is created from this POST requset (it should work)
         """
         response = self.c.get('/alert/alert_create/',follow=True)
+        post_data = {
+            "new_lockout_duration":      "02:33:15",
+                        "new_name":"new_alert_name",
+                      "new_owners":             "2",
+                "tg-0-new_compare":            "<=",
+                   "tg-0-new_name":        "769876",
+                     "tg-0-new_pv":             "1",
+                  "tg-0-new_value":         "76876",
+                "tg-1-new_compare":            "==",
+                   "tg-1-new_name":           "787",
+                     "tg-1-new_pv":             "1",
+                  "tg-1-new_value":             "7",
+                "tg-2-new_compare":            "-1",
+                   "tg-2-new_name":              "",
+                     "tg-2-new_pv":            "-1",
+                  "tg-2-new_value":              "",
+                "tg-INITIAL_FORMS":             "0",
+                "tg-MAX_NUM_FORMS":          "1000",
+                "tg-MIN_NUM_FORMS":             "0",
+                  "tg-TOTAL_FORMS":             "3",   
+        }
+
         response = self.c.post(
             '/alert/alert_create/',
-            data={'alert-name':'name'},
+            data=post_data,
             follow=True)
-
+        try:
+            Alert.objects.get(name="new_alert_name")
+        except Exception as E:
+            print(E)
+            self.fail("Alert not created")
 
     def test_render(self):
         #request = self.factory.get('/alert/alert_create')

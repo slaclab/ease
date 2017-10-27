@@ -58,13 +58,13 @@ class configTrigger(forms.Form):
     
 
         self.fields['new_compare'] = forms.ChoiceField(
-        label = 'Comparison',
-        choices = [(-1,None)] + Trigger.compare_choices,
-        widget = forms.Select(
-            attrs = {
-                'class':'custom-select',
-                }
-            )
+            label = 'Comparison',
+            choices = [(-1,None)] + Trigger.compare_choices,
+            widget = forms.Select(
+                attrs = {
+                    'class':'custom-select',
+                    }
+                )
         )
     
     
@@ -78,20 +78,7 @@ class configTrigger(forms.Form):
             }
         )
     )
-    # '''
-    # new_pv = forms.ChoiceField(
-    #     label = 'PV name',
-    #     # use this to sort alphabetiaclly if necessary
-    #     # sorted([(np.random.random(),np.random.random()) for x in range(10)],key=lambda s: s[1])
-    #     choices = [(-1,None)] + [ (x.pk,x.name) for x in Pv.objects.all()],
-    #     # choices = ["a,"b"],
-    #     widget = forms.Select(
-    #         attrs = {
-    #             'class':'custom-select',
-    #         }
-    #     )
-    # )
-    # '''
+
     new_value = forms.FloatField(
         label = 'Value',
         required = False,
@@ -102,15 +89,6 @@ class configTrigger(forms.Form):
         )
     )
 
-    # new_compare = forms.ChoiceField(
-    #     label = 'Comparison',
-    #     choices = [(-1,None)] + Trigger.compare_choices,
-    #     widget = forms.Select(
-    #         attrs = {
-    #             'class':'custom-select',
-    #         }
-    #     )
-    # )
 
 
     def clean_new_name(self):
@@ -174,7 +152,6 @@ class configAlert(forms.Form):#ModelForm
             # use this to sort alphabetiaclly if necessary
             # sorted([(np.random.random(),np.random.random()) for x in range(10)],key=lambda s: s[1])
             choices = [ (x.pk,x.user.username) for x in Profile.objects.all()],
-            # choices = ["a,"b"],
             widget = forms.CheckboxSelectMultiple(
                 attrs = {
                     'class':'form-control',
@@ -197,12 +174,10 @@ class configAlert(forms.Form):#ModelForm
     new_subscribe = forms.BooleanField(
         label = "Subscribed",
         required = False,
-        # This is where the checkbox for alert readonly page shows up... Can't figure out how to change size
         widget = forms.CheckboxInput(
             attrs = {
                 'class':'form-check-input',
                 'type':'checkbox',
-                #'size':'300'
             }
         )
     )
@@ -215,13 +190,9 @@ class configAlert(forms.Form):#ModelForm
                 'class':'form-control',
                 'type':'text',
                 'placeholder':'dd hh:mm:ss',
-                #'data-toggle':'tooltip',
-                #'data-placement':'top',
-                #'title':'tooltip!',
             }
         )
     )
-    
 
     def clean_new_subscribe(self):
         """Validate the subscription option
@@ -247,7 +218,17 @@ class configAlert(forms.Form):#ModelForm
             data = False
 
         return data
+    """ 
+    def clean_new_name(self):
+        try:
+            data = self.cleaned_data['new_subscribe']
+        except KeyError:
+            raise forms.ValidationError("Name must be given")
+        
+        raise forms.ValidationError("BAD",code="REALLY_BAD")
 
+        #return data    
+    """
 
 class subscribeAlert(forms.Form):
     """Define the fields for an alert. These fields are presented when the user

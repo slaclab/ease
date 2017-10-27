@@ -345,14 +345,39 @@ class alert_config(View):
 
     def post(self, request, *args, **kwargs):
         # DEBUG ONLY --------------------------------------
-        print("")
-        for x in sorted(request.POST):
-            print("{:>20}  {:>20}  {:>20}".format(  
-                x,
-                str(request.POST[x]),
-                str(type(request.POST[x]))))
-        print("")
+        if 1:
+            print("")
+            for x in sorted(request.POST):
+                print("{:>20}  {:>20}  {:>20}".format(  
+                    x,
+                    str(dict(request.POST)[x]),
+                    str(type(dict(request.POST)[x]))))
+            print("")
+        
+            form = configAlert(request.POST,)
+            #triggerForm = triggerFormSet(request.POST, prefix='tg')
+
+            if form.is_valid():
+                print(form.cleaned_data)
+
+        
         # DEBUG ONLY --------------------------------------
+        
+        
+        
+       
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         return HttpResponseRedirect(reverse('alerts_page_all'))
         
 
@@ -430,7 +455,6 @@ def alert_config_o(request,pk=None,*args,**kwargs):
             owners_list = []
             for pk in form.cleaned_data['new_owners']:
                 owners_list.append(Profile.objects.get(pk=pk))
-            print(owners_list,"*******************************************************")
             alert_inst.owner = owners_list
             alert_inst.lockout_duration = form.cleaned_data[
                 'new_lockout_duration']
