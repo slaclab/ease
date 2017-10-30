@@ -281,7 +281,7 @@ class alert_config(View):
     def get(self, request, *args, **kwargs):
         """Draw the page when create or config is loaded by the user
         """
-        self.pk = kwargs.pop("pk",None)
+        self.pk = kwargs.get("pk",None)
         if self.pk == None:
             create = True
         else:
@@ -292,12 +292,12 @@ class alert_config(View):
             except Http404:
                 return HttpResponseRedirect(reverse('alert_create'))
 
-        # reject non-owner users
         if not create:
+            # reject non-owner users
             if request.user.profile not in alert_inst.owner.all():
                 return HttpResponseRedirect(reverse(
-                    'alert_detail',
-                    kwargs={'pk':self.pk}))
+                        'alert_detail',
+                        kwargs={'pk':self.pk}))
 
         if create:
             alert_inst = None
@@ -308,6 +308,7 @@ class alert_config(View):
                 subscribed = True
             else:
                 subscribed = False
+            # prepare initial values for form fields showing current values
             alert_initial = {
                 'new_name': alert_inst.name,
                 'new_owners':[x.pk for x in alert_inst.owner.all()],
@@ -359,25 +360,56 @@ class alert_config(View):
 
             if form.is_valid():
                 print(form.cleaned_data)
-
-        
         # DEBUG ONLY --------------------------------------
         
         
         
        
+        self.pk = kwargs.get("pk",None)
+        triggerFormSet = formset_factory(configTrigger)
+        if self.pk == None:
+            create = True
+        else:
+            create = False
+        
+        form = configAlert(request.POST,)
+        triggerForm = triggerFormSet(request.POST, prefix='tg')
+         
+        if form.is_valid():
+            # if there is no preexisting Alert - create a new one
+            if create:
+                alert_inst = Alert()
+                alert_inst.save()
 
+            else:
+                # attempt to get indicated alert instance, redirect on fail
+                try:
+                    alert_inst = get_object_or_404(Alert,pk=self.pk)
+                except Http404:
+                    return HttpResponseRedirect(reverse('alert_create'))
+            
+            # Set/Modify the alert's name 
+            alert_inst.name = form.cleaned_data['new_name']
+
+            # Set/Modify the alert's list of owners
+            for new_owner in form.cleaned_data['new_owners']:
+                alert_inst.owner.add(new_owner)
+
+            # Set/Modify the alert's lockout duration
+            alert_inst.lockout_duration = form.cleaned_data[
+                'new_lockout_duration']
+
+            # Set/Modify the alert's subscription relation with the user
+            if ((form.cleaned_data['new_subscribe'])
+                and (request.user.profile not in alert_inst.subscriber.all())):
+                    alert_inst.subscriber.add(request.user.profile)
+            elif ((not form.cleaned_data['new_subscribe'])
+                and (request.user.profile in alert_inst.subscriber.all())):
+                    alert_inst.subscriber.remove(request.user.profile)
         
+            alert_inst.save()
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        print(form.errors.as_data()) 
         return HttpResponseRedirect(reverse('alerts_page_all'))
         
 

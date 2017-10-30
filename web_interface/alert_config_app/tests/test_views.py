@@ -34,8 +34,7 @@ class test_alert_config_form(TestCase):
 
         cls.factory = RequestFactory()
         cls.c = Client()
-
-    
+ 
     def setUp(self):
         """Log the test user in before each test method.
         """
@@ -136,43 +135,84 @@ class test_alert_config_form(TestCase):
                     'alert_detail',
                     kwargs={'pk':pk}),
                 302) in response.redirect_chain)
+    
+    def generic_alert_create_post(self,*args,**kwargs):
+        """Send alert creation post req. with default data and substitutions
 
-    @expectedFailure
-    def test_create(self):
-        """ check that alert is created from this POST requset (it should work)
+        Parameter
+        ---------
+        *args : unnamed arguments
+            unused
+
+        **kwargs : named arguments
+            Substitute default post request fields with the given data
+        
+        Returns
+        -------
+        django.template.response.TemplateResponse
+            the response issued from the post request
         """
         response = self.c.get('/alert/alert_create/',follow=True)
         post_data = {
-            "new_lockout_duration":      "02:33:15",
-                        "new_name":"new_alert_name",
-                      "new_owners":             "2",
-                "tg-0-new_compare":            "<=",
-                   "tg-0-new_name":        "769876",
-                     "tg-0-new_pv":             "1",
-                  "tg-0-new_value":         "76876",
-                "tg-1-new_compare":            "==",
-                   "tg-1-new_name":           "787",
-                     "tg-1-new_pv":             "1",
-                  "tg-1-new_value":             "7",
-                "tg-2-new_compare":            "-1",
-                   "tg-2-new_name":              "",
-                     "tg-2-new_pv":            "-1",
-                  "tg-2-new_value":              "",
-                "tg-INITIAL_FORMS":             "0",
-                "tg-MAX_NUM_FORMS":          "1000",
-                "tg-MIN_NUM_FORMS":             "0",
-                  "tg-TOTAL_FORMS":             "3",   
+            "new_lockout_duration":                       "02:33:15",
+                        "new_name":                 "new_alert_name",
+                      "new_owners":   str(self.secondary.profile.pk),
+                "tg-0-new_compare":                             "<=",
+                   "tg-0-new_name":                         "769876",
+                     "tg-0-new_pv":                              "1",
+                  "tg-0-new_value":                          "76876",
+                "tg-1-new_compare":                             "==",
+                   "tg-1-new_name":                            "787",
+                     "tg-1-new_pv":                              "1",
+                  "tg-1-new_value":                              "7",
+                "tg-2-new_compare":                             "-1",
+                   "tg-2-new_name":                               "",
+                     "tg-2-new_pv":                             "-1",
+                  "tg-2-new_value":                               "",
+                "tg-INITIAL_FORMS":                              "0",
+                "tg-MAX_NUM_FORMS":                           "1000",
+                "tg-MIN_NUM_FORMS":                              "0",
+                  "tg-TOTAL_FORMS":                              "3",   
         }
 
         response = self.c.post(
             '/alert/alert_create/',
             data=post_data,
             follow=True)
+        return response
+
+
+    '''@expectedFailure'''
+    def test_create(self):
+        """ check that alert is created from this POST requset (it should work)
+        """
+        response = self.generic_alert_create_post()
         try:
-            Alert.objects.get(name="new_alert_name")
+            alert_inst = Alert.objects.get(name="new_alert_name")
         except Exception as E:
             print(E)
             self.fail("Alert not created")
+
+        self.assertEqual(
+            len(alert_inst.owner.all()),
+            1,
+            "incorrect number of owners"
+        )
+        #self.assertTrue(
+        #    self.primary.profile.pk in [x.pk for x in alert_inst.owner.all()],
+        #    "creator is not added as owner"
+        #)
+        self.assertTrue(
+            self.secondary.profile in [x for x in alert_inst.owner.all()],
+            "optional owner is not added as owner"
+        )
+            
+
+       
+
+
+
+        #self.assertTrue(2 in [x.pk for x in alert_inst.owner])
 
     def test_render(self):
         #request = self.factory.get('/alert/alert_create')

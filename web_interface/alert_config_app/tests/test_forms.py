@@ -96,9 +96,7 @@ class test_configAlert_form(TestCase):
         """Log the test user out after every test method.
         """
         self.c.logout() 
-    
-    
-    
+     
     def test_Alert_must_have_name(self):
         """ensure that alerts throw errors when they lack names
         """

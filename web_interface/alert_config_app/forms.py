@@ -136,9 +136,7 @@ class configAlert(forms.Form):#ModelForm
             Changes to the alert name can be entered in this field.abs
 
         new_subscribe : forms.BooleanField
-            Determines whether the current user is subscribed. Unike the owners
-            field, registering others is not possible to prevent trolling.
-            
+            Determines whether the current user is subscribed.             
     """
 
     class Meta:
@@ -146,7 +144,12 @@ class configAlert(forms.Form):#ModelForm
 
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
-
+            
+        try:
+            post_request = args[0]
+        except IndexError:
+            post_request = False
+            
         self.fields['new_owners'] = forms.MultipleChoiceField(
             label = 'Owners',
             # use this to sort alphabetiaclly if necessary
@@ -194,6 +197,30 @@ class configAlert(forms.Form):#ModelForm
         )
     )
 
+    def clean_new_owners(self):
+        """Validate the new set of owners
+
+        Returns
+        -------
+        [account_mgr_app.models.Profile]
+        """
+        pks = self.cleaned_data['new_owners']
+        if len(pks) == 0:
+            raise forms.ValidationError("Alerts must have at least one owner")
+        
+        pks = [int(pk) for pk in pks]
+
+        owners_list = []
+
+        for pk in pks:
+            try:
+                owners_list.append(Profile.objects.get(pk=pk))
+            except Exception as E:
+                print(type(E),type(E).__name__)
+
+        
+        return owners_list
+
     def clean_new_subscribe(self):
         """Validate the subscription option
 
@@ -218,17 +245,7 @@ class configAlert(forms.Form):#ModelForm
             data = False
 
         return data
-    """ 
-    def clean_new_name(self):
-        try:
-            data = self.cleaned_data['new_subscribe']
-        except KeyError:
-            raise forms.ValidationError("Name must be given")
-        
-        raise forms.ValidationError("BAD",code="REALLY_BAD")
 
-        #return data    
-    """
 
 class subscribeAlert(forms.Form):
     """Define the fields for an alert. These fields are presented when the user
