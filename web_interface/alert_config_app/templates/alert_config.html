@@ -22,7 +22,7 @@ Alert Configuration Page
 
 
 <form action="" method="post">
-    {% csrf_token %}
+	{% csrf_token %}
 
 <!--ALERT SECTION-->
 
@@ -33,8 +33,14 @@ Alert Configuration Page
     <!--<div class="container">-->
     {% for entry in form %}
     <!--<br>-->
+
     <div class="form-group row col-sm-12">
         <label for="" class="col-sm-2 col-form-label"> {{entry.label}} </label>
+		{% if entry.errors  %}
+			<div class="alert alert-danger" role="alert">
+				{{entry.errors}}
+			</div>	
+		{% endif %}
         <div class="col-sm-10"> {{entry}} </div>
     </div>
     {% endfor %}

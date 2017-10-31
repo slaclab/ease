@@ -266,7 +266,13 @@ class test_alert_config_form(TestCase):
         """
         # Initiate post/get transaction
         response = self.generic_alert_post(
-            new_name = "starting_name")
+            new_name = "starting_name",
+            **{
+                "new_owners" : [
+                    str(self.primary.profile.pk),
+                    str(self.secondary.profile.pk),
+                ],
+            })
         
         alert_inst = Alert.objects.get(name="starting_name")
         
@@ -276,7 +282,6 @@ class test_alert_config_form(TestCase):
                 "new_name " : "modified_name",
                 "new_owners" : [
                     str(self.primary.profile.pk),
-                    str(self.secondary.profile.pk),
                 ],
                 "new_lockout_duration":"01:15:30",
                 "tg-0-new_compare":-1,
@@ -300,7 +305,7 @@ class test_alert_config_form(TestCase):
         # confirm that the user is added as the owner
         self.assertEqual(
             len(alert_inst.owner.all()),
-            2,
+            1,
             "incorrect number of owners"
         )
         # confirm that primary user has also been added as an owner
@@ -309,10 +314,10 @@ class test_alert_config_form(TestCase):
             "primaryl owner is not added as owner"
         )
 
-        # confirm that secondary user has also been added as an owner
-        self.assertTrue(
+        # confirm that secondary user has also been removed as an owner
+        self.assertFalse(
             self.secondary.profile in alert_inst.owner.all(),
-            "optional owner is not added as owner"
+            "optional owner is not removed as owner"
         )
    
         # confirm that primary user has also been added as a subscriber
@@ -343,6 +348,23 @@ class test_alert_config_form(TestCase):
         )
 
     
+    def test_create_alert_bad_owners(self):
+        """ check that alert is created correctly from this POST requset
+        """
+        # Initiate post/get transaction
+        response = self.generic_alert_post(
+            new_name = "owner_redirect_name",
+            **{"new_owners" : None}
+        )
+        
+        # confirm that alert with proper name exists
+        try:
+            alert_inst = Alert.objects.get(name="owner_redirect_name")
+            self.fail("Bad alert created")
+        except Exception as E:
+            # This SHOULD fail as the alert should not have been created
+            pass
 
-
-
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'alert_config.html')
+        self.assertContains(response, 'owner_redirect_name')

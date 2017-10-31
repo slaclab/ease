@@ -32,6 +32,7 @@ from django.urls import reverse_lazy
 
 from django.forms.formsets import formset_factory
 from django.db import transaction, IntegrityError, models
+from django.contrib import messages
 
 
 
@@ -372,24 +373,25 @@ class alert_config(View):
         
         form = configAlert(request.POST,)
         triggerForm = triggerFormSet(request.POST, prefix='tg')
+        # if there is no preexisting Alert - create a new one
+        if create:
+            alert_inst = Alert()
+            alert_inst.save()
+
+        else:
+            # attempt to get indicated alert instance, redirect on fail
+            try:
+                alert_inst = get_object_or_404(Alert,pk=self.pk)
+            except Http404:
+                return HttpResponseRedirect(reverse('alert_create'))
          
         if form.is_valid():
-            # if there is no preexisting Alert - create a new one
-            if create:
-                alert_inst = Alert()
-                alert_inst.save()
-
-            else:
-                # attempt to get indicated alert instance, redirect on fail
-                try:
-                    alert_inst = get_object_or_404(Alert,pk=self.pk)
-                except Http404:
-                    return HttpResponseRedirect(reverse('alert_create'))
             
             # Set/Modify the alert's name 
             alert_inst.name = form.cleaned_data['new_name']
 
             # Set/Modify the alert's list of owners
+            alert_inst.owner.clear()
             for new_owner in form.cleaned_data['new_owners']:
                 alert_inst.owner.add(new_owner)
 
@@ -437,8 +439,23 @@ class alert_config(View):
             except IntegrityError:
                 pass
                 #print("UPDATE FAILURE")
-        
-        #print(form.errors.as_data()) 
+        else:
+            #print(form.errors.as_data()['new_owners']) 
+            return render(
+                request = request, 
+                template_name = "alert_config.html", 
+                context = {
+                    'form':form,
+                    'triggerForm':triggerForm,
+                    'alert':alert_inst,
+                    'create':create,
+                },
+            )
+            #return HttpResponseRedirect(reverse(
+            #        'alert_config',
+            #        kwargs={'pk':self.pk}
+            #))
+
         return HttpResponseRedirect(reverse('alerts_page_all'))
        
 
