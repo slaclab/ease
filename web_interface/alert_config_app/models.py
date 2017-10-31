@@ -138,7 +138,7 @@ class Trigger(models.Model):
 
 
     def __repr__(self):
-        return "{}(name={},alert={},value={},compare={})".format(
+        return '{}(name="{}",alert="{}",value={},compare="{}")'.format(
             self.__class__.__name__, 
             self.name, 
             self.alert,

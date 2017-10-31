@@ -346,7 +346,7 @@ class alert_config(View):
 
     def post(self, request, *args, **kwargs):
         # DEBUG ONLY --------------------------------------
-        if 1:
+        if 0:
             print("")
             for x in sorted(request.POST):
                 print("{:>20}  {:>20}  {:>20}".format(  
@@ -361,8 +361,6 @@ class alert_config(View):
             if form.is_valid():
                 print(form.cleaned_data)
         # DEBUG ONLY --------------------------------------
-        
-        
         
        
         self.pk = kwargs.get("pk",None)
@@ -408,8 +406,39 @@ class alert_config(View):
                     alert_inst.subscriber.remove(request.user.profile)
         
             alert_inst.save()
+
+            new_triggers = []
+            for single_trigger_form in triggerForm:
+                # reexamine this section, is it still necessary?
+                # do values occasionally return false? like new_subscribe
+                if single_trigger_form.is_valid():
+
+                    new_triggers.append(
+                        Trigger(
+                            name = single_trigger_form.cleaned_data.get(
+                                'new_name'),
+                            alert = alert_inst,
+                            pv = single_trigger_form.cleaned_data.get(
+                                'new_pv'),
+                            compare = single_trigger_form.cleaned_data.get(
+                                'new_compare'),
+                            value = single_trigger_form.cleaned_data.get(
+                                'new_value'),
+                        )
+                    )
+            
+            try:
+                # atomic prevents db change unless all changes are error free
+                with transaction.atomic():
+                    alert_inst.trigger_set.all().delete()
+                    Trigger.objects.bulk_create(new_triggers)
+                    pass
+
+            except IntegrityError:
+                pass
+                #print("UPDATE FAILURE")
         
-        print(form.errors.as_data()) 
+        #print(form.errors.as_data()) 
         return HttpResponseRedirect(reverse('alerts_page_all'))
         
 

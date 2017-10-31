@@ -1,6 +1,8 @@
 from django.test import TestCase, RequestFactory, Client
 from unittest import skip, expectedFailure
 
+from datetime import timedelta
+
 import alert_config_app.views as views
 from alert_config_app.models import *
 from account_mgr_app.models import *
@@ -136,14 +138,18 @@ class test_alert_config_form(TestCase):
                     kwargs={'pk':pk}),
                 302) in response.redirect_chain)
     
-    def generic_alert_create_post(self,*args,**kwargs):
+    def generic_alert_post(self,pk=None,*args,**kwargs):
         """Send alert creation post req. with default data and substitutions
-
+         
         Parameter
         ---------
+        pk : int, None
+            database ID for modifying an alert. Passing none creates an alert
+            instead of modifying one
+        
         *args : unnamed arguments
             unused
-
+        
         **kwargs : named arguments
             Substitute default post request fields with the given data
         
@@ -152,17 +158,25 @@ class test_alert_config_form(TestCase):
         django.template.response.TemplateResponse
             the response issued from the post request
         """
-        response = self.c.get('/alert/alert_create/',follow=True)
+        if pk==None:
+            path = '/alert/alert_create/'
+        else:
+            path = '/alert/alert_config/{}/'.format(str(pk))
+        
+        
+        response = self.c.get(path,follow=True)
+        
         post_data = {
             "new_lockout_duration":                       "02:33:15",
                         "new_name":                 "new_alert_name",
-                      "new_owners":   str(self.secondary.profile.pk),
+                      "new_owners":     str(self.primary.profile.pk),
+                   "new_subscribe":                             "on",
                 "tg-0-new_compare":                             "<=",
-                   "tg-0-new_name":                         "769876",
+                   "tg-0-new_name":                      "0 trigger",
                      "tg-0-new_pv":                              "1",
-                  "tg-0-new_value":                          "76876",
+                  "tg-0-new_value":                            "100",
                 "tg-1-new_compare":                             "==",
-                   "tg-1-new_name":                            "787",
+                   "tg-1-new_name":                      "1 trigger",
                      "tg-1-new_pv":                              "1",
                   "tg-1-new_value":                              "7",
                 "tg-2-new_compare":                             "-1",
@@ -174,51 +188,161 @@ class test_alert_config_form(TestCase):
                 "tg-MIN_NUM_FORMS":                              "0",
                   "tg-TOTAL_FORMS":                              "3",   
         }
-
+        
+        # add in kwargs-specified substitutions
+        for x in kwargs:
+            if kwargs[x] == None:
+                post_data.pop(x)
+            else:
+                post_data[x] = kwargs[x]
+        
         response = self.c.post(
-            '/alert/alert_create/',
+            path,
             data=post_data,
             follow=True)
         return response
 
-
-    '''@expectedFailure'''
-    def test_create(self):
-        """ check that alert is created from this POST requset (it should work)
+    def test_create_alert(self):
+        """ check that alert is created correctly from this POST requset
         """
-        response = self.generic_alert_create_post()
+        # Initiate post/get transaction
+        response = self.generic_alert_post()
+        
+        # confirm that alert with proper name exists
         try:
             alert_inst = Alert.objects.get(name="new_alert_name")
         except Exception as E:
             print(E)
             self.fail("Alert not created")
-
+             
+        # confirm that the user is added as the owner
         self.assertEqual(
             len(alert_inst.owner.all()),
             1,
             "incorrect number of owners"
         )
-        #self.assertTrue(
-        #    self.primary.profile.pk in [x.pk for x in alert_inst.owner.all()],
-        #    "creator is not added as owner"
-        #)
+
+        # confirm that the indicated user has also been added as an owner
         self.assertTrue(
-            self.secondary.profile in [x for x in alert_inst.owner.all()],
+            self.primary.profile in alert_inst.owner.all(),
+            "indicated owner is not added as owner"
+        )
+
+            
+        # confirm that primary user has also been added as a subscriber
+        self.assertTrue(
+            self.primary.profile in alert_inst.subscriber.all(),
+            "primary owner is not added as subscriber"
+        )
+        
+        # confirm that lockout duration has been properly added 
+        self.assertEqual(
+            alert_inst.lockout_duration,
+            timedelta(hours=2,minutes=33,seconds=15),
+            "Lockout duration has incorrect value"
+        )
+        
+        # confirm the proper number of triggers have been created 
+        self.assertEqual(
+            len(alert_inst.trigger_set.all()),
+            2,
+            "Incorrect number of triggers created"
+        )
+
+        # ensure triggers 0 and 1 have been added 
+        self.assertTrue(
+            Trigger.objects.get(name="0 trigger",alert=alert_inst) in \
+                    alert_inst.trigger_set.all(),
+            "0 Trigger not added"
+        )
+        self.assertTrue(
+            Trigger.objects.get(name="0 trigger",alert=alert_inst) in \
+                    alert_inst.trigger_set.all(),
+            "1 Trigger not added"
+        )
+
+    def test_modify_alert(self):
+        """ check that alert is created correctly from this POST requset
+        """
+        # Initiate post/get transaction
+        response = self.generic_alert_post(
+            new_name = "starting_name")
+        
+        alert_inst = Alert.objects.get(name="starting_name")
+        
+        response = self.generic_alert_post(
+            pk = alert_inst.pk,
+            **{
+                "new_name " : "modified_name",
+                "new_owners" : [
+                    str(self.primary.profile.pk),
+                    str(self.secondary.profile.pk),
+                ],
+                "new_lockout_duration":"01:15:30",
+                "tg-0-new_compare":-1,
+                "tg-0-new_name":None,
+                "tg-0-new_value":None,
+                "tg-0-new_pv":-1,
+                "tg-1-new_compare":"==",
+                "tg-1-new_name":"generic_name",
+                "tg-1-new_value":"5",
+                "tg-1-new_pv":-1,
+            }    
+        )
+        # confirm that alert with proper name exists
+        try:
+            alert_inst = Alert.objects.get(name="modified_name")
+        except Exception as E:
+            print(E)
+            self.fail("Alert not created")
+        
+
+        # confirm that the user is added as the owner
+        self.assertEqual(
+            len(alert_inst.owner.all()),
+            2,
+            "incorrect number of owners"
+        )
+        # confirm that primary user has also been added as an owner
+        self.assertTrue(
+            self.primary.profile in alert_inst.owner.all(),
+            "primaryl owner is not added as owner"
+        )
+
+        # confirm that secondary user has also been added as an owner
+        self.assertTrue(
+            self.secondary.profile in alert_inst.owner.all(),
             "optional owner is not added as owner"
         )
-            
+   
+        # confirm that primary user has also been added as a subscriber
+        self.assertTrue(
+            self.primary.profile in alert_inst.subscriber.all(),
+            "primary owner is not added as subscriber"
+        )
+        
+        # confirm that lockout duration has been properly added 
+        self.assertEqual(
+            alert_inst.lockout_duration,
+            timedelta(hours=1,minutes=15,seconds=30),
+            "Lockout duration has incorrect value"
+        )
+        
+        # confirm the proper number of triggers have been created 
+        self.assertEqual(
+            len(alert_inst.trigger_set.all()),
+            1,
+            "Incorrect number of triggers"
+        )
 
-       
+        # ensure triggers 0 and 1 have been added 
+        self.assertTrue(
+            Trigger.objects.get(name="generic_name",alert=alert_inst) in \
+                    alert_inst.trigger_set.all(),
+            "Trigger not modified"
+        )
 
-
-
-        #self.assertTrue(2 in [x.pk for x in alert_inst.owner])
-
-    def test_render(self):
-        #request = self.factory.get('/alert/alert_create')
-        #request.user = self.primary
-        #ac_view = views.alert_config()
-        pass
+    
 
 
 
