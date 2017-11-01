@@ -13,6 +13,39 @@ class Alert(models.Model):
     It is inteded to be directly editable by all users who are owners.
     When a linked trigger is tripped, alerts are sent to the subscribed
     users.
+
+    Attributes
+    ----------
+    name : django.db.models.CharField
+        String defining the user-visible name for alerts.
+
+    subscriber : django.db.models.ManyToManyField
+        Django relationship pointing to the profiles of users who will be
+        notified when this alert triggers. View its members using
+        Alert.subscriber.all()
+
+    owner : django.db.models.ManyToManyField
+        Django relationship pointing to the profiles of users who will have the
+        power to edit this alert. View its members using Alert.owner.all()
+        
+    lockout_duration : django.db.models.DurationField
+        This specifies a flat time limit between the times at which successive
+        alerts can be sent to users. 
+    
+        Note
+        ----
+            This attribute will likely undergo significant change or possibly
+            removal during the planned integration of the IEC 62682 plans
+    
+    last_sent : django.db.models.DateTimeField
+        Specifies the time at which the last alert was sent. See the proceeding
+        note for potential changes
+
+        Note
+        ----
+            This attribute will likely undergo significant change or possibly
+            removal during the planned integration of the IEC 62682 plans
+
     """
     name_max_length = 100
     name = models.CharField(max_length = name_max_length)
@@ -105,7 +138,7 @@ class Trigger(models.Model):
 
 
     def __repr__(self):
-        return "{}(name={},alert={},value={},compare={})".format(
+        return '{}(name="{}",alert="{}",value={},compare="{}")'.format(
             self.__class__.__name__, 
             self.name, 
             self.alert,

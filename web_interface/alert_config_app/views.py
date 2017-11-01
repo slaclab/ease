@@ -5,12 +5,11 @@
 
 from django.shortcuts import render, redirect
 
-from django.views import generic
+from django.views import generic,View
 from django.views.generic import TemplateView
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-
+from django.views.generic.edit import (CreateView, UpdateView, DeleteView)
 
 from account_mgr_app.models import Profile
 import account_mgr_app
@@ -33,6 +32,7 @@ from django.urls import reverse_lazy
 
 from django.forms.formsets import formset_factory
 from django.db import transaction, IntegrityError, models
+from django.contrib import messages
 
 
 
@@ -274,118 +274,146 @@ def alert_detail(request,pk,*args,**kwargs):
     )
 
 
-@login_required()
-def alert_config(request,pk=None,*args,**kwargs):
-    """Draws editable screen for individual alert.
-    
-    This page is accesssible only to the owner of the alert.
-
-    Args
-    ____
-        pk : int, None
-            DB index of the displayed alert. PK is sent automatically from the 
-            regex in url. If pk is none, or does not match an existing alert,
-            the user is redirected to to the alert creation url which links
-            back to this function.
-
-    Note
-    ____
-        It may be better to rewrite this function as a class so long as the 
-        class can support the dynamic number of triggers. Having functions 
-        specific to the creation and editing processes could produce much
-        more readable and maintainable code. As it stands, this function is
-        something of a mess.
-    """
-    for x in sorted(request.POST):
-        print("{:>20}  {:>20}  {:>20}".format(x,str(request.POST[x]),str(type(request.POST[x]))))
-
-    # dict sets the intial values in the form fields, is empty if alert is new
-    alert_initial = {}
 
 
-    # redirect for alert creation
-    trigger_initial = []
-    if pk != None:
-        try:
-            alert_inst = get_object_or_404(Alert,pk=pk)
+
+@method_decorator(login_required, name = 'dispatch')
+class alert_config(View):
+    def get(self, request, *args, **kwargs):
+        """Draw the page when create or config is loaded by the user
+        """
+        self.pk = kwargs.get("pk",None)
+        if self.pk == None:
+            create = True
+        else:
+            create = False
+            # attempt to fetch database entry for alert, redirect on fail 
+            try:
+                alert_inst = get_object_or_404(Alert,pk=self.pk)
+            except Http404:
+                return HttpResponseRedirect(reverse('alert_create'))
+
+        if not create:
+            # reject non-owner users
+            if request.user.profile not in alert_inst.owner.all():
+                return HttpResponseRedirect(reverse(
+                        'alert_detail',
+                        kwargs={'pk':self.pk}))
+
+        if create:
+            alert_inst = None
+            alert_initial = {}
+            trigger_initial = []
+        else:
+            if request.user.profile in alert_inst.subscriber.all():
+                subscribed = True
+            else:
+                subscribed = False
+            # prepare initial values for form fields showing current values
+            alert_initial = {
+                'new_name': alert_inst.name,
+                'new_owners':[x.pk for x in alert_inst.owner.all()],
+                'new_subscribe': subscribed,
+                'new_lockout_duration':alert_inst.lockout_duration,    
+            }
+            trigger_initial = [
+                {   
+                    'new_name': l.name,
+                    'new_pv': l.pv.pk if l.pv else None,
+                    'new_value':l.value,
+                    'new_compare':l.compare,
+                } 
+                for l in alert_inst.trigger_set.all()
+            ]
+
+        triggerFormSet = formset_factory(configTrigger)
         
-        except Http404:
-            return HttpResponseRedirect(reverse('alert_create'))
+        form = configAlert(initial = alert_initial)
+        triggerForm = triggerFormSet(
+            initial = trigger_initial,
+            prefix='tg'
+        )
 
-    if request.path == reverse('alert_create'):
-        create = True
-    else:
-        create = False
+        return render(
+            request = request, 
+            template_name = "alert_config.html", 
+            context = {
+                'form':form,
+                'triggerForm':triggerForm,
+                'alert':alert_inst,
+                'create':create,
+            },
+        )
 
+    def post(self, request, *args, **kwargs):
+        # DEBUG ONLY --------------------------------------
+        if 0:
+            print("")
+            for x in sorted(request.POST):
+                print("{:>20}  {:>20}  {:>20}".format(  
+                    x,
+                    str(dict(request.POST)[x]),
+                    str(type(dict(request.POST)[x]))))
+            print("")
+        
+            form = configAlert(request.POST,)
+            #triggerForm = triggerFormSet(request.POST, prefix='tg')
 
-    if not create:
-        print(request.user.profile)
-        print(alert_inst.owner.all())
-        print(request.user.profile not in alert_inst.owner.all())
-        if request.user.profile not in alert_inst.owner.all():
-            return HttpResponseRedirect(reverse('alert_detail',kwargs={'pk':pk}))
-
-    triggerFormSet = formset_factory(configTrigger)
-
-
-    # handle POST request
-    if request.method == 'POST':            
+            if form.is_valid():
+                print(form.cleaned_data)
+        # DEBUG ONLY --------------------------------------
+        
+       
+        self.pk = kwargs.get("pk",None)
+        triggerFormSet = formset_factory(configTrigger)
+        if self.pk == None:
+            create = True
+        else:
+            create = False
+        
         form = configAlert(request.POST,)
         triggerForm = triggerFormSet(request.POST, prefix='tg')
-
-        # if form.is_valid() and triggerForm.is_valid():
-        if form.is_valid():
-            if create:
-                alert_inst = Alert()
-                alert_inst.save()
-            
-            else:
-                pass
-            # alter name 
-            alert_inst.name = form.cleaned_data['new_name']   
-            # alter owners 
-            owners_list = []
-            for pk in form.cleaned_data['new_owners']:
-                owners_list.append(Profile.objects.get(pk=pk))
-            print(owners_list,"*******************************************************")
-            alert_inst.owner = owners_list
-            alert_inst.lockout_duration = form.cleaned_data[
-                'new_lockout_duration']
-            # alter user subscription relation note: LOGGED IN USER ONLY
-            if form.cleaned_data['new_subscribe']:
-                try:
-                    alert_inst.subscriber.add(request.user.profile)
-                except ValueError:
-                    # instance already exists -- pass
-                    pass
-            else:
-                try:
-                    alert_inst.subscriber.remove(request.user.profile)
-                except ValueError:
-                    # instance already removed -- pass
-                    pass
-
+        # if there is no preexisting Alert - create a new one
+        if create:
+            alert_inst = Alert()
             alert_inst.save()
 
-            # iterate through individual triggers, check each for validity
+        else:
+            # attempt to get indicated alert instance, redirect on fail
+            try:
+                alert_inst = get_object_or_404(Alert,pk=self.pk)
+            except Http404:
+                return HttpResponseRedirect(reverse('alert_create'))
+         
+        if form.is_valid():
+            
+            # Set/Modify the alert's name 
+            alert_inst.name = form.cleaned_data['new_name']
+
+            # Set/Modify the alert's list of owners
+            alert_inst.owner.clear()
+            for new_owner in form.cleaned_data['new_owners']:
+                alert_inst.owner.add(new_owner)
+
+            # Set/Modify the alert's lockout duration
+            alert_inst.lockout_duration = form.cleaned_data[
+                'new_lockout_duration']
+
+            # Set/Modify the alert's subscription relation with the user
+            if ((form.cleaned_data['new_subscribe'])
+                and (request.user.profile not in alert_inst.subscriber.all())):
+                    alert_inst.subscriber.add(request.user.profile)
+            elif ((not form.cleaned_data['new_subscribe'])
+                and (request.user.profile in alert_inst.subscriber.all())):
+                    alert_inst.subscriber.remove(request.user.profile)
+        
+            alert_inst.save()
+
             new_triggers = []
             for single_trigger_form in triggerForm:
                 # reexamine this section, is it still necessary?
                 # do values occasionally return false? like new_subscribe
                 if single_trigger_form.is_valid():
-
-                    # if single_trigger_form.cleaned_data.get('new_pv') == None:
-                    #     continue;
-                    # if int(single_trigger_form.cleaned_data.get('new_pv')) == -1:
-                    #     new_trigger_pv = None
-                    # else:
-                    #     new_trigger_pv = Pv.objects.get(pk=int(single_trigger_form.cleaned_data.get('new_pv')))
-
-                    
-                    # if single_trigger_form.cleaned_data.get('new_compare') == str(-1):
-                    #     new_trigger_compare = None
-                    # else:
-                    #     new_trigger_compare = single_trigger_form.cleaned_data.get('new_compare')
 
                     new_triggers.append(
                         Trigger(
@@ -401,75 +429,35 @@ def alert_config(request,pk=None,*args,**kwargs):
                         )
                     )
             
-            # valid triggers in new_triggers[], now add them to db
             try:
-                # atomic means no db change unless all changes are error free
+                # atomic prevents db change unless all changes are error free
                 with transaction.atomic():
                     alert_inst.trigger_set.all().delete()
                     Trigger.objects.bulk_create(new_triggers)
                     pass
 
             except IntegrityError:
-                print("UPDATE FAILURE")
-
-
+                pass
+                #print("UPDATE FAILURE")
         else:
-            print("BAD FORM")
-            # print(triggerForm.errors)
-            # for single_trigger_form in triggerForm:
-            #     # print(dir(single_trigger_form))
-            #     print(single_trigger_form.is_valid())
+            #print(form.errors.as_data()['new_owners']) 
+            return render(
+                request = request, 
+                template_name = "alert_config.html", 
+                context = {
+                    'form':form,
+                    'triggerForm':triggerForm,
+                    'alert':alert_inst,
+                    'create':create,
+                },
+            )
+            #return HttpResponseRedirect(reverse(
+            #        'alert_config',
+            #        kwargs={'pk':self.pk}
+            #))
 
         return HttpResponseRedirect(reverse('alerts_page_all'))
-    
-
-    # handle GET request
-    else:
-        if create:
-            pass
-        else:
-            if request.user.profile in alert_inst.subscriber.all():
-                subscribed = True
-            else:
-                subscribed = False
-            alert_initial = {
-                'new_name': alert_inst.name,
-                'new_owners':[x.pk for x in alert_inst.owner.all()],
-                'new_subscribe': subscribed,
-                'new_lockout_duration':alert_inst.lockout_duration,
-                 
-            }
-            trigger_initial = [
-                {   
-                    'new_name': l.name,
-                    'new_pv': l.pv.pk if l.pv else None,
-                    'new_value':l.value,
-                    'new_compare':l.compare,
-                } 
-                for l in alert_inst.trigger_set.all()
-            ]
-
-        form = configAlert(initial = alert_initial)
-        triggerForm = triggerFormSet(
-            initial = trigger_initial,
-            prefix='tg'
-        )
-
-
-    if create:
-        alert_inst = None
-
-
-    return render(
-        request, 
-        "alert_config.html", 
-        {
-            'form':form,
-            'triggerForm':triggerForm,
-            'alert':alert_inst,
-            'create':create,
-        },
-    )
+       
 
 
 @login_required()

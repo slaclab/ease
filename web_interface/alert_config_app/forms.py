@@ -58,13 +58,13 @@ class configTrigger(forms.Form):
     
 
         self.fields['new_compare'] = forms.ChoiceField(
-        label = 'Comparison',
-        choices = [(-1,None)] + Trigger.compare_choices,
-        widget = forms.Select(
-            attrs = {
-                'class':'custom-select',
-                }
-            )
+            label = 'Comparison',
+            choices = [(-1,None)] + Trigger.compare_choices,
+            widget = forms.Select(
+                attrs = {
+                    'class':'custom-select',
+                    }
+                )
         )
     
     
@@ -78,20 +78,7 @@ class configTrigger(forms.Form):
             }
         )
     )
-    # '''
-    # new_pv = forms.ChoiceField(
-    #     label = 'PV name',
-    #     # use this to sort alphabetiaclly if necessary
-    #     # sorted([(np.random.random(),np.random.random()) for x in range(10)],key=lambda s: s[1])
-    #     choices = [(-1,None)] + [ (x.pk,x.name) for x in Pv.objects.all()],
-    #     # choices = ["a,"b"],
-    #     widget = forms.Select(
-    #         attrs = {
-    #             'class':'custom-select',
-    #         }
-    #     )
-    # )
-    # '''
+
     new_value = forms.FloatField(
         label = 'Value',
         required = False,
@@ -102,15 +89,6 @@ class configTrigger(forms.Form):
         )
     )
 
-    # new_compare = forms.ChoiceField(
-    #     label = 'Comparison',
-    #     choices = [(-1,None)] + Trigger.compare_choices,
-    #     widget = forms.Select(
-    #         attrs = {
-    #             'class':'custom-select',
-    #         }
-    #     )
-    # )
 
 
     def clean_new_name(self):
@@ -158,9 +136,7 @@ class configAlert(forms.Form):#ModelForm
             Changes to the alert name can be entered in this field.abs
 
         new_subscribe : forms.BooleanField
-            Determines whether the current user is subscribed. Unike the owners
-            field, registering others is not possible to prevent trolling.
-            
+            Determines whether the current user is subscribed.             
     """
 
     class Meta:
@@ -168,13 +144,17 @@ class configAlert(forms.Form):#ModelForm
 
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
-
+            
+        try:
+            post_request = args[0]
+        except IndexError:
+            post_request = False
+            
         self.fields['new_owners'] = forms.MultipleChoiceField(
             label = 'Owners',
             # use this to sort alphabetiaclly if necessary
             # sorted([(np.random.random(),np.random.random()) for x in range(10)],key=lambda s: s[1])
             choices = [ (x.pk,x.user.username) for x in Profile.objects.all()],
-            # choices = ["a,"b"],
             widget = forms.CheckboxSelectMultiple(
                 attrs = {
                     'class':'form-control',
@@ -197,12 +177,10 @@ class configAlert(forms.Form):#ModelForm
     new_subscribe = forms.BooleanField(
         label = "Subscribed",
         required = False,
-        # This is where the checkbox for alert readonly page shows up... Can't figure out how to change size
         widget = forms.CheckboxInput(
             attrs = {
                 'class':'form-check-input',
                 'type':'checkbox',
-                #'size':'300'
             }
         )
     )
@@ -215,13 +193,33 @@ class configAlert(forms.Form):#ModelForm
                 'class':'form-control',
                 'type':'text',
                 'placeholder':'dd hh:mm:ss',
-                #'data-toggle':'tooltip',
-                #'data-placement':'top',
-                #'title':'tooltip!',
             }
         )
     )
-    
+
+    def clean_new_owners(self):
+        """Validate the new set of owners
+
+        Returns
+        -------
+        [account_mgr_app.models.Profile]
+        """
+        pks = self.cleaned_data['new_owners']
+        if len(pks) == 0:
+            raise forms.ValidationError("Alerts must have at least one owner")
+        
+        pks = [int(pk) for pk in pks]
+
+        owners_list = []
+
+        for pk in pks:
+            try:
+                owners_list.append(Profile.objects.get(pk=pk))
+            except Exception as E:
+                print(type(E),type(E).__name__)
+
+        
+        return owners_list
 
     def clean_new_subscribe(self):
         """Validate the subscription option
