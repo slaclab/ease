@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Djang: alert_config_app &#8212; EASE  documentation</title>
+    <title>Django: alert_config_app &#8212; EASE  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -40,8 +40,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="djang-alert-config-app">
-<h1>Djang: alert_config_app<a class="headerlink" href="#djang-alert-config-app" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="django-alert-config-app">
+<h1>Django: alert_config_app<a class="headerlink" href="#django-alert-config-app" title="Permalink to this headline">¶</a></h1>
 <p>The alert_config_app builds the django pages and database entries responsible
 for managing the alerts engine.</p>
 <div class="section" id="module-alert_config_app.forms">
@@ -79,8 +79,23 @@ the __init__ due to its reliance on DB items.</p>
 <dl class="attribute">
 <dt id="alert_config_app.forms.configAlert.new_subscribe">
 <code class="descname">new_subscribe</code><a class="headerlink" href="#alert_config_app.forms.configAlert.new_subscribe" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>forms.BooleanField</em> – Determines whether the current user is subscribed. Unike the owners
-field, registering others is not possible to prevent trolling.</p>
+<dd><p><em>forms.BooleanField</em> – Determines whether the current user is subscribed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alert_config_app.forms.configAlert.clean_new_owners">
+<code class="descname">clean_new_owners</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#alert_config_app.forms.configAlert.clean_new_owners" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate the new set of owners</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">[account_mgr_app.models.Profile]</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -152,32 +167,6 @@ does NOT own this alert. The only option is to subscribe.</p>
 <span id="views-py"></span><h2>views.py<a class="headerlink" href="#module-alert_config_app.views" title="Permalink to this headline">¶</a></h2>
 <p>Django consults this page to determine the html that should be sent
 to the user</p>
-<dl class="function">
-<dt id="alert_config_app.views.alert_config">
-<code class="descclassname">alert_config_app.views.</code><code class="descname">alert_config</code><span class="sig-paren">(</span><em>request</em>, <em>pk=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#alert_config_app.views.alert_config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Draws editable screen for individual alert.</p>
-<p>This page is accesssible only to the owner of the alert.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pk</strong> (<em>int</em><em>, </em><em>None</em>) – DB index of the displayed alert. PK is sent automatically from the
-regex in url. If pk is none, or does not match an existing alert,
-the user is redirected to to the alert creation url which links
-back to this function.</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">It may be better to rewrite this function as a class so long as the
-class can support the dynamic number of triggers. Having functions
-specific to the creation and editing processes could produce much
-more readable and maintainable code. As it stands, this function is
-something of a mess.</p>
-</div>
-</dd></dl>
-
 <dl class="function">
 <dt id="alert_config_app.views.alert_delete">
 <code class="descclassname">alert_config_app.views.</code><code class="descname">alert_delete</code><span class="sig-paren">(</span><em>request</em>, <em>pk=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#alert_config_app.views.alert_delete" title="Permalink to this definition">¶</a></dt>
@@ -331,6 +320,51 @@ class can support the dynamic number of triggers.</p>
 It is inteded to be directly editable by all users who are owners.
 When a linked trigger is tripped, alerts are sent to the subscribed
 users.</p>
+<dl class="attribute">
+<dt id="alert_config_app.models.Alert.name">
+<code class="descname">name</code><a class="headerlink" href="#alert_config_app.models.Alert.name" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>django.db.models.CharField</em> – String defining the user-visible name for alerts.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alert_config_app.models.Alert.subscriber">
+<code class="descname">subscriber</code><a class="headerlink" href="#alert_config_app.models.Alert.subscriber" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>django.db.models.ManyToManyField</em> – Django relationship pointing to the profiles of users who will be
+notified when this alert triggers. View its members using
+Alert.subscriber.all()</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alert_config_app.models.Alert.owner">
+<code class="descname">owner</code><a class="headerlink" href="#alert_config_app.models.Alert.owner" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>django.db.models.ManyToManyField</em> – Django relationship pointing to the profiles of users who will have the
+power to edit this alert. View its members using Alert.owner.all()</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alert_config_app.models.Alert.lockout_duration">
+<code class="descname">lockout_duration</code><a class="headerlink" href="#alert_config_app.models.Alert.lockout_duration" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>django.db.models.DurationField</em> – This specifies a flat time limit between the times at which successive
+alerts can be sent to users.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This attribute will likely undergo significant change or possibly
+removal during the planned integration of the IEC 62682 plans</p>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alert_config_app.models.Alert.last_sent">
+<code class="descname">last_sent</code><a class="headerlink" href="#alert_config_app.models.Alert.last_sent" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>django.db.models.DateTimeField</em> – Specifies the time at which the last alert was sent. See the proceeding
+note for potential changes</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This attribute will likely undergo significant change or possibly
+removal during the planned integration of the IEC 62682 plans</p>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -371,7 +405,7 @@ edited directly but through the alerts config page.</p>
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">EASE sections:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Djang: alert_config_app</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Django: alert_config_app</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-alert_config_app.forms">forms.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-alert_config_app.views">views.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-alert_config_app.models">models.py</a></li>
