@@ -274,9 +274,6 @@ def alert_detail(request,pk,*args,**kwargs):
     )
 
 
-
-
-
 @method_decorator(login_required, name = 'dispatch')
 class alert_config(View):
     def get(self, request, *args, **kwargs):
@@ -333,7 +330,6 @@ class alert_config(View):
             initial = trigger_initial,
             prefix='tg'
         )
-
         return render(
             request = request, 
             template_name = "alert_config.html", 

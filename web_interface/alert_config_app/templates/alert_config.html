@@ -1,111 +1,82 @@
 {% extends 'base.html' %}
 
 {% block head_extra %}
-{% load static %}
-<script src="{% static 'dynamic_forms.js' %}"></script>
+	{% load static %}
+	<script src="{% static 'dynamic_forms.js' %}"></script>
 {% endblock %}
 
 {% block script %}
-var dfc_prefix = "tg"
-var dfc_fields = ["new_name","new_pv","new_compare","new_value"]
-var dfc_replace = ["",-1,-1,""]
-$(document).ready(dynamic_form_controller);
-
+	var dfc_prefix = "tg"
+	var dfc_fields = ["new_name","new_pv","new_compare","new_value"]
+	var dfc_replace = ["",-1,-1,""]
+	$(document).ready(dynamic_form_controller);
+	
 {% endblock %}
 
 {% block title %}
-Alert Configuration Page
+	Alert Configuration Page
 {% endblock %}
 
 
 {% block content %}
-
-
-<form action="" method="post">
-	{% csrf_token %}
-
-<!--ALERT SECTION-->
-
-    <div class="form-group row">
-        <label for="" class="col-sm-2 col-form-label"><h2>Alert:</h2></label>
-    </div>
-
-    <!--<div class="container">-->
-    {% for entry in form %}
-    <!--<br>-->
-
-    <div class="form-group row col-sm-12">
-        <label for="" class="col-sm-2 col-form-label"> {{entry.label}} </label>
-		{% if entry.errors  %}
-			<div class="alert alert-danger" role="alert">
-				{{entry.errors}}
-			</div>	
+	
+	<form action="" method="post">
+		{% csrf_token %}
+		<!--ALERT SECTION-->
+		<div class="form-group row">
+			<label for="" class="col-sm-2 col-form-label"><h2>Alert:</h2></label>
+		</div>
+	
+		{% for entry in form %}
+			<div class="form-group row ">
+				<label for="" class="col-sm-3 {% if entry.field.widget.input_type != "checkbox" %}col-form-label{% endif %}"> {{entry.label}} </label>
+				{% if entry.errors	%}
+					<div class="alert alert-danger" role="alert"> {{entry.errors}} </div>	
+				{% endif %}
+				<div class="col-sm-9"> {{entry}} </div>
+			</div>
+		{% endfor %}
+	
+		<br>
+		<br>
+	
+		<!--TRIGGERS SECTION-->
+		<div class="form-group row">
+				<label for="" class="col-sm-2 col-form-label"><b>Triggers:</b></label>
+		</div>
+		<input class="btn btn-primary" type="button" id="add_trigger_btn" value="Add Trigger"/>
+	
+		{{ triggerForm.management_form }}
+	
+		<table class="table">
+			<thead>
+				<tr>
+					<th class="w-30">Trigger Name</th>
+					<th class="w-10">Linked PV</th>
+					<th class="w-10">Comparison</th>
+					<th class="w-20">Value</th>
+					<th class="w-10"></th>
+				</tr>
+			</thead>
+			<tbody id="contents_section">
+				{% for entry in triggerForm %}
+					<tr>
+						<td class="w-30">{{ entry.new_name }}</td>
+						<td class="w-10">{{ entry.new_pv }}</td>
+						<td class="w-10">{{ entry.new_compare }}</td>
+						<td class="w-20">{{ entry.new_value }}</td>
+						<td class="w-10">
+							<button class="btn btn-outline-warning delete-btn" type="button">Delete Row</button>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<input class="btn btn-primary" type="submit" value="Submit"/>
+		{% if not create %}
+			<a href="{% url 'alert_delete' alert.pk %}" class="btn btn-danger">Delete</a>
 		{% endif %}
-        <div class="col-sm-10"> {{entry}} </div>
-    </div>
-    {% endfor %}
-    <!--</div>-->
-    <br>
-    <br>
-
-<!--TRIGGERS SECTION-->
-    <div class="form-group row">
-        <label for="" class="col-sm-2 col-form-label"><b>Triggers:</b></label>
-    </div>
-    <input class="btn btn-primary" type="button" id="add_trigger_btn" value="Add Trigger"/>
-
-    {{ triggerForm.management_form }}
-
-    <table class="table">
-        <thead>
-        <tr>
-        <th class="w-30">Trigger Name</th>
-        <th class="w-10">Linked PV</th>
-        <th class="w-10">Comparison</th>
-        <th class="w-20">Value</th>
-        <th class="w-10"></th>
-
-        </tr>
-        </thead>
-        <tbody id="contents_section">
-            {% for entry in triggerForm %}
-            <tr>
-            <td class="w-30">{{ entry.new_name }}</td>
-            <td class="w-10">{{ entry.new_pv }}</td>
-            <td class="w-10">{{ entry.new_compare }}</td>
-
-            <td class="w-20">{{ entry.new_value }}</td>
-
-            <td class="w-10">
-                <button class="btn btn-outline-warning delete-btn" type="button">Delete Row</button>
-            </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-
-
-
-
-
-
-    <input class="btn btn-primary" type="submit" value="Submit"/>
-    {% if not create %}
-    <a href="{% url 'alert_delete' alert.pk %}" class="btn btn-danger">Delete</a>
-    {% endif %}
-</form>
-<br>
-
-
-
-
-
-
-
-
-
-
-
+	</form>
+	<br>
 {% endblock %}
 

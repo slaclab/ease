@@ -18,6 +18,8 @@ from account_mgr_app.models import Profile
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 
+from .widgets import HorizontalCheckbox
+
 
 class configTrigger(forms.Form):
     """Define the fields for an individual trigger
@@ -162,7 +164,6 @@ class configAlert(forms.Form):#ModelForm
             )
         )
 
-
     new_name = forms.CharField(
         label = 'Alert name',
         max_length = Alert.name_max_length,
@@ -177,13 +178,14 @@ class configAlert(forms.Form):#ModelForm
     new_subscribe = forms.BooleanField(
         label = "Subscribed",
         required = False,
-        widget = forms.CheckboxInput(
+        widget = HorizontalCheckbox(
             attrs = {
-                'class':'form-check-input',
+                'class':'form-check-input position-static',
                 'type':'checkbox',
             }
         )
     )
+    new_subscribe.extra_label = "this is an extra_label"
 
     new_lockout_duration = forms.DurationField(
         label = "Delay Between Successive Alerts",
