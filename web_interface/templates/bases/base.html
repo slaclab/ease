@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	
-	<!-- Local compled Bootstrap-->
+	<!-- Local compiled Bootstrap-->
 	<link rel="stylesheet" href="{% static 'dist-bootstrap-4.0.0-beta.2/css/bootstrap.min.css' %}">
 
 	<!-- jQuery library -->
@@ -13,27 +13,34 @@
 	
 	<!-- Need tether.io for bootstrap4 (js) -->
 	<script src="{% static 'dist-tether-1.4.0/js/tether.min.js' %}"></script>
+
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+crossorigin="anonymous"></script>
 	
 	<!-- Local compiled JavaScript -->
 	<script src="{% static 'dist-bootstrap-4.0.0-beta.2/js/bootstrap.min.js' %}"></script>
   
-  <style>
-    body {
-      padding-top:1em;
-    }
-    .titles {
-      color: blue;
-    }
+                     
+  <style>            
+		body {           
+			padding-top    :1em;
+		}
+
+		.titles {
+			color: blue;
+		}
 	
-	#home_page_title {
-	  color: black;
-	  text-align: center
-	}
-	
-	#home_page_image {
-	  max-width: 40%;
-	  max-height: 40%;
-	}
+		#home_page_title {
+			color: black;
+			text-align: center
+		}
+		
+		#home_page_image {
+			max-width: 40%;
+			max-height: 40%;
+		}
   </style>
   
 
@@ -42,52 +49,51 @@
   {% block head_extra %}
   {% endblock %}
   <script type="text/javascript">
-  {% block script %}
-  {% endblock %}
+		{% block script %}
+		{% endblock %}
 	</script>
 </head>
 
 
 
 <body>
-
   <div class="container-fluid">
-  <nav class="navbar navbar-toggleable-xl navbar-inverse bg-inverse">
-    <a class="navbar-brand" href="{% url 'title_page' %}">EASE</a>
-    <!--<h1 class="navbar-brand mb-0" >EASE</h1>-->
-    <div class="navbar-collapse collapse">
 
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'alerts_page_all' %}">Alerts</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link " href="{% url 'pvs_page_all' %}">PVs</a>
-        </li>
-      </ul>
-
-      <ul class="navbar-nav ml-auto">
-             {% if user.is_authenticated %}
-        <li class="nav-item active">
-          <a class="nav-link" href="{% url 'user_profile' %}">{{user}}</a>
-
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-        </li>
-      {% else %}
-        <li class="nav-item active">
-          <a class="nav-link" href="{% url 'signup' %}">Create Account</a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="{% url 'login' %}">Login</a>
-        </li>		
-      {% endif %}
-      </ul>
-
-    </div>
+  <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+		<a class="navbar-brand" href="{% url 'title_page' %}">EASE</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav">
+				<li class="nav-item active">
+					<a class="nav-link" href="{% url 'alerts_page_all' %}">Alerts</a>
+				</li>
+				<li class="nav-item active">
+					<a class="nav-link " href="{% url 'pvs_page_all' %}">PVs</a>
+			</li>
+			</ul>
+			<ul class="navbar-nav ml-auto">	
+			{% if user.is_authenticated %}
+				<li class="nav-item active">
+					<a class="nav-link" href="{% url 'user_profile' %}">{{user}}</a>	
+				</li>
+				<li class="nav-item active">
+					<a class="nav-link" href="{% url 'logout' %}">Logout</a>
+				</li>
+			{% else %}
+				<li class="nav-item active">
+					<a class="nav-link" href="{% url 'signup' %}">Create Account</a>
+				</li>
+				<li class="nav-item active">
+					<a class="nav-link" href="{% url 'login' %}">Login</a>
+				</li>		
+			{% endif %}
+			</ul>
+		</div>
   </nav>
-    
+
   <div class="page-header" style="background-color: #d1d1d1;">
     <div class="col-sm-12"> 
     <h1>
@@ -101,7 +107,7 @@
     </div>
   </div>
   
-  <div class="bg-faded">
+  <div class="bg-light">
     <div class="col-sm-12">
       {% block sidebar %}
       {% endblock %}
