@@ -151,7 +151,7 @@ class configAlert(forms.Form):#ModelForm
             post_request = args[0]
         except IndexError:
             post_request = False
-            
+        ''' 
         self.fields['new_owners'] = forms.MultipleChoiceField(
             label = 'Owners',
             # use this to sort alphabetiaclly if necessary
@@ -163,7 +163,16 @@ class configAlert(forms.Form):#ModelForm
                 }
             )
         )
-
+        '''
+        self.fields['new_owners'] = forms.ModelMultipleChoiceField(
+            label = 'Owners',
+            queryset = Profile.objects.all(),
+            widget = forms.CheckboxSelectMultiple(
+                attrs = {
+                    'class':'form-control',
+                }
+            )
+        )
     new_name = forms.CharField(
         label = 'Alert name',
         max_length = Alert.name_max_length,
@@ -198,7 +207,7 @@ class configAlert(forms.Form):#ModelForm
             }
         )
     )
-
+    '''
     def clean_new_owners(self):
         """Validate the new set of owners
 
@@ -222,7 +231,7 @@ class configAlert(forms.Form):#ModelForm
 
         
         return owners_list
-
+    '''
     def clean_new_subscribe(self):
         """Validate the subscription option
 
