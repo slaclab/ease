@@ -151,28 +151,8 @@ class configAlert(forms.Form):#ModelForm
             post_request = args[0]
         except IndexError:
             post_request = False
-        ''' 
-        self.fields['new_owners'] = forms.MultipleChoiceField(
-            label = 'Owners',
-            # use this to sort alphabetiaclly if necessary
-            # sorted([(np.random.random(),np.random.random()) for x in range(10)],key=lambda s: s[1])
-            choices = [ (x.pk,x.user.username) for x in Profile.objects.all()],
-            widget = forms.CheckboxSelectMultiple(
-                attrs = {
-                    'class':'form-control',
-                }
-            )
-        )
-        '''
-        self.fields['new_owners'] = forms.ModelMultipleChoiceField(
-            label = 'Owners',
-            queryset = Profile.objects.all(),
-            widget = forms.CheckboxSelectMultiple(
-                attrs = {
-                    'class':'form-control',
-                }
-            )
-        )
+
+
     new_name = forms.CharField(
         label = 'Alert name',
         max_length = Alert.name_max_length,
@@ -194,7 +174,6 @@ class configAlert(forms.Form):#ModelForm
             }
         )
     )
-    new_subscribe.extra_label = "this is an extra_label"
 
     new_lockout_duration = forms.DurationField(
         label = "Delay Between Successive Alerts",
@@ -207,6 +186,19 @@ class configAlert(forms.Form):#ModelForm
             }
         )
     )
+    
+    new_owners = forms.ModelMultipleChoiceField(
+        label = 'Owners',
+        queryset = User.objects.all().values('username'),
+        widget = forms.Textarea(
+            attrs = {
+                'class':'form-control',
+                'rows':'3',
+            }
+        )
+    
+    )
+    
     '''
     def clean_new_owners(self):
         """Validate the new set of owners
@@ -232,6 +224,11 @@ class configAlert(forms.Form):#ModelForm
         
         return owners_list
     '''
+    
+    def clean_new_owners(self):
+        data = self.cleaned_data['new_owners']
+        return [1,2,3]
+
     def clean_new_subscribe(self):
         """Validate the subscription option
 

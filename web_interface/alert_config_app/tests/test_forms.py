@@ -104,7 +104,7 @@ class test_configAlert_form(TestCase):
         # name is none
         form = configAlert(
             data = {
-                'new_owners' : [str(self.primary.pk)],
+                'new_owners' : [str(self.primary.username)],
                 'new_name' : None,
                 'new_subscribe' : 'on', #as opposed to None
                 'new_lockout_duration' : None})
@@ -116,7 +116,7 @@ class test_configAlert_form(TestCase):
         # name not provided 
         form = configAlert(
             data = {
-                'new_owners' : [str(self.primary.pk)],
+                'new_owners' : [str(self.primary.username)],
                 'new_subscribe' : 'on', #as opposed to None
                 'new_lockout_duration' : None})
             
@@ -127,7 +127,7 @@ class test_configAlert_form(TestCase):
         # name too short
         form = configAlert(
             data = {
-                'new_owners' : [str(self.primary.pk)],
+                'new_owners' : [str(self.primary.username)],
                 'new_name' : "",
                 'new_subscribe' : 'on', #as opposed to None
                 'new_lockout_duration' : None})

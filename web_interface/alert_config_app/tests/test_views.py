@@ -169,7 +169,7 @@ class test_alert_config_form(TestCase):
         post_data = {
             "new_lockout_duration":                       "02:33:15",
                         "new_name":                 "new_alert_name",
-                      "new_owners":     str(self.primary.profile.pk),
+                      "new_owners":       str(self.primary.username),
                    "new_subscribe":                             "on",
                 "tg-0-new_compare":                             "<=",
                    "tg-0-new_name":                      "0 trigger",
@@ -212,7 +212,7 @@ class test_alert_config_form(TestCase):
         try:
             alert_inst = Alert.objects.get(name="new_alert_name")
         except Exception as E:
-            print(E)
+            #print(E)
             self.fail("Alert not created")
              
         # confirm that the user is added as the owner
@@ -269,19 +269,22 @@ class test_alert_config_form(TestCase):
             new_name = "starting_name",
             **{
                 "new_owners" : [
-                    str(self.primary.profile.pk),
-                    str(self.secondary.profile.pk),
+                    str(self.primary.username) +", "+
+                    str(self.secondary.username),
                 ],
             })
         
-        alert_inst = Alert.objects.get(name="starting_name")
+        try:
+            alert_inst = Alert.objects.get(name="starting_name")
+        except Exception as E:
+            self.fail("Alert not created")
         
         response = self.generic_alert_post(
             pk = alert_inst.pk,
             **{
                 "new_name " : "modified_name",
                 "new_owners" : [
-                    str(self.primary.profile.pk),
+                    str(self.primary.username),
                 ],
                 "new_lockout_duration":"01:15:30",
                 "tg-0-new_compare":-1,
@@ -298,7 +301,6 @@ class test_alert_config_form(TestCase):
         try:
             alert_inst = Alert.objects.get(name="modified_name")
         except Exception as E:
-            print(E)
             self.fail("Alert not created")
         
 
