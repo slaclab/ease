@@ -187,16 +187,16 @@ class configAlert(forms.Form):#ModelForm
         )
     )
     
-    new_owners = forms.ModelMultipleChoiceField(
+    new_owners = forms.CharField(
         label = 'Owners',
-        queryset = User.objects.all().values('username'),
+        strip = True,
+        required = False,
         widget = forms.Textarea(
             attrs = {
                 'class':'form-control',
-                'rows':'3',
+                'rows':'5',
             }
         )
-    
     )
     
     '''
@@ -226,16 +226,48 @@ class configAlert(forms.Form):#ModelForm
     '''
     
     def clean_new_owners(self):
+        """Receive input string for the new_owners field and return users list
+
+        Returns
+        -------
+        list of Django.db.models.query.Queryset
+            This queryset contains the list of profiles (NOT User objects) to
+            have ownership of this Alert.
+
+        """
+        # data is received as a single sting
         data = self.cleaned_data['new_owners']
-        return [1,2,3]
+        
+        # produce list of individual usernames from textbox
+        name_list = [name.strip() for name in data.split(",")]
+        name_set = set(name_list)
+
+        # search database 
+        profile_list = Profile.objects.filter(user__username__in=name_set)
+
+        # find lists of accepted and rejected usernames for reporting errors
+        user_list = User.objects.filter(profile__in=profile_list)
+        accepted_name_list = [ name['username'] for name in user_list.values()]
+        rejected_name_set = name_set - set(accepted_name_list)
+        
+        if rejected_name_set:
+            error_msg = ""
+            for rejected_name in rejected_name_set:
+                error_msg += (rejected_name + ", ")
+
+            raise forms.ValidationError(
+                "Usernames "+error_msg+"Not recognized"
+            )
+
+        return profile_list 
 
     def clean_new_subscribe(self):
         """Validate the subscription option
 
         Returns
         -------
-            bool
-                True if the user has selected the subscriber option
+        bool
+            True if the user has selected the subscriber option
 
         Note
         ----

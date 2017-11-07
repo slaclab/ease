@@ -5,6 +5,7 @@ from alert_config_app.models import *
 from alert_config_app.forms import *
 from account_mgr_app.models import *
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 # Create your tests here.
 # @skip("Keeping this as an example template")
@@ -104,7 +105,7 @@ class test_configAlert_form(TestCase):
         # name is none
         form = configAlert(
             data = {
-                'new_owners' : [str(self.primary.username)],
+                'new_owners' : str(self.primary.username),
                 'new_name' : None,
                 'new_subscribe' : 'on', #as opposed to None
                 'new_lockout_duration' : None})
@@ -116,7 +117,7 @@ class test_configAlert_form(TestCase):
         # name not provided 
         form = configAlert(
             data = {
-                'new_owners' : [str(self.primary.username)],
+                'new_owners' : str(self.primary.username),
                 'new_subscribe' : 'on', #as opposed to None
                 'new_lockout_duration' : None})
             
@@ -127,11 +128,67 @@ class test_configAlert_form(TestCase):
         # name too short
         form = configAlert(
             data = {
-                'new_owners' : [str(self.primary.username)],
+                'new_owners' : str(self.primary.username),
                 'new_name' : "",
                 'new_subscribe' : 'on', #as opposed to None
                 'new_lockout_duration' : None})
             
         errors = form['new_name'].errors.as_data()
         self.assertEqual(len(errors), 1)
-        self.assertFalse(form.is_valid())   
+        self.assertFalse(form.is_valid())
+    
+    def test_clean_new_owners(self):
+        """Ensure that clean_new_owners properly errs on bad names
+        """
+
+        # Ensure that errors are reported for bad owner inputs
+        form = configAlert(
+            data = {
+                'new_owners' : 
+                    str(self.primary.username)+", "+
+                    "FAKE_USERNAME"
+                ,
+                'new_name' : "sample name",
+                'new_subscribe' : 'on', #as opposed to None
+                'new_lockout_duration' : None
+            }
+        )   
+
+        form_errors = form.errors.as_data()
+        
+        self.assertTrue(
+            len(form.errors.as_data()) > 0,
+            "No Errors Reported"
+        )
+
+        self.assertEqual(
+            ValidationError,
+            type(form.errors.as_data()['new_owners'][0]),
+            "Wrong error type"
+        )
+
+        self.assertTrue(
+            "FAKE_USERNAME" in form.errors.as_data()['new_owners'][0].message,
+            "error message failed to report bad name"
+        )
+        
+        # Ensure that no errors are reported for good owner inputs 
+        form = configAlert(
+            data = {
+                'new_owners' : str(self.primary.username),
+                'new_name' : "sample name",
+                'new_subscribe' : 'on', #as opposed to None
+                'new_lockout_duration' : None
+            }
+        )   
+
+        self.assertEqual(
+            len(form.errors.as_data()),
+            0,
+            "No Errors Reported"
+        )
+
+        self.assertTrue(
+            self.primary.profile in form.cleaned_data['new_owners'],
+            "Profile not returned"
+        )
