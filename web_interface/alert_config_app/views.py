@@ -307,12 +307,23 @@ class alert_config(View):
             else:
                 subscribed = False
             # prepare initial values for form fields showing current values
+            
+            initial_owner_list = User.objects.filter(
+                profile__in=alert_inst.owner.all()
+            )
+
+            initial_usernames = [usr.username for usr in initial_owner_list]
+
+            initial_owners = ", ".join(sorted(initial_usernames))
+
             alert_initial = {
                 'new_name': alert_inst.name,
-                'new_owners':[x.pk for x in alert_inst.owner.all()],
+                'new_owners': initial_owners,
                 'new_subscribe': subscribed,
                 'new_lockout_duration':alert_inst.lockout_duration,    
             }
+
+
             trigger_initial = [
                 {   
                     'new_name': l.name,

@@ -190,7 +190,6 @@ class configAlert(forms.Form):#ModelForm
     new_owners = forms.CharField(
         label = 'Owners',
         strip = True,
-        required = False,
         widget = forms.Textarea(
             attrs = {
                 'class':'form-control',
@@ -241,6 +240,7 @@ class configAlert(forms.Form):#ModelForm
         # produce list of individual usernames from textbox
         name_list = [name.strip() for name in data.split(",")]
         name_set = set(name_list)
+        name_set = name_set - set(['',' '])
 
         # search database 
         profile_list = Profile.objects.filter(user__username__in=name_set)
@@ -249,7 +249,8 @@ class configAlert(forms.Form):#ModelForm
         user_list = User.objects.filter(profile__in=profile_list)
         accepted_name_list = [ name['username'] for name in user_list.values()]
         rejected_name_set = name_set - set(accepted_name_list)
-        
+        print(rejected_name_set) 
+        print(len(rejected_name_set)) 
         if rejected_name_set:
             error_msg = ""
             for rejected_name in rejected_name_set:

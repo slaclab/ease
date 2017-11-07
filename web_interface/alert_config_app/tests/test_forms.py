@@ -146,7 +146,7 @@ class test_configAlert_form(TestCase):
             data = {
                 'new_owners' : 
                     str(self.primary.username)+", "+
-                    "FAKE_USERNAME"
+                    "FAKE_USERNAME, "
                 ,
                 'new_name' : "sample name",
                 'new_subscribe' : 'on', #as opposed to None
