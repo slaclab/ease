@@ -44,10 +44,10 @@
 		{% for entry in form %}
 			<div class="form-group row ">
 				<label for="" class="col-sm-3 {% if entry.field.widget.input_type != "checkbox" %}col-form-label{% endif %}"> {{entry.label}} </label>
-				{% if entry.errors	%}
-					<div class="alert alert-danger" role="alert"> {{entry.errors}} </div>	
-				{% endif %}
 				<div class="col-sm-9"> 
+					{% if entry.errors	%}
+						<div class="alert alert-danger" role="alert"> {{entry.errors}} </div>	
+					{% endif %}
 					{{entry}}
 					<small class="form-text text-muted">{{entry.help_text}}</small>
 				</div>

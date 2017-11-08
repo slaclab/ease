@@ -227,8 +227,6 @@ class configAlert(forms.Form):#ModelForm
         user_list = User.objects.filter(profile__in=profile_list)
         accepted_name_list = [ name['username'] for name in user_list.values()]
         rejected_name_set = name_set - set(accepted_name_list)
-        print(rejected_name_set) 
-        print(len(rejected_name_set)) 
         if rejected_name_set:
             error_msg = ""
             for rejected_name in rejected_name_set:
