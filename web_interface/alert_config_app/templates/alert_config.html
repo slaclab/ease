@@ -11,13 +11,17 @@
 	var dfc_fields = ["new_name","new_pv","new_compare","new_value"]
 	var dfc_replace = ["",-1,-1,""]
 	$(document).ready(dynamic_form_controller);
-	
+
+	var name_list
 	$(
 		function(){
-			var name_list =['Aaaa','aab','Bbbbbb','Bbbbc','Vcccdefafewaf']
+			name_list = [
+				{% for name in usernames %}
+					'{{name}}',
+				{% endfor %}
+			];
 			var searcher = new search_helper(name_list,"id_new_owners");
-			searcher.prepare_document()
-			console.log("hi")
+			searcher.prepare_document();
 		}
 	);
 
@@ -43,11 +47,13 @@
 				{% if entry.errors	%}
 					<div class="alert alert-danger" role="alert"> {{entry.errors}} </div>	
 				{% endif %}
-				<div class="col-sm-9"> {{entry}} </div>
+				<div class="col-sm-9"> 
+					{{entry}}
+					<small class="form-text text-muted">{{entry.help_text}}</small>
+				</div>
 			</div>
 		{% endfor %}
 	
-		<br>
 		<br>
 	
 		<!--TRIGGERS SECTION-->

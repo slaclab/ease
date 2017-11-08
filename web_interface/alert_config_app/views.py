@@ -341,6 +341,9 @@ class alert_config(View):
             initial = trigger_initial,
             prefix='tg'
         )
+        
+        all_usernames = sorted([usr.username for usr in User.objects.all()])
+
         return render(
             request = request, 
             template_name = "alert_config.html", 
@@ -349,6 +352,7 @@ class alert_config(View):
                 'triggerForm':triggerForm,
                 'alert':alert_inst,
                 'create':create,
+                'usernames': all_usernames,
             },
         )
 
@@ -447,7 +451,7 @@ class alert_config(View):
                 pass
                 #print("UPDATE FAILURE")
         else:
-            #print(form.errors.as_data()['new_owners']) 
+            all_usernames = sorted([usr.username for usr in User.objects.all()])
             return render(
                 request = request, 
                 template_name = "alert_config.html", 
@@ -456,12 +460,9 @@ class alert_config(View):
                     'triggerForm':triggerForm,
                     'alert':alert_inst,
                     'create':create,
+                    'usernames':all_usernames,
                 },
             )
-            #return HttpResponseRedirect(reverse(
-            #        'alert_config',
-            #        kwargs={'pk':self.pk}
-            #))
 
         return HttpResponseRedirect(reverse('alerts_page_all'))
        

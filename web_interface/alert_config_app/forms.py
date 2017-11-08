@@ -161,7 +161,8 @@ class configAlert(forms.Form):#ModelForm
                 'class':'form-control',
                 'type':'text',
             }
-        )
+        ),
+        help_text = str(Alert.name_max_length) + " character limit"
     )
 
     new_subscribe = forms.BooleanField(
@@ -172,11 +173,12 @@ class configAlert(forms.Form):#ModelForm
                 'class':'form-check-input position-static',
                 'type':'checkbox',
             }
-        )
+        ),
+        help_text = 'Check this box to receive alerts',
     )
 
     new_lockout_duration = forms.DurationField(
-        label = "Delay Between Successive Alerts",
+        label = "Lockout delay",
         required = False,
         widget = forms.TimeInput(
             attrs = {
@@ -184,7 +186,8 @@ class configAlert(forms.Form):#ModelForm
                 'type':'text',
                 'placeholder':'dd hh:mm:ss',
             }
-        )
+        ),
+        help_text = "Time delay between successive alerts"
     )
     
     new_owners = forms.CharField(
@@ -195,34 +198,9 @@ class configAlert(forms.Form):#ModelForm
                 'class':'form-control',
                 'rows':'5',
             }
-        )
+        ),
+        help_text = "Users who can edit this alert"
     )
-    
-    '''
-    def clean_new_owners(self):
-        """Validate the new set of owners
-
-        Returns
-        -------
-        [account_mgr_app.models.Profile]
-        """
-        pks = self.cleaned_data['new_owners']
-        if len(pks) == 0:
-            raise forms.ValidationError("Alerts must have at least one owner")
-        
-        pks = [int(pk) for pk in pks]
-
-        owners_list = []
-
-        for pk in pks:
-            try:
-                owners_list.append(Profile.objects.get(pk=pk))
-            except Exception as E:
-                print(type(E),type(E).__name__)
-
-        
-        return owners_list
-    '''
     
     def clean_new_owners(self):
         """Receive input string for the new_owners field and return users list
