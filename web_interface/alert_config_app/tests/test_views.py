@@ -370,3 +370,57 @@ class test_alert_config_form(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'alert_config.html')
         self.assertContains(response, 'owner_redirect_name')
+
+
+class test_alert_detail_form(TestCase):
+    """Collection of tests inspecting the detail_alert form 
+    """
+    @classmethod
+    def setUpTestData(cls):
+        cls.primary = User.objects.create_user("test")
+        cls.primary_pass = "tests"
+        cls.primary.set_password(cls.primary_pass)
+        cls.primary.save()
+
+        cls.secondary = User.objects.create_user("test2")
+        cls.secondary_pass = "tests"
+        cls.secondary.set_password(cls.secondary_pass)
+        cls.secondary.save()
+
+        
+        cls.alerts = []
+        for x in range(2):
+            cls.alerts.append(Alert())
+            cls.alerts[x].name = "alert_"+str(x)
+            cls.alerts[x].save()
+            cls.alerts[x].owner.add(cls.primary.profile)
+            cls.alerts[x].save() 
+
+        cls.factory = RequestFactory()
+        cls.c = Client()
+    
+    def setUp(self):
+        """Log the test user in before each test method.
+        """
+        self.c.login(
+           username = self.primary.username,
+           password = self.primary_pass)
+
+    def tearDown(self):
+        """Log the test user out after every test method.
+        """
+        self.c.logout()
+
+    def test_detail_exists(self):
+        """Test that the creation page can be drawn without errors.
+        """
+        response = self.c.get(
+            '/alert/alert_detail/'+str(self.alerts[0].pk)+'/',
+            follow=True)
+        self.assertEqual(response.status_code, 200, "Error code reported")
+        self.assertTemplateUsed(response,'alert_detail.html', "Wrong Template")
+
+
+
+
+
