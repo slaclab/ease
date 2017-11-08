@@ -3,6 +3,7 @@
 {% block head_extra %}
 	{% load static %}
 	<script src="{% static 'dynamic_forms.js' %}"></script>
+	<script src="{% static 'search_helper.js' %}"></script>
 {% endblock %}
 
 {% block script %}
@@ -11,8 +12,17 @@
 	var dfc_replace = ["",-1,-1,""]
 	$(document).ready(dynamic_form_controller);
 	
-{% endblock %}
+	$(
+		function(){
+			var name_list =['Aaaa','aab','Bbbbbb','Bbbbc','Vcccdefafewaf']
+			var searcher = new search_helper(name_list,"id_new_owners");
+			searcher.prepare_document()
+			console.log("hi")
+		}
+	);
 
+	
+{% endblock %}
 {% block title %}
 	Alert Configuration Page
 {% endblock %}
