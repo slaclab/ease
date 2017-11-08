@@ -59,7 +59,7 @@ class test_configTrigger_form(TestCase):
                 'new_value' : None,})
 
 
-class test_configAlert_form(TestCase):
+class test_config_Alert_form(TestCase):
     '''Collection of tests inspecting the configAlert form.
     '''
     @classmethod
@@ -192,3 +192,68 @@ class test_configAlert_form(TestCase):
             self.primary.profile in form.cleaned_data['new_owners'],
             "Profile not returned"
         )
+
+class test_detail_Alert_form(TestCase):
+    """Collection of tests inspecting the detail_alert form 
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        """Create a collection of users and alerts for this TestCase
+        """
+        cls.primary = User.objects.create_user("testA")
+        cls.primary_pass = "tests"
+        cls.primary.set_password(cls.primary_pass)
+        cls.primary.save()
+        
+        cls.secondary = User.objects.create_user("testB")
+        cls.secondary_pass = "tests"
+        cls.secondary.set_password(cls.secondary_pass)
+        cls.secondary.save()
+
+        cls.c = Client()
+
+        cls.alert = Alert()
+        cls.alert.name = "test alert"
+        cls.alert.save()
+        cls.alert.owner.add(cls.primary.profile)
+        cls.alert.save()
+    
+    def setUp(self):
+        """Log the test user in before each test method.
+        """
+        self.c.login(
+           username = self.primary.username,
+           password = self.primary_pass)
+
+    def test_clean_new_subscribe(self):
+        """Ensure that the cleaner for the new_subscribe field errs properly
+        """
+        # Ensure that subscription is handled properly
+        form = detailAlert(
+            data = {
+                'new_subscribe' : 'on',
+            }
+        )
+        errors = form['new_subscribe'].errors.as_data()
+        self.assertFalse(
+            len(errors),
+            "Errors should not have been reported",
+        )
+        self.assertTrue(
+            form.cleaned_data['new_subscribe'],
+            "True value not reported",
+        )
+
+        # Ensure that unsubscription is handled properly
+        form = detailAlert(data = {})
+        errors = form['new_subscribe'].errors.as_data()
+        self.assertFalse(
+            len(errors),
+            "Errors should not have been reported",
+        )
+        self.assertFalse(
+            form.cleaned_data['new_subscribe'],
+            "False value not reported",
+        )
+

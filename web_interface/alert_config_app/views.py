@@ -14,7 +14,7 @@ from django.views.generic.edit import (CreateView, UpdateView, DeleteView)
 from account_mgr_app.models import Profile
 import account_mgr_app
 from .models import Alert, Pv, Trigger #PVname #Does this allow you to say "model = Pv....model = Alert..."
-from .forms import configAlert, configTrigger, deleteAlert, subscribeAlert, createPv
+from .forms import configAlert, configTrigger, deleteAlert, detailAlert, createPv
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -232,8 +232,24 @@ def alert_detail(request,pk,*args,**kwargs):
 
 
     if request.method == "POST":
+        # DEBUG ONLY --------------------------------------
+        if 1:
+            print("")
+            for x in sorted(request.POST):
+                print("{:>20}  {:>20}  {:>20}".format(  
+                    x,
+                    str(dict(request.POST)[x]),
+                    str(type(dict(request.POST)[x]))))
+            print("")
+        
+            #form = configAlert(request.POST,)
+            ##triggerForm = triggerFormSet(request.POST, prefix='tg')
 
-        form = subscribeAlert(request.POST)
+            #if form.is_valid():
+            #    print(form.cleaned_data)
+        # DEBUG ONLY --------------------------------------
+
+        form = detailAlert(request.POST)
         if form.is_valid():
             if form.cleaned_data.get('new_subscribe'):
                 try:
@@ -256,7 +272,7 @@ def alert_detail(request,pk,*args,**kwargs):
         subscribed = False
         if request.user.profile in alert_inst.subscriber.all():
             subscribed = True
-        form = subscribeAlert(
+        form = detailAlert(
             initial = {
                 'new_subscribe': subscribed
             }

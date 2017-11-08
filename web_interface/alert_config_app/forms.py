@@ -166,7 +166,7 @@ class configAlert(forms.Form):#ModelForm
     )
 
     new_subscribe = forms.BooleanField(
-        label = "Subscribed",
+        label = "Subscribe",
         required = False,
         widget = HorizontalCheckbox(
             attrs = {
@@ -264,28 +264,28 @@ class configAlert(forms.Form):#ModelForm
         return data
 
 
-class subscribeAlert(forms.Form):
+class detailAlert(forms.Form):
     """Define the fields for an alert. These fields are presented when the user
     does NOT own this alert. The only option is to subscribe.
     """
     class Meta:
         model = Alert
-
+    
     new_subscribe = forms.BooleanField(
-        label = "Subscribed",
+        label = "Subscribe",
         required = False,
-        widget = forms.CheckboxInput(
+        widget = HorizontalCheckbox(
             attrs = {
-                'class':'form-check-input',
+                'class':'form-check-input position-static',
                 'type':'checkbox',
             }
-        )
+        ),
+        help_text = 'Check this box to receive alerts',
     )
     def clean_new_subscribe(self):
-        
         if self.cleaned_data['new_subscribe']:
             data = True
-        else:
+        elif not self.cleaned_data['new_subscribe']:
             data = False
 
         return data
