@@ -203,7 +203,7 @@ class test_alert_config_form(TestCase):
         return response
 
     def test_create_alert(self):
-        """ check that alert is created correctly from this POST requset
+        """ check that alert is created correctly from this POST request
         """
         # Initiate post/get transaction
         response = self.generic_alert_post()
@@ -262,7 +262,7 @@ class test_alert_config_form(TestCase):
         )
 
     def test_modify_alert(self):
-        """ check that alert is created correctly from this POST requset
+        """ check that alert is created correctly from this POST request
         """
         # Initiate post/get transaction
         response = self.generic_alert_post(
@@ -349,9 +349,68 @@ class test_alert_config_form(TestCase):
             "Trigger not modified"
         )
 
-    
+    def test_non_owner_modification_rejection(self):
+        """ensure that PRs from non-owners will be rejected
+        """
+        
+        # Initiate post/get transaction
+        response = self.generic_alert_post(
+            new_name = "start_name",
+            **{
+                "new_owners" : [
+                    str(self.primary.username)
+                ],
+            })
+        
+        try:
+            alert_inst = Alert.objects.get(name="start_name")
+        except Exception as E:
+            self.fail("Alert not created")
+        
+        self.c.logout()
+        self.c.login(
+            username = self.secondary.username,
+            password = self.secondary_pass,
+        )
+        
+        response = self.generic_alert_post(
+            pk = alert_inst.pk,
+            **{
+                "new_name " : "modified_name",
+                "new_owners" : [
+                    str(self.primary.username),
+                ],
+                "new_lockout_duration":"01:15:30",
+                "tg-0-new_compare":-1,
+                "tg-0-new_name":None,
+                "tg-0-new_value":None,
+                "tg-0-new_pv":-1,
+                "tg-1-new_compare":"==",
+                "tg-1-new_name":"generic_name",
+                "tg-1-new_value":"5",
+                "tg-1-new_pv":-1,
+            }    
+        )
+
+        self.assertEqual(
+            alert_inst.name,
+            "start_name",
+            "Name has been allowed to change"
+        )
+
+
+        self.assertTrue(
+            ('/alert/alert_detail/'+str(alert_inst.pk)+'/',302) in
+                response.redirect_chain,
+            "Failed to redirect to detail page"
+        )
+
+
+
+
+
     def test_create_alert_bad_owners(self):
-        """ check that alert is created correctly from this POST requset
+        """ check that alert is created correctly from this POST request
         """
         # Initiate post/get transaction
         response = self.generic_alert_post(
@@ -386,14 +445,13 @@ class test_alert_detail_form(TestCase):
         cls.secondary_pass = "tests"
         cls.secondary.set_password(cls.secondary_pass)
         cls.secondary.save()
-
         
         cls.alerts = []
         for x in range(2):
             cls.alerts.append(Alert())
             cls.alerts[x].name = "alert_"+str(x)
             cls.alerts[x].save()
-            cls.alerts[x].owner.add(cls.primary.profile)
+            cls.alerts[x].owner.add(cls.secondary.profile)
             cls.alerts[x].save() 
 
         cls.factory = RequestFactory()
@@ -411,8 +469,8 @@ class test_alert_detail_form(TestCase):
         """
         self.c.logout()
 
-    def test_detail_exists(self):
-        """Test that the creation page can be drawn without errors.
+    def test_exists(self):
+        """Ensure the detail page draws correctly for non-owners.
         """
         response = self.c.get(
             '/alert/alert_detail/'+str(self.alerts[0].pk)+'/',
@@ -420,7 +478,84 @@ class test_alert_detail_form(TestCase):
         self.assertEqual(response.status_code, 200, "Error code reported")
         self.assertTemplateUsed(response,'alert_detail.html', "Wrong Template")
 
+    def test_redirection(self):
+        """Ensure owners are redirected to the config page
+        """
+        
+        response = self.c.get(
+            '/alert/alert_detail/'+str(self.alerts[0].pk)+'/',
+            follow=True)
+    
+        self.assertTrue(
+            ('/alert/alert_config/'+str(self.alerts[0].pk)+'/',302) in
+                response.redirect_chain,
+            "Failed to redirect to configuration page"
+        )
+
+    def test_post_request(self):
+        """Ensure PRs accept changes from owners
+        """
+        self.c.logout()
+        self.c.login(
+            username = self.secondary.username,
+            password = self.secondary_pass,
+        )
+
+        path = '/alert/alert_detail/'+str(self.alerts[0].pk)+'/'
+        post_data = { 'new_subscribe':'on' }
+        response = self.c.post(
+            path,
+            data=post_data,
+            follow=True
+        )
+        self.assertTrue(
+            self.secondary.profile in self.alerts[0].subscriber.all(),
+            "subscriber not added",
+        )
+
+        path =  '/alert/alert_detail/'+str(self.alerts[0].pk)+'/'
+        post_data = {}
+        response = self.c.post(
+            path,
+            data=post_data,
+            follow=True
+        )
+        
+        self.assertFalse(
+            self.secondary.profile in self.alerts[0].subscriber.all(),
+            "subscriber not removed",
+        )
 
 
+
+
+    def test_post_request_non_owner(self):
+        """ensure PRs from non-owners are accepted
+        """
+        
+        path = '/alert/alert_detail/'+str(self.alerts[0].pk)+'/'
+        post_data = { 'new_subscribe':'on' }
+        response = self.c.post(
+            path,
+            data=post_data,
+            follow=True
+        )
+        self.assertTrue(
+            self.primary.profile in self.alerts[0].subscriber.all(),
+            "subscriber not added",
+        )
+
+        path =  '/alert/alert_detail/'+str(self.alerts[0].pk)+'/'
+        post_data = {}
+        response = self.c.post(
+            path,
+            data=post_data,
+            follow=True
+        )
+        
+        self.assertFalse(
+            self.primary.profile in self.alerts[0].subscriber.all(),
+            "subscriber not removed",
+        )
 
 

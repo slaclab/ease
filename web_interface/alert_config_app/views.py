@@ -209,8 +209,73 @@ class pv_create(generic.edit.CreateView):
 #     context_object_name='alert'
 #     template_name = 'alert_detail.html'
 
+
+
+@method_decorator(login_required, name = 'dispatch')
+class alert_detail(View):
+
+    def __init__(self, *args, **kwargs):
+        #self.pk = kwargs.get("pk",None)
+        #super().__init__(*args, **kwargs)
+        pass
+    
+    def get(self, request, *args, **kwargs):
+        self.pk = kwargs.get("pk",None)
+        try:
+            alert_inst = get_object_or_404(Alert,pk=self.pk)
+        except Http404:
+            return HttpResponseRedirect(reverse('alerts_page_all'))
+
+        subscribed = False
+        if request.user.profile in alert_inst.subscriber.all():
+            subscribed = True
+        form = detailAlert(
+            initial = {
+                'new_subscribe': subscribed
+            }
+        )
+
+        context = {
+            'alert': alert_inst,
+            'form':form,
+        }
+    
+        return render( 
+            request, 
+            'alert_detail.html', 
+            context
+        )
+
+
+
+    def post(self, request, *args, **kwargs):
+        self.pk = kwargs.get("pk",None)
+        try:
+            alert_inst = get_object_or_404(Alert,pk=self.pk)
+        except Http404:
+            return HttpResponseRedirect(reverse('alerts_page_all'))
+
+        form = detailAlert(request.POST)
+        if form.is_valid():
+            if form.cleaned_data.get('new_subscribe'):
+                try:
+                    alert_inst.subscriber.add(request.user.profile)
+                except ValueError:
+                    # instance already exists -- pass
+                    pass
+            else:
+                try:
+                    alert_inst.subscriber.remove(request.user.profile)
+                except ValueError:
+                    # instance already removed -- pass
+                    pass
+
+            return HttpResponseRedirect(reverse('alerts_page_all'))
+
+
+
 @login_required()
-def alert_detail(request,pk,*args,**kwargs):
+def alert_detail_o(request,pk,*args,**kwargs):
     """Draws read-only screen for individual alert
 
     Args
@@ -233,7 +298,7 @@ def alert_detail(request,pk,*args,**kwargs):
 
     if request.method == "POST":
         # DEBUG ONLY --------------------------------------
-        if 1:
+        if 0:
             print("")
             for x in sorted(request.POST):
                 print("{:>20}  {:>20}  {:>20}".format(  
@@ -390,7 +455,7 @@ class alert_config(View):
                 print(form.cleaned_data)
         # DEBUG ONLY --------------------------------------
         
-       
+        
         self.pk = kwargs.get("pk",None)
         triggerFormSet = formset_factory(configTrigger)
         if self.pk == None:
@@ -411,6 +476,11 @@ class alert_config(View):
                 alert_inst = get_object_or_404(Alert,pk=self.pk)
             except Http404:
                 return HttpResponseRedirect(reverse('alert_create'))
+
+            if request.user.profile not in alert_inst.owner.all():
+                return HttpResponseRedirect(reverse(
+                        'alert_detail',
+                        kwargs={'pk':self.pk}))        
          
         if form.is_valid():
             
