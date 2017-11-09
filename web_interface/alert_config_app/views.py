@@ -213,18 +213,17 @@ class pv_create(generic.edit.CreateView):
 
 @method_decorator(login_required, name = 'dispatch')
 class alert_detail(View):
-
-    def __init__(self, *args, **kwargs):
-        #self.pk = kwargs.get("pk",None)
-        #super().__init__(*args, **kwargs)
-        pass
-    
     def get(self, request, *args, **kwargs):
         self.pk = kwargs.get("pk",None)
         try:
             alert_inst = get_object_or_404(Alert,pk=self.pk)
         except Http404:
             return HttpResponseRedirect(reverse('alerts_page_all'))
+        
+        if request.user.profile in alert_inst.owner.all():
+            return HttpResponseRedirect(reverse(
+                    'alert_config',
+                    kwargs={'pk':self.pk}))
 
         subscribed = False
         if request.user.profile in alert_inst.subscriber.all():
@@ -246,73 +245,17 @@ class alert_detail(View):
             context
         )
 
-
-
     def post(self, request, *args, **kwargs):
         self.pk = kwargs.get("pk",None)
         try:
             alert_inst = get_object_or_404(Alert,pk=self.pk)
         except Http404:
             return HttpResponseRedirect(reverse('alerts_page_all'))
-
-        form = detailAlert(request.POST)
-        if form.is_valid():
-            if form.cleaned_data.get('new_subscribe'):
-                try:
-                    alert_inst.subscriber.add(request.user.profile)
-                except ValueError:
-                    # instance already exists -- pass
-                    pass
-            else:
-                try:
-                    alert_inst.subscriber.remove(request.user.profile)
-                except ValueError:
-                    # instance already removed -- pass
-                    pass
-
-            return HttpResponseRedirect(reverse('alerts_page_all'))
-
-
-
-@login_required()
-def alert_detail_o(request,pk,*args,**kwargs):
-    """Draws read-only screen for individual alert
-
-    Args
-    ____
-        pk : int
-            DB index of the displayed alert. PK is sent automatically from the 
-            regex in url. 
-
-    Note
-    ____
-        It may be better to rewrite this function as a class so long as the 
-        class can support the dynamic number of triggers.
-    """
-    try:
-        alert_inst = get_object_or_404(Alert,pk=pk)
-    except Http404:
-        return HttpResponseRedirect(reverse('alerts_page_all'))
-
-
-
-    if request.method == "POST":
-        # DEBUG ONLY --------------------------------------
-        if 0:
-            print("")
-            for x in sorted(request.POST):
-                print("{:>20}  {:>20}  {:>20}".format(  
-                    x,
-                    str(dict(request.POST)[x]),
-                    str(type(dict(request.POST)[x]))))
-            print("")
         
-            #form = configAlert(request.POST,)
-            ##triggerForm = triggerFormSet(request.POST, prefix='tg')
-
-            #if form.is_valid():
-            #    print(form.cleaned_data)
-        # DEBUG ONLY --------------------------------------
+        if request.user.profile in alert_inst.owner.all():
+            return HttpResponseRedirect(reverse(
+                    'alert_config',
+                    kwargs={'pk':self.pk}))
 
         form = detailAlert(request.POST)
         if form.is_valid():
@@ -329,30 +272,7 @@ def alert_detail_o(request,pk,*args,**kwargs):
                     # instance already removed -- pass
                     pass
 
-
             return HttpResponseRedirect(reverse('alerts_page_all'))
-
-
-    else:
-        subscribed = False
-        if request.user.profile in alert_inst.subscriber.all():
-            subscribed = True
-        form = detailAlert(
-            initial = {
-                'new_subscribe': subscribed
-            }
-        )
-
-    context = {
-        'alert': alert_inst,
-        'form':form,
-    }
-
-    return render( 
-        request, 
-        'alert_detail.html', 
-        context
-    )
 
 
 @method_decorator(login_required, name = 'dispatch')

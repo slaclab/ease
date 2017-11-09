@@ -481,11 +481,15 @@ class test_alert_detail_form(TestCase):
     def test_redirection(self):
         """Ensure owners are redirected to the config page
         """
+        self.c.logout()
+        self.c.login(
+            username = self.secondary.username,
+            password = self.secondary_pass,
+        )
         
         response = self.c.get(
             '/alert/alert_detail/'+str(self.alerts[0].pk)+'/',
             follow=True)
-    
         self.assertTrue(
             ('/alert/alert_config/'+str(self.alerts[0].pk)+'/',302) in
                 response.redirect_chain,
@@ -493,7 +497,7 @@ class test_alert_detail_form(TestCase):
         )
 
     def test_post_request(self):
-        """Ensure PRs accept changes from owners
+        """Ensure PRs accept changes from owners are rejected
         """
         self.c.logout()
         self.c.login(
@@ -508,11 +512,13 @@ class test_alert_detail_form(TestCase):
             data=post_data,
             follow=True
         )
-        self.assertTrue(
+        self.assertFalse(
             self.secondary.profile in self.alerts[0].subscriber.all(),
-            "subscriber not added",
+            "subscriber added",
         )
 
+        self.alerts[0].subscriber.add(self.secondary.profile)
+        
         path =  '/alert/alert_detail/'+str(self.alerts[0].pk)+'/'
         post_data = {}
         response = self.c.post(
@@ -521,12 +527,10 @@ class test_alert_detail_form(TestCase):
             follow=True
         )
         
-        self.assertFalse(
+        self.assertTrue(
             self.secondary.profile in self.alerts[0].subscriber.all(),
-            "subscriber not removed",
+            "subscriber removed",
         )
-
-
 
 
     def test_post_request_non_owner(self):
