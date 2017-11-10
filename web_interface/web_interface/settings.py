@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 import sys
+from datetime import datetime
 
 # https://stackoverflow.com/questions/4664724/distributing-django-projects-with-unique-secret-keys/16630719#16630719
 # Import/regenerate secret key upon downloading source. Live key should never go to repo
@@ -60,6 +61,66 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+if 0:
+    handler = 'console'
+    django_level = 'INFO'
+    app_level = 'DEBUG'
+    formatter = 'neat'
+else:
+    handler = 'file'
+    django_level = 'INFO'
+    app_level = 'WARNING'
+    formatter = 'verbose'
+    time_stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    logs_folder = "session_logs_" + time_stamp
+    os.mkdir(logs_folder)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'neat': {
+            'format':'[%(asctime)s] %(message)s',
+            #srftime format
+            'datefmt':'%a %b/%d/%y %I:%M:%S %p',
+        },
+        'verbose':{
+            'format':'[%(asctime)s][%(levelname)s][%(name)s] %(message)s'
+        },
+    },
+
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': formatter,
+        },
+        'file': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': os.path.join(logs_folder,'log.log'),
+            'when': 'midnight',
+            #'interval': 24,
+            'backupCount':500,
+            'formatter': formatter,
+        },
+    },
+    
+    'loggers': {
+        'django': {
+            'handlers': [handler],
+            'level': django_level,
+        },
+        'alert_config_app': {
+            'handlers': [handler],
+            'level': app_level,
+        },
+        'account_mgr_app': {
+            'handlers': [handler],
+            'level': app_level,
+        },
+    },
+}
 
 ALLOWED_HOSTS = [
     "134.79.165.105",
