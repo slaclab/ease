@@ -42,13 +42,6 @@ except ImportError:
     '''
     sys.exit(0)
 
-
-
-
-
-
-
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -62,19 +55,21 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+time_stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+logs_folder = "session_logs_" + time_stamp
+os.mkdir(logs_folder)
+
 if DEBUG:
     handler = 'console'
     django_level = 'INFO'
     app_level = 'DEBUG'
     formatter = 'neat'
+
 else:
     handler = 'file'
     django_level = 'INFO'
     app_level = 'WARNING'
     formatter = 'verbose'
-    time_stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    logs_folder = "session_logs_" + time_stamp
-    os.mkdir(logs_folder)
 
 LOGGING = {
     'version': 1,
@@ -169,8 +164,6 @@ if not DEBUG:
 if not DEBUG:
     WHITENOISE_STATIC_PREFIX = '/static/'
 
-
-
 ROOT_URLCONF = 'web_interface.urls'
 
 TEMPLATES = [
@@ -196,7 +189,6 @@ FIXTURE_DIRS = [
 ]
 
 WSGI_APPLICATION = 'web_interface.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
@@ -226,7 +218,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -239,7 +230,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
