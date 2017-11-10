@@ -61,6 +61,68 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
+
+
+
+if DEBUG:
+    handler = 'console'
+    django_level = 'INFO'
+    app_level = 'DEBUG'
+    formatter = 'neat'
+else:
+    handler = 'file'
+    django_level = 'WARNING'
+    app_level = 'WARNING'
+    formatter = 'verbose'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'neat': {
+            'format':'[%(asctime)s] %(message)s',
+            #srftime format
+            'datefmt':'%a %b/%d/%y %I:%M:%S %p',
+        },
+        'verbose':{
+            'format':'[%(asctime)s][%(levelname)s][%(name)s] %(message)s'
+        },
+    },
+
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': formatter,
+        },
+        'file': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': 'ease_log.log',
+            'when': 'midnight',
+            #'interval': 24,
+            'backupCount':100,
+            'formatter': formatter,
+        },
+    },
+    
+    'loggers': {
+        'django': {
+            'handlers': [handler],
+            'level': django_level,
+        },
+        'alert_config_app': {
+            'handlers': [handler],
+            'level': app_level,
+        },
+        'account_mgr_app': {
+            'handlers': [handler],
+            'level': app_level,
+        },
+    },
+}
+
+
 ALLOWED_HOSTS = [
     "134.79.165.105",
     "pswww-dev.slac.stanford.edu",
