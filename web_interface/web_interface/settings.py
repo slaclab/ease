@@ -62,19 +62,22 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+time_stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+logs_folder = "session_logs_" + time_stamp
+os.mkdir(logs_folder)
+
 if DEBUG:
     handler = 'console'
     django_level = 'INFO'
     app_level = 'DEBUG'
     formatter = 'neat'
+
 else:
     handler = 'file'
     django_level = 'INFO'
     app_level = 'WARNING'
     formatter = 'verbose'
-    time_stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    logs_folder = "session_logs_" + time_stamp
-    os.mkdir(logs_folder)
+
 
 LOGGING = {
     'version': 1,
