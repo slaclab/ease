@@ -1,96 +1,71 @@
 {% extends 'base.html' %}
 
 {% block title %}
-{{alert.name}} (Read-only)
+	{{alert.name}} (Read-only)
 {% endblock %}
 
 
 {% block content %}
-<!--pk: {{alert.pk}}
-yay!-->
+	<div class="form-group row">
+		<label for="" class="col-sm-2 col-form-label"><b>Alert:</b></label>
+	</div>
+	
+	<div class="form-group row">
+		<label for="" class="col-sm-3 col-form-label"> Alert Name </label>
+		<div class="col-sm-9"> 
+			<input type="text" value="{{alert.name}}"  class="form-control" required="" readonly>
+		</div>
+	</div>
+	
+	<form action="" method="post">
+		{% csrf_token %}
+		<div class="form-group row">
+			<label for="" class="col-sm-3"> Subscribed </label>
+			<div class="col-sm-9" >
+				{{form.new_subscribe}}
+				<small class="form-text text-muted">{{form.new_subscribe.help_text}}</small>
+			</div>
+		</div>
+		<input class="btn btn-primary" type="submit" value="Submit"/>
+	</form>
 
-    <div class="form-group row">
-        <label for="" class="col-sm-2 col-form-label"><b>Alert:</b></label>
-    </div>
-
-
-
-    <!--ALERT NAME-->
-    <div class="form-group row col-sm-12">
-        <label for="" class="col-sm-2 col-form-label"> Alert Name </label>
-        <div class="col-sm-10"> 
-            <input type="text" value="{{alert.name}}"  class="form-control" required="" readonly>
-        </div>
-    </div>
-<!--OWNERS-->
-<!--     <div class="form-group row col-sm-12"> -->
-<!--         <label for="" class="col-sm-2 col-form-label">Owners</label> -->
-<!--                 <div class="col-sm-10">  -->
-<!--  -->
-<!--             <select multiple class="form-control" id="exampleSelect2" readonly="readonly"> -->
-<!--             {% for owner in alert.owner.all %} -->
-<!--             <option> {{owner.user}} </option> -->
-<!--             {% endfor %} -->
-<!--  -->
-<!--             </select> -->
-<!--         </div> -->
-<!--  -->
-<!--     </div> -->
-
-    <form action="" method="post">
-        {% csrf_token %}
-        <div class="form-group row col-sm-12">
-        <label for="" class="col-sm-2 col-form-label"> Subscribed </label>
-        <!-- This is where the checkbox in readonly page lives-->
-        <div class="col-sm-10" >
-            {{form.new_subscribe}}
-        </div>
-        </div>
-            <input class="btn btn-primary" type="submit" value="Submit"/>
-    </form>
-
-
-
-    <!--TRIGGERS-->
-    <div class="form-group row">
-        <label for="" class="col-sm-2 col-form-label"><b>Triggers:</b></label>
-    </div>
-        <table class="table">
-        <thead>
-        <tr>
-        <th class="w-30">Trigger Name</th>
-        <th class="w-10">Linked PV</th>
-        <th class="w-10">Comparison</th>
-        <th class="w-20">Value</th>
-        <th class="w-10"></th>        </tr>
-        </thead>
-        <tbody id="contents_section">
-            {% for trigger in alert.trigger_set.all %}
-                <tr>
-                <td class="w-30">
-                    <input type="text" value="{{trigger.name}}"  class="form-control" required="" readonly>
-                </td>
-                <td class="w-10">
-                    <input type="text" value="{{trigger.pv}}"  class="form-control" required="" readonly>
-                </td>
-                <td class="w-10">
-                    <input type="text" value="{{trigger.compare}}"  class="form-control" required="" readonly>
-                </td>
-
-                <td class="w-20">
-                    <input type="text" value="{{trigger.value}}"  class="form-control" required="" readonly>                    
-                </td>
-
-                <td class="w-10">
-                </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <br>
-
-
-
-
+	<!--TRIGGERS-->
+	<div class="form-group row">
+		<label for="" class="col-sm-2 col-form-label"><b>Triggers:</b></label>
+	</div>
+	<table class="table">
+		<thead>
+			<tr>
+				<th class="w-30">Trigger Name</th>
+				<th class="w-10">Linked PV</th>
+				<th class="w-10">Comparison</th>
+				<th class="w-20">Value</th>
+				<th class="w-10"></th>
+			</tr>
+		</thead>
+		<tbody id="contents_section">
+			{% for trigger in alert.trigger_set.all %}
+				<tr>
+				<td class="w-30">
+				    <input type="text" value="{{trigger.name}}"  class="form-control" required="" readonly>
+				</td>
+				<td class="w-10">
+				    <input type="text" value="{{trigger.pv}}"  class="form-control" required="" readonly>
+				</td>
+				<td class="w-10">
+				    <input type="text" value="{{trigger.compare}}"  class="form-control" required="" readonly>
+				</td>
+	
+				<td class="w-20">
+				    <input type="text" value="{{trigger.value}}"  class="form-control" required="" readonly>                    
+				</td>
+	
+				<td class="w-10">
+				</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<br>	
 {% endblock %}
 

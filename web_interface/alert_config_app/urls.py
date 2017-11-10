@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^pv_detail/(?P<pk>\d+)/delete/$', views.pv_delete.as_view(), name = 'pv_delete'),
     
     url(r'^alerts_all/$', views.alerts_all.as_view(), name='alerts_page_all'),
-    url(r'^alert_detail/(?P<pk>\d+)/$', views.alert_detail, name='alert_detail'),
+    url(r'^alert_detail/(?P<pk>\d+)/$', views.alert_detail.as_view(), name='alert_detail'),
     url(r'^alert_config/(?P<pk>\d+)/$', views.alert_config.as_view(), name='alert_config'),
     url(r'^alert_create/$', views.alert_config.as_view(), name='alert_create'),
     url(r'^alert_delete/(?P<pk>\d+)/$', views.alert_delete,name='alert_delete'),

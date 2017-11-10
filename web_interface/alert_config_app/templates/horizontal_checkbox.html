@@ -1,0 +1,10 @@
+<div class="form-check">
+	<label class="form-check-label">
+		<input type="{{ widget.type }}" 
+			name="{{ widget.name }}"
+			{% if widget.value != None %} 
+				value="{{ widget.value }}"
+			{% endif %}
+			{% include "django/forms/widgets/attrs.html" %} />
+	</label>
+</div>

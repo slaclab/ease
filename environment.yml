@@ -63,7 +63,7 @@ dependencies:
   - babel==2.4.0
   - certifi==2017.7.27.1
   - chardet==3.0.4
-  - django==1.11.3
+  - django==1.11.6
   - docutils==0.13.1
   - gunicorn==19.7.1
   - idna==2.5

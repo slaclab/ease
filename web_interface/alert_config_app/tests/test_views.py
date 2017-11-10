@@ -169,7 +169,7 @@ class test_alert_config_form(TestCase):
         post_data = {
             "new_lockout_duration":                       "02:33:15",
                         "new_name":                 "new_alert_name",
-                      "new_owners":     str(self.primary.profile.pk),
+                      "new_owners":       str(self.primary.username),
                    "new_subscribe":                             "on",
                 "tg-0-new_compare":                             "<=",
                    "tg-0-new_name":                      "0 trigger",
@@ -203,7 +203,7 @@ class test_alert_config_form(TestCase):
         return response
 
     def test_create_alert(self):
-        """ check that alert is created correctly from this POST requset
+        """ check that alert is created correctly from this POST request
         """
         # Initiate post/get transaction
         response = self.generic_alert_post()
@@ -212,7 +212,7 @@ class test_alert_config_form(TestCase):
         try:
             alert_inst = Alert.objects.get(name="new_alert_name")
         except Exception as E:
-            print(E)
+            #print(E)
             self.fail("Alert not created")
              
         # confirm that the user is added as the owner
@@ -262,26 +262,29 @@ class test_alert_config_form(TestCase):
         )
 
     def test_modify_alert(self):
-        """ check that alert is created correctly from this POST requset
+        """ check that alert is created correctly from this POST request
         """
         # Initiate post/get transaction
         response = self.generic_alert_post(
             new_name = "starting_name",
             **{
                 "new_owners" : [
-                    str(self.primary.profile.pk),
-                    str(self.secondary.profile.pk),
+                    str(self.primary.username) +", "+
+                    str(self.secondary.username),
                 ],
             })
         
-        alert_inst = Alert.objects.get(name="starting_name")
+        try:
+            alert_inst = Alert.objects.get(name="starting_name")
+        except Exception as E:
+            self.fail("Alert not created")
         
         response = self.generic_alert_post(
             pk = alert_inst.pk,
             **{
                 "new_name " : "modified_name",
                 "new_owners" : [
-                    str(self.primary.profile.pk),
+                    str(self.primary.username),
                 ],
                 "new_lockout_duration":"01:15:30",
                 "tg-0-new_compare":-1,
@@ -298,7 +301,6 @@ class test_alert_config_form(TestCase):
         try:
             alert_inst = Alert.objects.get(name="modified_name")
         except Exception as E:
-            print(E)
             self.fail("Alert not created")
         
 
@@ -347,9 +349,68 @@ class test_alert_config_form(TestCase):
             "Trigger not modified"
         )
 
-    
+    def test_non_owner_modification_rejection(self):
+        """ensure that PRs from non-owners will be rejected
+        """
+        
+        # Initiate post/get transaction
+        response = self.generic_alert_post(
+            new_name = "start_name",
+            **{
+                "new_owners" : [
+                    str(self.primary.username)
+                ],
+            })
+        
+        try:
+            alert_inst = Alert.objects.get(name="start_name")
+        except Exception as E:
+            self.fail("Alert not created")
+        
+        self.c.logout()
+        self.c.login(
+            username = self.secondary.username,
+            password = self.secondary_pass,
+        )
+        
+        response = self.generic_alert_post(
+            pk = alert_inst.pk,
+            **{
+                "new_name " : "modified_name",
+                "new_owners" : [
+                    str(self.primary.username),
+                ],
+                "new_lockout_duration":"01:15:30",
+                "tg-0-new_compare":-1,
+                "tg-0-new_name":None,
+                "tg-0-new_value":None,
+                "tg-0-new_pv":-1,
+                "tg-1-new_compare":"==",
+                "tg-1-new_name":"generic_name",
+                "tg-1-new_value":"5",
+                "tg-1-new_pv":-1,
+            }    
+        )
+
+        self.assertEqual(
+            alert_inst.name,
+            "start_name",
+            "Name has been allowed to change"
+        )
+
+
+        self.assertTrue(
+            ('/alert/alert_detail/'+str(alert_inst.pk)+'/',302) in
+                response.redirect_chain,
+            "Failed to redirect to detail page"
+        )
+
+
+
+
+
     def test_create_alert_bad_owners(self):
-        """ check that alert is created correctly from this POST requset
+        """ check that alert is created correctly from this POST request
         """
         # Initiate post/get transaction
         response = self.generic_alert_post(
@@ -368,3 +429,137 @@ class test_alert_config_form(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'alert_config.html')
         self.assertContains(response, 'owner_redirect_name')
+
+
+class test_alert_detail_form(TestCase):
+    """Collection of tests inspecting the detail_alert form 
+    """
+    @classmethod
+    def setUpTestData(cls):
+        cls.primary = User.objects.create_user("test")
+        cls.primary_pass = "tests"
+        cls.primary.set_password(cls.primary_pass)
+        cls.primary.save()
+
+        cls.secondary = User.objects.create_user("test2")
+        cls.secondary_pass = "tests"
+        cls.secondary.set_password(cls.secondary_pass)
+        cls.secondary.save()
+        
+        cls.alerts = []
+        for x in range(2):
+            cls.alerts.append(Alert())
+            cls.alerts[x].name = "alert_"+str(x)
+            cls.alerts[x].save()
+            cls.alerts[x].owner.add(cls.secondary.profile)
+            cls.alerts[x].save() 
+
+        cls.factory = RequestFactory()
+        cls.c = Client()
+    
+    def setUp(self):
+        """Log the test user in before each test method.
+        """
+        self.c.login(
+           username = self.primary.username,
+           password = self.primary_pass)
+
+    def tearDown(self):
+        """Log the test user out after every test method.
+        """
+        self.c.logout()
+
+    def test_exists(self):
+        """Ensure the detail page draws correctly for non-owners.
+        """
+        response = self.c.get(
+            '/alert/alert_detail/'+str(self.alerts[0].pk)+'/',
+            follow=True)
+        self.assertEqual(response.status_code, 200, "Error code reported")
+        self.assertTemplateUsed(response,'alert_detail.html', "Wrong Template")
+
+    def test_redirection(self):
+        """Ensure owners are redirected to the config page
+        """
+        self.c.logout()
+        self.c.login(
+            username = self.secondary.username,
+            password = self.secondary_pass,
+        )
+        
+        response = self.c.get(
+            '/alert/alert_detail/'+str(self.alerts[0].pk)+'/',
+            follow=True)
+        self.assertTrue(
+            ('/alert/alert_config/'+str(self.alerts[0].pk)+'/',302) in
+                response.redirect_chain,
+            "Failed to redirect to configuration page"
+        )
+
+    def test_post_request(self):
+        """Ensure PRs accept changes from owners are rejected
+        """
+        self.c.logout()
+        self.c.login(
+            username = self.secondary.username,
+            password = self.secondary_pass,
+        )
+
+        path = '/alert/alert_detail/'+str(self.alerts[0].pk)+'/'
+        post_data = { 'new_subscribe':'on' }
+        response = self.c.post(
+            path,
+            data=post_data,
+            follow=True
+        )
+        self.assertFalse(
+            self.secondary.profile in self.alerts[0].subscriber.all(),
+            "subscriber added",
+        )
+
+        self.alerts[0].subscriber.add(self.secondary.profile)
+        
+        path =  '/alert/alert_detail/'+str(self.alerts[0].pk)+'/'
+        post_data = {}
+        response = self.c.post(
+            path,
+            data=post_data,
+            follow=True
+        )
+        
+        self.assertTrue(
+            self.secondary.profile in self.alerts[0].subscriber.all(),
+            "subscriber removed",
+        )
+
+
+    def test_post_request_non_owner(self):
+        """ensure PRs from non-owners are accepted
+        """
+        
+        path = '/alert/alert_detail/'+str(self.alerts[0].pk)+'/'
+        post_data = { 'new_subscribe':'on' }
+        response = self.c.post(
+            path,
+            data=post_data,
+            follow=True
+        )
+        self.assertTrue(
+            self.primary.profile in self.alerts[0].subscriber.all(),
+            "subscriber not added",
+        )
+
+        path =  '/alert/alert_detail/'+str(self.alerts[0].pk)+'/'
+        post_data = {}
+        response = self.c.post(
+            path,
+            data=post_data,
+            follow=True
+        )
+        
+        self.assertFalse(
+            self.primary.profile in self.alerts[0].subscriber.all(),
+            "subscriber not removed",
+        )
+
+

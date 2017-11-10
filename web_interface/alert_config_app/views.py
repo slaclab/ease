@@ -14,7 +14,7 @@ from django.views.generic.edit import (CreateView, UpdateView, DeleteView)
 from account_mgr_app.models import Profile
 import account_mgr_app
 from .models import Alert, Pv, Trigger #PVname #Does this allow you to say "model = Pv....model = Alert..."
-from .forms import configAlert, configTrigger, deleteAlert, subscribeAlert, createPv
+from .forms import configAlert, configTrigger, deleteAlert, detailAlert, createPv
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -209,31 +209,55 @@ class pv_create(generic.edit.CreateView):
 #     context_object_name='alert'
 #     template_name = 'alert_detail.html'
 
-@login_required()
-def alert_detail(request,pk,*args,**kwargs):
-    """Draws read-only screen for individual alert
-
-    Args
-    ____
-        pk : int
-            DB index of the displayed alert. PK is sent automatically from the 
-            regex in url. 
-
-    Note
-    ____
-        It may be better to rewrite this function as a class so long as the 
-        class can support the dynamic number of triggers.
-    """
-    try:
-        alert_inst = get_object_or_404(Alert,pk=pk)
-    except Http404:
-        return HttpResponseRedirect(reverse('alerts_page_all'))
 
 
+@method_decorator(login_required, name = 'dispatch')
+class alert_detail(View):
+    def get(self, request, *args, **kwargs):
+        self.pk = kwargs.get("pk",None)
+        try:
+            alert_inst = get_object_or_404(Alert,pk=self.pk)
+        except Http404:
+            return HttpResponseRedirect(reverse('alerts_page_all'))
+        
+        if request.user.profile in alert_inst.owner.all():
+            return HttpResponseRedirect(reverse(
+                    'alert_config',
+                    kwargs={'pk':self.pk}))
 
-    if request.method == "POST":
+        subscribed = False
+        if request.user.profile in alert_inst.subscriber.all():
+            subscribed = True
+        form = detailAlert(
+            initial = {
+                'new_subscribe': subscribed
+            }
+        )
 
-        form = subscribeAlert(request.POST)
+        context = {
+            'alert': alert_inst,
+            'form':form,
+        }
+    
+        return render( 
+            request, 
+            'alert_detail.html', 
+            context
+        )
+
+    def post(self, request, *args, **kwargs):
+        self.pk = kwargs.get("pk",None)
+        try:
+            alert_inst = get_object_or_404(Alert,pk=self.pk)
+        except Http404:
+            return HttpResponseRedirect(reverse('alerts_page_all'))
+        
+        if request.user.profile in alert_inst.owner.all():
+            return HttpResponseRedirect(reverse(
+                    'alert_config',
+                    kwargs={'pk':self.pk}))
+
+        form = detailAlert(request.POST)
         if form.is_valid():
             if form.cleaned_data.get('new_subscribe'):
                 try:
@@ -248,33 +272,7 @@ def alert_detail(request,pk,*args,**kwargs):
                     # instance already removed -- pass
                     pass
 
-
             return HttpResponseRedirect(reverse('alerts_page_all'))
-
-
-    else:
-        subscribed = False
-        if request.user.profile in alert_inst.subscriber.all():
-            subscribed = True
-        form = subscribeAlert(
-            initial = {
-                'new_subscribe': subscribed
-            }
-        )
-
-    context = {
-        'alert': alert_inst,
-        'form':form,
-    }
-
-    return render( 
-        request, 
-        'alert_detail.html', 
-        context
-    )
-
-
-
 
 
 @method_decorator(login_required, name = 'dispatch')
@@ -310,12 +308,23 @@ class alert_config(View):
             else:
                 subscribed = False
             # prepare initial values for form fields showing current values
+            
+            initial_owner_list = User.objects.filter(
+                profile__in=alert_inst.owner.all()
+            )
+
+            initial_usernames = [usr.username for usr in initial_owner_list]
+
+            initial_owners = ", ".join(sorted(initial_usernames))
+
             alert_initial = {
                 'new_name': alert_inst.name,
-                'new_owners':[x.pk for x in alert_inst.owner.all()],
+                'new_owners': initial_owners,
                 'new_subscribe': subscribed,
                 'new_lockout_duration':alert_inst.lockout_duration,    
             }
+
+
             trigger_initial = [
                 {   
                     'new_name': l.name,
@@ -333,6 +342,8 @@ class alert_config(View):
             initial = trigger_initial,
             prefix='tg'
         )
+        
+        all_usernames = sorted([usr.username for usr in User.objects.all()])
 
         return render(
             request = request, 
@@ -342,6 +353,7 @@ class alert_config(View):
                 'triggerForm':triggerForm,
                 'alert':alert_inst,
                 'create':create,
+                'usernames': all_usernames,
             },
         )
 
@@ -363,7 +375,7 @@ class alert_config(View):
                 print(form.cleaned_data)
         # DEBUG ONLY --------------------------------------
         
-       
+        
         self.pk = kwargs.get("pk",None)
         triggerFormSet = formset_factory(configTrigger)
         if self.pk == None:
@@ -384,6 +396,11 @@ class alert_config(View):
                 alert_inst = get_object_or_404(Alert,pk=self.pk)
             except Http404:
                 return HttpResponseRedirect(reverse('alert_create'))
+
+            if request.user.profile not in alert_inst.owner.all():
+                return HttpResponseRedirect(reverse(
+                        'alert_detail',
+                        kwargs={'pk':self.pk}))        
          
         if form.is_valid():
             
@@ -440,7 +457,7 @@ class alert_config(View):
                 pass
                 #print("UPDATE FAILURE")
         else:
-            #print(form.errors.as_data()['new_owners']) 
+            all_usernames = sorted([usr.username for usr in User.objects.all()])
             return render(
                 request = request, 
                 template_name = "alert_config.html", 
@@ -449,12 +466,9 @@ class alert_config(View):
                     'triggerForm':triggerForm,
                     'alert':alert_inst,
                     'create':create,
+                    'usernames':all_usernames,
                 },
             )
-            #return HttpResponseRedirect(reverse(
-            #        'alert_config',
-            #        kwargs={'pk':self.pk}
-            #))
 
         return HttpResponseRedirect(reverse('alerts_page_all'))
        

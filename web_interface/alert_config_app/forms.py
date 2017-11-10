@@ -18,6 +18,8 @@ from account_mgr_app.models import Profile
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 
+from .widgets import HorizontalCheckbox
+
 
 class configTrigger(forms.Form):
     """Define the fields for an individual trigger
@@ -149,18 +151,6 @@ class configAlert(forms.Form):#ModelForm
             post_request = args[0]
         except IndexError:
             post_request = False
-            
-        self.fields['new_owners'] = forms.MultipleChoiceField(
-            label = 'Owners',
-            # use this to sort alphabetiaclly if necessary
-            # sorted([(np.random.random(),np.random.random()) for x in range(10)],key=lambda s: s[1])
-            choices = [ (x.pk,x.user.username) for x in Profile.objects.all()],
-            widget = forms.CheckboxSelectMultiple(
-                attrs = {
-                    'class':'form-control',
-                }
-            )
-        )
 
 
     new_name = forms.CharField(
@@ -171,22 +161,24 @@ class configAlert(forms.Form):#ModelForm
                 'class':'form-control',
                 'type':'text',
             }
-        )
+        ),
+        help_text = str(Alert.name_max_length) + " character limit"
     )
 
     new_subscribe = forms.BooleanField(
-        label = "Subscribed",
+        label = "Subscribe",
         required = False,
-        widget = forms.CheckboxInput(
+        widget = HorizontalCheckbox(
             attrs = {
-                'class':'form-check-input',
+                'class':'form-check-input position-static',
                 'type':'checkbox',
             }
-        )
+        ),
+        help_text = 'Check this box to receive alerts',
     )
 
     new_lockout_duration = forms.DurationField(
-        label = "Delay Between Successive Alerts",
+        label = "Lockout delay",
         required = False,
         widget = forms.TimeInput(
             attrs = {
@@ -194,40 +186,65 @@ class configAlert(forms.Form):#ModelForm
                 'type':'text',
                 'placeholder':'dd hh:mm:ss',
             }
-        )
+        ),
+        help_text = "Time delay between successive alerts"
     )
-
+    
+    new_owners = forms.CharField(
+        label = 'Owners',
+        strip = True,
+        widget = forms.Textarea(
+            attrs = {
+                'class':'form-control',
+                'rows':'5',
+            }
+        ),
+        help_text = "Users who can edit this alert"
+    )
+    
     def clean_new_owners(self):
-        """Validate the new set of owners
+        """Receive input string for the new_owners field and return users list
 
         Returns
         -------
-        [account_mgr_app.models.Profile]
+        list of Django.db.models.query.Queryset
+            This queryset contains the list of profiles (NOT User objects) to
+            have ownership of this Alert.
+
         """
-        pks = self.cleaned_data['new_owners']
-        if len(pks) == 0:
-            raise forms.ValidationError("Alerts must have at least one owner")
+        # data is received as a single sting
+        data = self.cleaned_data['new_owners']
         
-        pks = [int(pk) for pk in pks]
+        # produce list of individual usernames from textbox
+        name_list = [name.strip() for name in data.split(",")]
+        name_set = set(name_list)
+        name_set = name_set - set(['',' '])
 
-        owners_list = []
+        # search database 
+        profile_list = Profile.objects.filter(user__username__in=name_set)
 
-        for pk in pks:
-            try:
-                owners_list.append(Profile.objects.get(pk=pk))
-            except Exception as E:
-                print(type(E),type(E).__name__)
+        # find lists of accepted and rejected usernames for reporting errors
+        user_list = User.objects.filter(profile__in=profile_list)
+        accepted_name_list = [ name['username'] for name in user_list.values()]
+        rejected_name_set = name_set - set(accepted_name_list)
+        if rejected_name_set:
+            error_msg = ""
+            for rejected_name in rejected_name_set:
+                error_msg += (rejected_name + ", ")
 
-        
-        return owners_list
+            raise forms.ValidationError(
+                "Usernames "+error_msg+"Not recognized"
+            )
+
+        return profile_list 
 
     def clean_new_subscribe(self):
         """Validate the subscription option
 
         Returns
         -------
-            bool
-                True if the user has selected the subscriber option
+        bool
+            True if the user has selected the subscriber option
 
         Note
         ----
@@ -247,28 +264,28 @@ class configAlert(forms.Form):#ModelForm
         return data
 
 
-class subscribeAlert(forms.Form):
+class detailAlert(forms.Form):
     """Define the fields for an alert. These fields are presented when the user
     does NOT own this alert. The only option is to subscribe.
     """
     class Meta:
         model = Alert
-
+    
     new_subscribe = forms.BooleanField(
-        label = "Subscribed",
+        label = "Subscribe",
         required = False,
-        widget = forms.CheckboxInput(
+        widget = HorizontalCheckbox(
             attrs = {
-                'class':'form-check-input',
+                'class':'form-check-input position-static',
                 'type':'checkbox',
             }
-        )
+        ),
+        help_text = 'Check this box to receive alerts',
     )
     def clean_new_subscribe(self):
-        
         if self.cleaned_data['new_subscribe']:
             data = True
-        else:
+        elif not self.cleaned_data['new_subscribe']:
             data = False
 
         return data
