@@ -250,9 +250,13 @@ EMAIL_HOST = 'psmail'
 EMAIL_PORT = 25
 EMAIL_HOST_USER = 'EASE'
 DEFAULT_FROM_EMAIL = 'EASE'
+
+
 if not DEBUG:
     LOGIN_REDIRECT_URL = FORCE_SCRIPT_NAME + '/alert/title'
+    LOGIN_URL = FORCE_SCRIPT_NAME + '/accounts/login'
 else:
     LOGIN_REDIRECT_URL = '/alert/title'
+    LOGIN_URL = '/accounts/login'
 
 ACCOUNT_ACTIVATION_DAYS = 7
