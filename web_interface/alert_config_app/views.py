@@ -13,7 +13,7 @@ from django.views.generic.edit import (CreateView, UpdateView, DeleteView)
 
 from account_mgr_app.models import Profile
 import account_mgr_app
-from .models import Alert, Pv, Trigger #PVname #Does this allow you to say "model = Pv....model = Alert..."
+from .models import Alert, Pv, Trigger 
 from .forms import configAlert, configTrigger, deleteAlert, detailAlert, createPv
 
 from django.contrib.auth.decorators import login_required
@@ -35,45 +35,30 @@ from django.db import transaction, IntegrityError, models
 from django.contrib import messages
 
 
-
-# login_url = reverse('login')
-# login_url = '/acct/login/'
-
-
-
-# Create your views here.
 @login_required()
 def list_all(request):
     """Currently unused - Draw a page with a full list of PVs and Alerts.
 
     Attributes
-    __________
-        request : django.http.HttpRequest
+    ----------
+    request : django.http.HttpRequest
 
+    
     Returns
     -------
-        render : django.http.HttpResponse
+    django.http.HttpResponse
     """
     context = {}
     context['pv_list'] = Pv.objects.all()
     context['alert_list'] = Alert.objects.all()
     context['user'] = request.user
     return render( request, 'debug_list_all.html', context)
-    #return HttpResponse("<h1>Page is alive</h1>")
 
 
-#@login_required()
-#def title(request):
-#    context = {}
-#    context['user'] = request.user
-#    return render( request, 'title.html', context)
-#------------------------------------------------------------------------------
 @method_decorator(login_required, name = 'dispatch')
 class Title_page(generic.ListView):
-    #model = Alert
     template_name = 'title.html'
     form_class = configAlert
-#    context_object_name='alert'
     paginate_by = 30
     
     def title(request):
@@ -84,30 +69,8 @@ class Title_page(generic.ListView):
     def get_queryset(self):
         new_context = Alert.objects.all().order_by('name')
         return new_context
-        #return render(request, self.template_name, {'new_context': new_context })
-    
-    
-#    def form_valid(self,form):
-#        # form.cleaned_data.get('new_name')
-#        form.instance.name = form.data['new_subscribe']
-#
-#        return super().form_valid(form)
-#------------------------------------------------------------------------------
+   
 
-
-
-# def pvs(request):
-#     context = {}
-#     context['pv_list'] = Pv.objects.all()
-#     context['user'] = request.user
-#     return render( request, 'pvs.html', context)
-
-# def alerts(request):
-#     context = {}
-#     context['alert_list'] = Alert.objects.all()
-#     context['user'] = request.user
-#     return render( request, 'alerts.html', context)
-    
 @method_decorator(login_required, name = 'dispatch')
 class alerts_all(generic.ListView):
     """Currently unused - Draw a page with a full list of PVs and Alerts
@@ -130,6 +93,7 @@ class alerts_all(generic.ListView):
         if query:
             new_context = new_context.filter(name__icontains=query)#
         return new_context
+
 
 @method_decorator(login_required, name = 'dispatch')
 class pvs_all(generic.ListView):
@@ -156,6 +120,7 @@ class pvs_all(generic.ListView):
             new_context = new_context.filter(name__icontains=query) 
         return new_context
 
+
 @method_decorator(login_required, name = 'dispatch')
 class pv_detail(generic.DetailView, UpdateView):
     model = Pv
@@ -175,7 +140,6 @@ class pv_delete(DeleteView):
     model = Pv
     template_name = 'pv_delete.html'
     success_url = reverse_lazy('pvs_page_all')
-
 
 
 @method_decorator(login_required, name = 'dispatch')
@@ -201,14 +165,6 @@ class pv_create(generic.edit.CreateView):
         form.instance.name = form.cleaned_data.get('new_name')
         form.save()
         return super(pv_create, self).form_valid(form)
-
-
-# @method_decorator(login_required, name = 'dispatch')
-# class alert_detail(generic.DetailView):
-#     model = Alert
-#     context_object_name='alert'
-#     template_name = 'alert_detail.html'
-
 
 
 @method_decorator(login_required, name = 'dispatch')
@@ -520,37 +476,3 @@ def alert_delete(request,pk=None,*args,**kwargs):
         {'form':deleteForm,'alert':alert_inst},
     )
 
-
-#def profile(request):
-#    args = {'user': request.user}
-#    return render(request, 'profile.html', args)
-#    
-#def edit_profile(request):
-#    if request.method == 'POST':
-#        form = EditProfileForm(request.POST, instance=request.user)
-#        
-#        if form.is_valid():
-#            form.save()
-#            return redirect('/alert/profile')
-#            
-#    else:
-#        form = EditProfileForm(instance=request.user)
-#        args = {'form': form}
-#        return render(request, 'edit_profile.html', args)
-#    
-#    
-#def change_password(request):
-#    if request.method == 'POST':
-#        form = PasswordChangeForm(data=request.POST, user=request.user)
-#        
-#        if form.is_valid():
-#            form.save()
-#            update_session_auth_hash(request, form.user)
-#            return redirect('/alert/profile')
-#        else:
-#            return redirect('/alert/profile/change_password')
-#    else:
-#        form = PasswordChangeForm(user=request.user)
-#        args = {'form': form}
-#        return render(request, 'change_password.html', args)
-#        
