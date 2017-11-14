@@ -58,7 +58,8 @@ DEBUG = True
 time_stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
 logs_folder_base = "session_logs_" + time_stamp
 logs_folder = logs_folder_base 
-idx = 0 
+idx = 0
+
 while os.path.exists(logs_folder):
     logs_folder = logs_folder_base + "_" + str(idx)
     idx += 1
