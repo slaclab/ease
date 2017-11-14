@@ -56,9 +56,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = True
 
 time_stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-logs_folder = "session_logs_" + time_stamp
-if not os.path.exists(logs_folder):
-    os.mkdir(logs_folder)
+logs_folder_base = "session_logs_" + time_stamp
+logs_folder = logs_folder_base 
+idx = 0 
+while os.path.exists(logs_folder):
+    logs_folder = logs_folder_base + "_" + str(idx)
+    idx += 1
+
+os.mkdir(logs_folder)
+
+logfile_name = os.path.join(logs_folder, str(os.getpid())+'.log')
 
 if DEBUG:
     handler = 'console'
@@ -94,7 +101,7 @@ LOGGING = {
         },
         'file': {
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(logs_folder, str(os.getpid())+'.log'),
+            'filename': logfile_name,
             'when': 'midnight',
             #'interval': 24,
             'backupCount':500,
