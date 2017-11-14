@@ -12,3 +12,4 @@ pid.txt
 gecko*
 .coverage
 .cache
+web_interface/session_logs*

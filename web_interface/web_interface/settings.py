@@ -57,7 +57,8 @@ DEBUG = True
 
 time_stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
 logs_folder = "session_logs_" + time_stamp
-os.mkdir(logs_folder)
+if not os.path.exists(logs_folder):
+    os.mkdir(logs_folder)
 
 if DEBUG:
     handler = 'console'
@@ -93,7 +94,7 @@ LOGGING = {
         },
         'file': {
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(logs_folder,'log.log'),
+            'filename': os.path.join(logs_folder, str(os.getpid())+'.log'),
             'when': 'midnight',
             #'interval': 24,
             'backupCount':500,
