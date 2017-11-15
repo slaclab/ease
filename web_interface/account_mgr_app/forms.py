@@ -44,7 +44,7 @@ class EditProfileForm(UserForm):
     class Meta:
         model = User 
         #exclude = {'password',}
-        fields = ('username', 'first_name', 'last_name', 'email')
+        fields = ('first_name', 'last_name', 'email')
 
 
 
