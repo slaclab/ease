@@ -6,7 +6,7 @@ var viewerVars = {};// This is one of the integration points with the server.
 
 // This should default to a path relative location that works from the appliance UI.
 // To develop/debug, override this to a absolute URL of the server with the data you are going to use for debugging/developing.
-viewerVars.serverURL = "../../data";
+viewerVars.serverURL = "https://pswww.slac.stanford.edu/archiveviewer/data";
 
 // User typed a pattern, we search for PV's matching this pattern.
 function searchForPVsMatchingPattern() {
