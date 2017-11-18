@@ -4,6 +4,7 @@
 	{% load static %}
 	<script src="{% static 'dynamic_forms.js' %}"></script>
 	<script src="{% static 'search_helper.js' %}"></script>
+	<script src="{% static 'pv_search.js' %}"></script>
 {% endblock %}
 
 {% block script %}
@@ -24,6 +25,20 @@
 			searcher.prepare_document();
 		}
 	);
+		<!-- PV Searching Modal function -->
+	$(
+		function () {
+			$('#searchAndAddPVsModal').on('hidden.bs.modal', addSelectedSearchPVs);
+			$("#pvNamePattern").keydown(function(e) {
+				if (e.keyCode == 13) {
+					e.preventDefault();
+					searchForPVsMatchingPattern();
+				}
+			});
+			$("#pvNameSearchIcon").click(function() {
+				searchForPVsMatchingPattern();
+		});
+	});
 
 	
 {% endblock %}
@@ -68,7 +83,7 @@
 			<thead>
 				<tr>
 					<th class="w-30">Trigger Name</th>
-					<th class="w-10">Linked PV</th>
+					<th class="w-10">Trigger PVs</th>
 					<th class="w-10">Comparison</th>
 					<th class="w-20">Value</th>
 					<th class="w-10"></th>
@@ -78,7 +93,10 @@
 				{% for entry in triggerForm %}
 					<tr>
 						<td class="w-30">{{ entry.new_name }}</td>
-						<td class="w-10">{{ entry.new_pv }}</td>
+						<td class="w-10"><!--{{ entry.new_pv }} -->
+							<!--  Search and add PVs  -->
+							<button type="button" class="btn btn-info" data-toggle="modal" data-target="#searchAndAddPVsModal">Search and Add PVs</button>               			
+						</td>
 						<td class="w-10">{{ entry.new_compare }}</td>
 						<td class="w-20">{{ entry.new_value }}</td>
 						<td class="w-10">
@@ -94,5 +112,39 @@
 		{% endif %}
 	</form>
 	<br>
+
+	<!-- Trigger PV Addition Modal -->
+	<div id="searchAndAddPVsModal" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+	  
+		  <!-- Modal content-->
+		  <div class="modal-content">
+			<div class="modal-header">
+					<h4 class="modal-title">Trigger PVs</h4>
+			  <button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal" role="form">
+						<div class="form-group">
+							<div class='input-group'>
+							<span class="input-group-addon">PV Name Pattern:</span>
+							<input type="text" class="form-control" id="pvNamePattern" placeholder="PV:Name:*"/>
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-search" aria-hidden="true" id="pvNameSearchIcon"></span>
+							</span>
+							</div>
+						</div>
+						</form>
+						<div id="pvNameSearchMatchingError"></div>
+							<ul class="list-group" id="pvNameSearchMatchingList">
+							</ul>
+			</div>
+			<div class="modal-footer">
+			  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		  </div>
+	  
+		</div>
+	  </div>
 {% endblock %}
 
