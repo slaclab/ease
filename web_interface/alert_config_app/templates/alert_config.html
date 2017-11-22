@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+
+
 {% block head_extra %}
 	{% load static %}
 	<script src="{% static 'dynamic_forms.js' %}"></script>
@@ -37,7 +39,7 @@
 		<!-- PV Searching Modal function -->
 	$(
 		function () {
-			$('#searchAndAddPVsModal').on('hidden.bs.modal', addSelectedSearchPVs);
+			<!-- $('#searchAndAddPVsModal').on('hidden.bs.modal', addSelectedSearchPVs); -->
 			$("#pvNamePattern").keydown(function(e) {
 				if (e.keyCode == 13) {
 					e.preventDefault();
@@ -122,7 +124,7 @@
 	</form>
 	<br>
 
-	<!-- Trigger PV Addition Modal -->
+	<!-- Trigger PV Modal -->
 	<div id="searchAndAddPVsModal" class="modal fade" role="dialog">
 		<div class="modal-dialog">
 	  
