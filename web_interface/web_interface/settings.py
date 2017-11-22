@@ -122,11 +122,11 @@ ALLOWED_HOSTS = [
     "134.79.165.105",
     "pswww-dev.slac.stanford.edu",
     "198.129.113.193",
-    "127.0.0.1"    
+    "127.0.0.1"
 ]
 if DEBUG:
     ALLOWED_HOSTS.append("127.0.0.1")
-
+    ALLOWED_HOSTS.append("192.168.205.3")
 
 if not DEBUG:
     FORCE_SCRIPT_NAME = '/ease'
