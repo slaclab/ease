@@ -342,8 +342,11 @@ class alert_config(View):
             initial = trigger_initial,
             prefix='tg'
         )
-        
-        all_usernames = sorted([usr.username for usr in User.objects.all()])
+        all_usernames =  [
+            u.username + " (" + u.last_name + ", " + u.first_name + ")" 
+            for u in User.objects.all()
+        ]
+        all_usernames = sorted(all_usernames)
 
         return render(
             request = request, 
