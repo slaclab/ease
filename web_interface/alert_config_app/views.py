@@ -313,7 +313,12 @@ class alert_config(View):
                 profile__in=alert_inst.owner.all()
             )
 
-            initial_usernames = [usr.username for usr in initial_owner_list]
+            #initial_usernames = [usr.username for usr in initial_owner_list]
+            
+            initial_usernames =  [
+                u.username + " (" + u.last_name + ", " + u.first_name + ")" 
+                for u in initial_owner_list
+            ]
 
             initial_owners = ", ".join(sorted(initial_usernames))
 
