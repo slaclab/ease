@@ -259,9 +259,6 @@ class configAlert(forms.Form):#ModelForm
         
         # produce list of individual usernames from textbox
         name_set = self.parse_usernames(data)
-        #name_list = [name.strip() for name in data.split(",")]
-        #name_set = set(name_list)
-        #name_set = name_set - set(['',' '])
 
         # search database 
         profile_list = Profile.objects.filter(user__username__in=name_set)
