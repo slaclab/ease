@@ -7,6 +7,7 @@ var viewerVars = {};// This is one of the integration points with the server.
 // This should default to a path relative location that works from the appliance UI.
 // To develop/debug, override this to a absolute URL of the server with the data you are going to use for debugging/developing.
 viewerVars.serverURL = "https://pswww.slac.stanford.edu/archiveviewer/retrieval";
+//Set up an ssh tunnel to pslogin -L 8700:pswww.slac.stanford.edu:80
 viewerVars.serverURL = "http://localhost:8700/archiveviewer/retrieval";//remote work with port forwarding
 
 // User typed a pattern, we search for PV's matching this pattern.
@@ -34,4 +35,12 @@ function searchForPVsMatchingPattern() {
 			}
 		});
 	}
+}
+
+function addSelectedSearchPVs(e) {
+	var selectedPVs = [];
+	$("#pvNameSearchMatchingList li.list-group-item-info").each(function(index) { selectedPVs.push($(this).text())});
+	// if(selectedPVs.length > 0) { addTraceForNewPVs(selectedPVs); }
+	console.log("Selected PVs"+selectedPVs);
+	$("#pvNameSearchMatchingList").empty();
 }
