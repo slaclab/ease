@@ -49,12 +49,9 @@ class configTrigger(forms.Form):
             label = 'PV name',
             # use this to sort alphabetiaclly if necessary
             # sorted([(np.random.random(),np.random.random()) for x in range(10)],key=lambda s: s[1])
-            choices = [(-1,None)] + [ (x.pk,x.name) for x in Pv.objects.all()],
+            #choices = [(-1,None)] + [ (x.pk,x.name) for x in Pv.objects.all()],
             # choices = ["a,"b"],
-            widget = forms.Select(
-                attrs = {
-                    'class':'custom-select',
-                }
+            widget = forms.HiddenInput(
             )
         )
     
@@ -102,7 +99,29 @@ class configTrigger(forms.Form):
         #         code='duplicate_links'
         #     )
         return data
+        '''# data is received as a single sting
+        data = self.cleaned_data['new_owners']
+        
+        # produce list of individual usernames from textbox
+        name_list = [name.strip() for name in data.split(",")]
+        name_set = set(name_list)
+        name_set = name_set - set(['',' '])
 
+        # search database 
+        profile_list = Profile.objects.filter(user__username__in=name_set)
+
+        # find lists of accepted and rejected usernames for reporting errors
+        user_list = User.objects.filter(profile__in=profile_list)
+        accepted_name_list = [ name['username'] for name in user_list.values()]
+        rejected_name_set = name_set - set(accepted_name_list)
+        if rejected_name_set:
+            error_msg = ""
+            for rejected_name in rejected_name_set:
+                error_msg += (rejected_name + ", ")
+
+            raise forms.ValidationError(
+                "Usernames "+error_msg+"Not recognized"
+            )'''
     def clean_new_pv(self):
         data = self.cleaned_data['new_pv']
         if data == str(-1):
