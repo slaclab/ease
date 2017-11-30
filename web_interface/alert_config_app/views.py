@@ -269,7 +269,11 @@ class alert_config(View):
                 profile__in=alert_inst.owner.all()
             )
 
-            initial_usernames = [usr.username for usr in initial_owner_list]
+            
+            initial_usernames =  [
+                u.username + " (" + u.last_name + ", " + u.first_name + ")" 
+                for u in initial_owner_list
+            ]
 
             initial_owners = ", ".join(sorted(initial_usernames))
 
@@ -298,8 +302,11 @@ class alert_config(View):
             initial = trigger_initial,
             prefix='tg'
         )
-        
-        all_usernames = sorted([usr.username for usr in User.objects.all()])
+        all_usernames =  [
+            u.username + " (" + u.last_name + ", " + u.first_name + ")" 
+            for u in User.objects.all()
+        ]
+        all_usernames = sorted(all_usernames)
 
         return render(
             request = request, 
