@@ -30,7 +30,7 @@
 		<!-- PV Searching Modal function -->
 	$(
 		function () {
-			<!-- $('#searchAndAddPVsModal').on('hidden.bs.modal', addSelectedSearchPVs); -->
+			$('#searchAndAddPVsModal').on('hidden.bs.modal', addSelectedSearchPVs);
 			$("#pvNamePattern").keydown(function(e) {
 				if (e.keyCode == 13) {
 					e.preventDefault();
@@ -97,7 +97,7 @@
 						<td class="w-30">{{ entry.new_name }}</td>
 						<td class="w-10"><!--{{ entry.new_pv }} -->
 							<!--  Search and add PVs  -->
-							<button type="button" class="btn btn-info" data-toggle="modal" data-target="#searchAndAddPVsModal">Search and Add PVs</button>               			
+							<button type="button" class="btn btn-info" data-toggle="modal" data-target="#searchAndAddPVsModal">Search and Add PVs</button>
 						</td>
 						<td class="w-10">{{ entry.new_compare }}</td>
 						<td class="w-20">{{ entry.new_value }}</td>
@@ -138,8 +138,8 @@
 						</div>
 						</form>
 						<div id="pvNameSearchMatchingError"></div>
-							<ul class="list-group" id="pvNameSearchMatchingList">
-							</ul>
+						<ul class="list-group" id="pvNameSearchMatchingList">
+						</ul>
 			</div>
 			<div class="modal-footer">
 			  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
