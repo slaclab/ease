@@ -122,6 +122,28 @@ bugging after changes</p>
 </div>
 </dd></dl>
 
+<dl class="staticmethod">
+<dt id="alert_config_app.forms.configAlert.parse_usernames">
+<em class="property">static </em><code class="descname">parse_usernames</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#alert_config_app.forms.configAlert.parse_usernames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receive string of usernames separated by commas, first/last
+optional and extract the username strings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>str</em>) – This takes a string containing the usernames. Usernames must be
+comma separated and may optionally be followed by  ‘(last_name,
+first_name’. The first and last names are not checked, they are
+only present for user readability and will be removed</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of username strings.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-obj docutils literal"><span class="pre">set</span></code> of <code class="xref py py-obj docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
