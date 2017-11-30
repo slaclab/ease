@@ -22,6 +22,9 @@
 			];
 			var searcher = new search_helper(name_list,"id_new_owners");
 			searcher.prepare_document();
+
+			var trigger_mgr = new df_controller(dfc_prefix,dfc_fields,dfc_replace);
+			trigger_mgr.prepare_document();
 		}
 	);
 

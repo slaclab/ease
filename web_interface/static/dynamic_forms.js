@@ -1,6 +1,34 @@
 
 
 
+
+
+class df_controller{
+    constructor(prefix, target_fields, replacements){
+        this.prefix = prefix;
+        this.target_fields = target_fields;
+        this.replacements = replacements;
+
+        // inform developer of arg length issue
+        if (this.target_fields.length != this.replacements.length){
+            throw "target_fields and replacments mush have same length";
+        }    
+    }
+
+    other_function(){
+        console.log("other function run succesfully")
+    }
+
+    prepare_document(){
+        this.other_function();
+        console.log("preparing dfc");
+        console.log("Has this line changed?");
+    }
+
+};
+
+
+
 function dynamic_form_controller(){
     console.log(dfc_prefix);
     console.log(dfc_fields);
