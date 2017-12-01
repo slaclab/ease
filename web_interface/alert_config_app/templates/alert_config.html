@@ -40,6 +40,10 @@
 	$(
 		function () {
 			$('#searchAndAddPVsModal').on('hidden.bs.modal', addSelectedSearchPVs);
+			$('#searchAndAddPVsModal').on('show.bs.modal', function(e) {
+				var triggerId = $(e.relatedTarget).data('id');
+				console.log(triggerId)
+			})
 			$("#pvNamePattern").keydown(function(e) {
 				if (e.keyCode == 13) {
 					e.preventDefault();
@@ -156,7 +160,6 @@
 		{% endif %}
 	</form>
 	<br>
-
 
 {% endblock %}
 
