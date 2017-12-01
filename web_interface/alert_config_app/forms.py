@@ -51,8 +51,7 @@ class configTrigger(forms.Form):
             # sorted([(np.random.random(),np.random.random()) for x in range(10)],key=lambda s: s[1])
             #choices = [(-1,None)] + [ (x.pk,x.name) for x in Pv.objects.all()],
             # choices = ["a,"b"],
-            widget = forms.HiddenInput(
-            )
+            widget = forms.HiddenInput()
         )
     
 

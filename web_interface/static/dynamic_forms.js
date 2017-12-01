@@ -43,6 +43,14 @@ function dynamic_form_controller(){
                 "-"+dfc_fields[i]
             new_contents.find(find).attr('id', update);
 
+
+            find = "[data-id*=id_"+dfc_prefix+
+                "-][data-id*=-"+dfc_fields[i]+"]"
+            update = "id_"+dfc_prefix+
+                "-"+next_contents_no.toString()+
+                "-"+dfc_fields[i]
+            new_contents.find(find).attr('data-id', update);
+
             find = "[name*="+dfc_prefix+
                 "-][name*=-"+dfc_fields[i]+"]"
             update = dfc_prefix+

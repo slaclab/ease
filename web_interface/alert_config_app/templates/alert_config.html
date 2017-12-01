@@ -11,7 +11,7 @@
 
 {% block script %}
 	var dfc_prefix = "tg"
-	var dfc_fields = ["new_name","new_pv","new_compare","new_value"]
+	var dfc_fields = ["new_name","new_pv","new_compare","new_value","new_modal"]
 	var dfc_replace = ["",-1,-1,""]
 	$(document).ready(dynamic_form_controller);
 
@@ -31,6 +31,10 @@
 	$(
 		function () {
 			$('#searchAndAddPVsModal').on('hidden.bs.modal', addSelectedSearchPVs);
+			$('#searchAndAddPVsModal').on('show.bs.modal', function(e) {
+				var triggerId = $(e.relatedTarget).data('id');
+				console.log(triggerId)
+			})
 			$("#pvNamePattern").keydown(function(e) {
 				if (e.keyCode == 13) {
 					e.preventDefault();
@@ -97,11 +101,28 @@
 						<td class="w-30">{{ entry.new_name }}</td>
 						<td class="w-10">{{ entry.new_pv }}
 							<!--  Search and add PVs  -->
-							<button type="button" class="btn btn-info" data-toggle="modal" data-target="#searchAndAddPVsModal">Search and Add PVs</button>
-		<!-- Trigger PV Modal -->
-		<div id="searchAndAddPVsModal" class="modal fade" role="dialog">
+							<button type="button" class="btn btn-info" data-toggle="modal" data-target="#searchAndAddPVsModal" data-id="id_tg-0-new_modal" name="tg-0-new_modal">Search and Add PVs</button>
+							
+						</td>
+						<td class="w-10">{{ entry.new_compare }}</td>
+						<td class="w-20">{{ entry.new_value }}</td>
+						<td class="w-10">
+							<button class="btn btn-outline-warning delete-btn" type="button">Delete Row</button>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<input class="btn btn-primary" type="submit" value="Submit"/>
+		{% if not create %}
+			<a href="{% url 'alert_delete' alert.pk %}" class="btn btn-danger">Delete</a>
+		{% endif %}
+	</form>
+	<br>
+
+	<!-- Trigger PV Modal -->
+	<div id="searchAndAddPVsModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
-		
 			<!-- Modal content-->
 			<div class="modal-content">
 				<div class="modal-header">
@@ -128,26 +149,8 @@
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>
-		
 			</div>
 		</div>
-						</td>
-						<td class="w-10">{{ entry.new_compare }}</td>
-						<td class="w-20">{{ entry.new_value }}</td>
-						<td class="w-10">
-							<button class="btn btn-outline-warning delete-btn" type="button">Delete Row</button>
-						</td>
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-		<input class="btn btn-primary" type="submit" value="Submit"/>
-		{% if not create %}
-			<a href="{% url 'alert_delete' alert.pk %}" class="btn btn-danger">Delete</a>
-		{% endif %}
-	</form>
-	<br>
-
-
+	
 {% endblock %}
 
