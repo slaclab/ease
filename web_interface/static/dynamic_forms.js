@@ -150,6 +150,7 @@ class df_controller{
 
 class df_controller{
     constructor(prefix, target_fields, replacements, delete_class){
+        // take arguments 
         this.prefix = prefix;
         this.target_fields = target_fields;
         this.replacements = replacements;
@@ -161,15 +162,16 @@ class df_controller{
         }    
         
         // this.next_contents_no designates the next no. for the next row.
-        var this.next_contents_no = $('input[name=tg-TOTAL_FORMS]').val();
+        this.next_contents_no = $('input[name=tg-TOTAL_FORMS]').val();
     }
 
     add_trigger_actions(){
-        
+        // Collection of actions to take when the "add" button is pressed
+
         var new_contents = $("#contents_section").children().last().clone();
-    
+
         // Scan through input fields in row, update fields with new names, IDs
-        for (var i = 0; i < dfc_fields.length; i++){
+        for (var i = 0; i < this.target_fields.length; i++){
             // construct search term to find correct input element
             find = "[id*=id_"+this.prefix+"-][id*=-"+this.target_fields[i]+"]"
 
@@ -177,7 +179,7 @@ class df_controller{
             var target_element = new_contents.find(find)
             
             // construct new ID
-            update_id = "id_"+this.prefix+
+            var update_id = "id_"+this.prefix+
                 "-"+this.next_contents_no.toString()+
                 "-"+this.target_fields[i]
             
@@ -185,15 +187,15 @@ class df_controller{
             target_element.attr('id', update_id);
 
             // construct new name
-            update_name = dfc_prefix+
-                "-"+next_contents_no.toString()+
-                "-"+dfc_fields[i]
+            var update_name = dfc_prefix+
+                "-"+this.next_contents_no.toString()+
+                "-"+this.target_fields[i]
 
             // update correct input element with new name
             target_element.attr('name', update_name);            
             
             // update correct imput element with new value 
-            new_contents.find(find).val(dfc_replace[i]);
+            new_contents.find(find).val(this.replacements[i]);
         }
     
         // Push new row into live html
@@ -203,20 +205,41 @@ class df_controller{
         console.log(cache);
         $("input[name=tg-TOTAL_FORMS]").val(Number(cache)+1);
 
-        next_contents_no ++;
-        console.log("click2");
+        this.next_contents_no ++;
 
-
-        new_contents.find(".delete-btn").click(delete_handler);
+        new_contents.find(".delete-btn").click(
+            //this.delete_trigger_actions.bind(this)
+            this.delete_trigger_actions
+        );
     
     
     }
 
     delete_trigger_actions(){
+        // reject deleting the last remaining entry, there must be at least one
+        // trigger at all times
+        if ( $('input[name=tg-TOTAL_FORMS]').val() <= 1 ){
+            return;
+        }
+
+        $(this).attr('class',"btn btn-danger text-muted")
+        //this.innerHTML = "keep this!";
+        //$(this).parent().parent().remove();
+        $(this).parentsUntil("tbody").last().remove();
+        console.log("delete pressed")
+        //console.log($(this).parent().parent());
+        //console.log($(this).parentsUntil("tbody").last());
+        //console.log($(this)[0].innerHTML); 
+        
+        
+        var cache = $("input[name=tg-TOTAL_FORMS]").val();
+        $("input[name=tg-TOTAL_FORMS]").val(Number(cache)-1);
     }
 
     prepare_document(){
-        console.log("preparing dfc");
+        $("#add_trigger_btn").click(this.add_trigger_actions.bind(this));
+        
+        $(".delete-btn").click(this.delete_trigger_actions);
     }
 
 };
