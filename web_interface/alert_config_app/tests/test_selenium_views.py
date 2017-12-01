@@ -3,9 +3,12 @@ from unittest import skip, skipIf, skipUnless
 import unittest
 import os
 from selenium import webdriver
+from alert_config_app.models import Alert, Trigger
+from account_mgr_app.models import Profile
+from django.contrib.auth.models import User
+
+
 #from selenium.webdriver.firefox.webdriver import WebDriver
-# Create your tests here.
-# @skip("Keeping this as an example template")
 
 webdriver_path = os.path.join(os.getcwd(),"geckodriver")
 
@@ -18,7 +21,7 @@ class SeleniumViewTests(LiveServerTestCase):
     @classmethod
     def setUpTestData(cls):
         #cls.driver = WebDriver()
-        print("setting up test data")
+        #print("setting up test data")
         pass
 
     @classmethod
@@ -28,6 +31,7 @@ class SeleniumViewTests(LiveServerTestCase):
         cls.wdriver = webdriver.Firefox(executable_path=webdriver_path)
         # how long to poll for a DOM object before giving up. 
         cls.wdriver.implicitly_wait(10)
+        
     
     def setUp(self):
         pass
@@ -42,3 +46,7 @@ class SeleniumViewTests(LiveServerTestCase):
     def tearDown(self):
         #Clean up run after every test method.
         pass
+
+    def test_visit_page(self):
+        print("IS DB EMPTY?",User.objects.all())
+
