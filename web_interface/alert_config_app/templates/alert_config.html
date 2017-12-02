@@ -45,6 +45,7 @@
 				if (e.keyCode == 13) {
 					e.preventDefault();
 					searchForPVsMatchingPattern();
+					$("#modalPVSelect").bootstrapDualListbox('refresh');
 				}
 			});
 			$("#pvNameSearchIcon").click(function() {
