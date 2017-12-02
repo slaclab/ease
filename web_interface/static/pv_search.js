@@ -1,4 +1,4 @@
-//Copied from M. Shankar's svg_viewer
+//Copied from M. Shankar's svg_viewer and hacked a bit by A. Wallace
 
 // viewerVars is a struct that contains all the information needed for the viewer;
 // To debug, a useful first step is look at viewerVars in the browser console.
@@ -8,21 +8,24 @@ var viewerVars = {};// This is one of the integration points with the server.
 // To develop/debug, override this to a absolute URL of the server with the data you are going to use for debugging/developing.
 viewerVars.serverURL = "https://pswww.slac.stanford.edu/archiveviewer/retrieval";
 //Set up an ssh tunnel to pslogin -L 8700:pswww.slac.stanford.edu:80
-viewerVars.serverURL = "http://localhost:8700/archiveviewer/retrieval";//remote work with port forwarding
+//viewerVars.serverURL = "http://localhost:8700/archiveviewer/retrieval";//remote work with port forwarding
 
 // User typed a pattern, we search for PV's matching this pattern.
-function searchForPVsMatchingPattern() {
-	var pattern = $("#pvNamePattern").val();
+function searchForPVsMatchingPattern(pvNamePattern) {
+	if (pvNamePattern == null){
+		var pattern = $("#pvNamePattern").val();
+	}
+	else{
+		var pattern = pvNamePattern;
+	}	
 	var globp = /[\*\?]/;
 	if(!globp.test(pattern)) {
-		$('#searchAndAddPVsModal').modal('hide');
 		console.log(pattern + " is not a glob pattern");
-		addTraceForNewPVs([pattern]);
 		return;
 	}
 	if(pattern) {
 		console.log("Search and add PVs for pattern " + pattern);
-		console.log("URL"+viewerVars.serverURL);
+		console.log("URL "+viewerVars.serverURL);
 		var list = $("#pvNameSearchMatchingList");
 		list.empty();
 		$("#pvNameSearchMatchingError").empty();
@@ -40,7 +43,11 @@ function searchForPVsMatchingPattern() {
 function addSelectedSearchPVs(e) {
 	var selectedPVs = [];
 	$("#pvNameSearchMatchingList li.list-group-item-info").each(function(index) { selectedPVs.push($(this).text())});
-	// if(selectedPVs.length > 0) { addTraceForNewPVs(selectedPVs); }
+	if(selectedPVs.length > 0) { 
+		$("#"+pvTagId).val(selectedPVs)
+	 }
 	console.log("Selected PVs"+selectedPVs);
 	$("#pvNameSearchMatchingList").empty();
 }
+
+//function populateSelectedPVs()
