@@ -142,7 +142,7 @@
     });
 
     if (dualListbox.settings.showFilterInputs) {
-      filter(dualListbox, 1);
+      //filter(dualListbox, 1);
       filter(dualListbox, 2);
     }
     refreshInfo(dualListbox);
@@ -358,36 +358,7 @@
     dualListbox.elements.filterInput1.on('keydown', function(e) {
       //HACKED here A. Wallace
       //Turning the filter into an archiver pv search box
-      if (e.keyCode == 13){
-        console.log("Search string: "+dualListbox.elements.filterInput1.val());
-        
-        //I don't know a better way to get this value
-        var pattern=dualListbox.elements.filterInput1.val();
-        //If it's not a glob, don't do anything
-        var globp = /[\*\?]/;
-        if(!globp.test(pattern)) {
-          console.log(pattern + " is not a glob pattern");
-          return;
-        }
-        //At this point we know we have a glob
-        if(pattern) {
-          console.log("Search and add PVs for pattern " + pattern);
-          console.log("URL "+viewerVars.serverURL);
-          var list = [];
-          //$("#pvNameSearchMatchingError").empty(); //disabled this for now
-          //Query for the matching PVs, note we're limiting to 50 here...
-          $.getJSON( viewerVars.serverURL + "/bpl/getMatchingPVs?limit=50&pv=" + pattern, function(matchingPVs){
-            if(matchingPVs.length > 0) {
-              matchingPVs.forEach(function(matchingPV) { 
-                dualListbox.elements.select1.append(matchingPV); 
-              });
-              refreshSelects(dualListbox);
-            } else {
-              $("#pvNameSearchMatchingError").html("No PV names matched your search. Search using GLOB patterns, for example, QUAD:*:BDES");
-            }
-          });
-        }
-      }
+      ;
       
     });
 
@@ -407,8 +378,8 @@
         '     <span class="info"></span>' +
         '     <button type="button" class="btn clear1 pull-right"></button>' +
         '   </span>' +
-        //'   <input class="filter" type="text">' +
-        '   <input type="text" class="filter" id="pvNamePattern" placeholder="PV:Name:*"/>' +
+        '   <input class="filter" type="text">' +
+        //'   <input type="text" class="filter" id="pvNamePattern" placeholder="PV:Name:*"/>' +
         '   <div class="btn-group buttons">' +
         '     <button type="button" class="btn moveall">' +
         '       <i></i>' +

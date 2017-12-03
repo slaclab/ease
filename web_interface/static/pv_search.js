@@ -8,7 +8,7 @@ var viewerVars = {};// This is one of the integration points with the server.
 // To develop/debug, override this to a absolute URL of the server with the data you are going to use for debugging/developing.
 viewerVars.serverURL = "https://pswww.slac.stanford.edu/archiveviewer/retrieval";
 //Set up an ssh tunnel to pslogin -L 8700:pswww.slac.stanford.edu:80
-//viewerVars.serverURL = "http://localhost:8700/archiveviewer/retrieval";//remote work with port forwarding
+viewerVars.serverURL = "http://localhost:8700/archiveviewer/retrieval";//remote work with port forwarding
 
 // User typed a pattern, we search for PV's matching this pattern.
 function searchForPVsMatchingPattern(pvNamePattern) {
@@ -30,10 +30,11 @@ function searchForPVsMatchingPattern(pvNamePattern) {
 		list.empty();
 		$("#pvNameSearchMatchingError").empty();
 		$.getJSON( viewerVars.serverURL + "/bpl/getMatchingPVs?limit=50&pv=" + pattern, function(matchingPVs){
+			
 			if(matchingPVs.length > 0) {
-				//matchingPVs.forEach(function(matchingPV) { list.append('<li class="list-group-item">' + matchingPV + '</li>') });
-				//$("#pvNameSearchMatchingList li").click(function() { $(this).toggleClass('list-group-item-info'); });
-				matchingPVs.forEach(function(matchingPV) { managePVModal.append(matchingPV) }); 
+				matchingPVs.forEach(function(matchingPV) { list.append('<li class="list-group-item">' + matchingPV + '</li>') });
+				$("#pvNameSearchMatchingList li").click(function() { $(this).toggleClass('list-group-item-info'); });
+				return;
 			} else {
 				$("#pvNameSearchMatchingError").html("No PV names matched your search. Search using GLOB patterns, for example, QUAD:*:BDES");
 			}
