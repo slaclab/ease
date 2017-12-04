@@ -12,7 +12,7 @@ from django.core.urlresolvers import reverse
 
 # Create your tests here.
 # @skip("Keeping this as an example template")
-class test_alert_config_form(TestCase):
+class test_alert_config_view(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.primary = User.objects.create_user("test")
@@ -426,7 +426,7 @@ class test_alert_config_form(TestCase):
         self.assertContains(response, 'owner_redirect_name')
 
 
-class test_alert_detail_form(TestCase):
+class test_alert_detail_view(TestCase):
     """Collection of tests inspecting the detail_alert form 
     """
     @classmethod
@@ -595,7 +595,7 @@ class test_alert_list_page_view(TestCase):
         """
         self.c.logout()
     
-    def test_page_view(self):
+    def test_page_visit(self):
         response = self.c.get('/alert/alert_create/',follow=True)
         self.assertEqual(
             response.status_code,
@@ -604,3 +604,94 @@ class test_alert_list_page_view(TestCase):
         )
         
 
+class test_title_page_view(TestCase): 
+    @classmethod
+    def setUpTestData(cls):
+        cls.primary = User.objects.create_user("test")
+        cls.primary_pass = "tests"
+        cls.primary.set_password(cls.primary_pass)
+        cls.primary.save()
+
+        cls.secondary = User.objects.create_user("test2")
+        cls.secondary_pass = "tests"
+        cls.secondary.set_password(cls.secondary_pass)
+        cls.secondary.save()
+
+        
+        cls.alerts = []
+        for x in range(2):
+            cls.alerts.append(Alert())
+            cls.alerts[x].name = "alert_"+str(x)
+            cls.alerts[x].save()
+            cls.alerts[x].owner.add(cls.primary.profile)
+            cls.alerts[x].save() 
+
+        cls.factory = RequestFactory()
+        cls.c = Client()
+ 
+    def setUp(self):
+        """Log the test user in before each test method.
+        """
+        self.c.login(
+           username = self.primary.username,
+           password = self.primary_pass)
+
+    def tearDown(self):
+        """Log the test user out after every test method.
+        """
+        self.c.logout()
+    
+    def test_page_visit(self):
+        response = self.c.get('/alert/title/',follow=True)
+        self.assertEqual(
+            response.status_code,
+            200,
+            "Unable to render the title page"
+        )
+
+
+
+class test_alert_delete_page_view(TestCase): 
+    @classmethod
+    def setUpTestData(cls):
+        cls.primary = User.objects.create_user("test")
+        cls.primary_pass = "tests"
+        cls.primary.set_password(cls.primary_pass)
+        cls.primary.save()
+
+        cls.secondary = User.objects.create_user("test2")
+        cls.secondary_pass = "tests"
+        cls.secondary.set_password(cls.secondary_pass)
+        cls.secondary.save()
+
+        
+        cls.alerts = []
+        for x in range(2):
+            cls.alerts.append(Alert())
+            cls.alerts[x].name = "alert_"+str(x)
+            cls.alerts[x].save()
+            cls.alerts[x].owner.add(cls.primary.profile)
+            cls.alerts[x].save() 
+
+        cls.factory = RequestFactory()
+        cls.c = Client()
+ 
+    def setUp(self):
+        """Log the test user in before each test method.
+        """
+        self.c.login(
+           username = self.primary.username,
+           password = self.primary_pass)
+
+    def tearDown(self):
+        """Log the test user out after every test method.
+        """
+        self.c.logout()
+    
+    def test_page_visit(self):
+        response = self.c.get('/alert/alert_delete/1/',follow=True)
+        self.assertEqual(
+            response.status_code,
+            200,
+            "Unable to render the alert delete page"
+        )
