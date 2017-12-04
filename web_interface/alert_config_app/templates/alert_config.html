@@ -8,7 +8,6 @@
 	<script src="{% static 'search_helper.js' %}"></script>
 	<script src="{% static 'pv_search.js' %}"></script>
 	<script src="{% static 'jquery.bootstrap-duallistbox.js' %}"></script>
-	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-duallistbox.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-pvSearchWidget.css' %}">
 {% endblock %}
 
@@ -167,11 +166,12 @@
 									<div id="pvNameSearchMatchingError"></div>
 									<button type="button" class="btn clear1 pull-right"></button>
 								</span>
+								
 									<div class="input-group">
-										<input type="text" id="pvNamePattern" placeholder="PV:Name:*" />
-										<button class="input-group-btn" id="pvNameSearch">
+										<input type="text" id="pvNamePattern" placeholder="PV:Name:*" class="filter" />
+										<span class="input-group-addon filter" id="pvNameSearch">
 											<i class="fa fa-search"></i>
-										</button>
+										</span>
 									</div>
 									<div class="btn-group buttons">
 										<button type="button" class="btn moveall">

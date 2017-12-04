@@ -72,6 +72,16 @@
   box-sizing: border-box;
 }
 
+.pvSearchWidget-container .filter.input-group-addon {
+  display: inline-block;
+  width: 20%;
+  height: 31px;
+  margin: 0 0 5px 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
 .pvSearchWidget-container .filter.placeholder {
   color: #aaa;
 }
