@@ -173,11 +173,11 @@ class test_alert_config_form(TestCase):
                    "new_subscribe":                             "on",
                 "tg-0-new_compare":                             "<=",
                    "tg-0-new_name":                      "0 trigger",
-                     "tg-0-new_pv":                              "1",
+                     "tg-0-new_pv":                             "-1",
                   "tg-0-new_value":                            "100",
                 "tg-1-new_compare":                             "==",
                    "tg-1-new_name":                      "1 trigger",
-                     "tg-1-new_pv":                              "1",
+                     "tg-1-new_pv":                             "-1",
                   "tg-1-new_value":                              "7",
                 "tg-2-new_compare":                             "-1",
                    "tg-2-new_name":                               "",
@@ -206,15 +206,14 @@ class test_alert_config_form(TestCase):
         """ check that alert is created correctly from this POST request
         """
         # Initiate post/get transaction
-        response = self.generic_alert_post()
-        
+        response = self.generic_alert_post(**{'new_name':'alert_name'})
         # confirm that alert with proper name exists
         try:
-            alert_inst = Alert.objects.get(name="new_alert_name")
+            alert_inst = Alert.objects.get(name="alert_name")
         except Exception as E:
             #print(E)
             self.fail("Alert not created")
-             
+         
         # confirm that the user is added as the owner
         self.assertEqual(
             len(alert_inst.owner.all()),
@@ -405,10 +404,6 @@ class test_alert_config_form(TestCase):
             "Failed to redirect to detail page"
         )
 
-
-
-
-
     def test_create_alert_bad_owners(self):
         """ check that alert is created correctly from this POST request
         """
@@ -562,4 +557,50 @@ class test_alert_detail_form(TestCase):
             "subscriber not removed",
         )
 
+
+class test_alert_list_page_view(TestCase): 
+    @classmethod
+    def setUpTestData(cls):
+        cls.primary = User.objects.create_user("test")
+        cls.primary_pass = "tests"
+        cls.primary.set_password(cls.primary_pass)
+        cls.primary.save()
+
+        cls.secondary = User.objects.create_user("test2")
+        cls.secondary_pass = "tests"
+        cls.secondary.set_password(cls.secondary_pass)
+        cls.secondary.save()
+
+        
+        cls.alerts = []
+        for x in range(2):
+            cls.alerts.append(Alert())
+            cls.alerts[x].name = "alert_"+str(x)
+            cls.alerts[x].save()
+            cls.alerts[x].owner.add(cls.primary.profile)
+            cls.alerts[x].save() 
+
+        cls.factory = RequestFactory()
+        cls.c = Client()
+ 
+    def setUp(self):
+        """Log the test user in before each test method.
+        """
+        self.c.login(
+           username = self.primary.username,
+           password = self.primary_pass)
+
+    def tearDown(self):
+        """Log the test user out after every test method.
+        """
+        self.c.logout()
+    
+    def test_page_view(self):
+        response = self.c.get('/alert/alert_create/',follow=True)
+        self.assertEqual(
+            response.status_code,
+            200,
+            "Unable to render the alerts list"
+        )
+        
 

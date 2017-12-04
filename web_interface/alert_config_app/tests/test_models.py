@@ -96,5 +96,5 @@ class PVFieldsTests(TestCase):
     
     @classmethod
     def tearDownClass(cls):
-        # super().tearDownClass()
+        super().tearDownClass()
         pass
