@@ -48,9 +48,8 @@ function addSelectedSearchPVs(e) {
 	if(selectedPVs.length > 0) { 
 		$("#"+pvTagId).val(selectedPVs)
 	 }
-	console.log("Selected PVs"+selectedPVs);
-	
-	$("#pvNameSearchMatchingList").empty();
+	console.log("Selected PVs "+selectedPVs);
+	//$("#pvNameSearchMatchingList").empty();
 }
 
 //function populateSelectedPVs()
