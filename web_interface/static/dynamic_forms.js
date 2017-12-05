@@ -110,7 +110,9 @@ class df_controller{
      * default to the button element instead of the df_controller instance.
      *
      * @param {event} event this is the event of the button press, it is
-     * automatically sent when called from the click method*
+     * automatically sent when called from the click method
+     *
+     *
      */
     delete_trigger_actions(event){
         // reject deleting the last remaining entry, there must be at least one
@@ -127,119 +129,13 @@ class df_controller{
         var cache = $("input[name="+this.prefix+"-TOTAL_FORMS]").val();
         $("input[name="+this.prefix+"-TOTAL_FORMS]").val(Number(cache)-1);
     }
-    
-    /**
-     * After instantiating the class, this method must be run to initialize the
-     * HTML elements in the page
-     *
-     * @this {df_controller}
-     */
+
     prepare_document(){
         $(this.add_button).click(this.add_trigger_actions.bind(this));
         
         $(this.delete_button).click(
             this.delete_trigger_actions.bind(this)
         );
-    }
-
-};
-
-
-
-
-
-class df_controller{
-    constructor(prefix, target_fields, replacements, delete_class){
-        // take arguments 
-        this.prefix = prefix;
-        this.target_fields = target_fields;
-        this.replacements = replacements;
-        this.delete_class = delete_class;
-
-        // inform developer of arg length issue
-        if (this.target_fields.length != this.replacements.length){
-            throw "target_fields and replacments mush have same length";
-        }    
-        
-        // this.next_contents_no designates the next no. for the next row.
-        this.next_contents_no = $('input[name=tg-TOTAL_FORMS]').val();
-    }
-
-    add_trigger_actions(){
-        // Collection of actions to take when the "add" button is pressed
-
-        var new_contents = $("#contents_section").children().last().clone();
-
-        // Scan through input fields in row, update fields with new names, IDs
-        for (var i = 0; i < this.target_fields.length; i++){
-            // construct search term to find correct input element
-            find = "[id*=id_"+this.prefix+"-][id*=-"+this.target_fields[i]+"]"
-
-            // seek correct input element   
-            var target_element = new_contents.find(find)
-            
-            // construct new ID
-            var update_id = "id_"+this.prefix+
-                "-"+this.next_contents_no.toString()+
-                "-"+this.target_fields[i]
-            
-            // update correct input element with new ID
-            target_element.attr('id', update_id);
-
-            // construct new name
-            var update_name = dfc_prefix+
-                "-"+this.next_contents_no.toString()+
-                "-"+this.target_fields[i]
-
-            // update correct input element with new name
-            target_element.attr('name', update_name);            
-            
-            // update correct imput element with new value 
-            new_contents.find(find).val(this.replacements[i]);
-        }
-    
-        // Push new row into live html
-        $("#contents_section").append(new_contents);
-
-        var cache = $("input[name=tg-TOTAL_FORMS]").val();
-        console.log(cache);
-        $("input[name=tg-TOTAL_FORMS]").val(Number(cache)+1);
-
-        this.next_contents_no ++;
-
-        new_contents.find(".delete-btn").click(
-            //this.delete_trigger_actions.bind(this)
-            this.delete_trigger_actions
-        );
-    
-    
-    }
-
-    delete_trigger_actions(){
-        // reject deleting the last remaining entry, there must be at least one
-        // trigger at all times
-        if ( $('input[name=tg-TOTAL_FORMS]').val() <= 1 ){
-            return;
-        }
-
-        $(this).attr('class',"btn btn-danger text-muted")
-        //this.innerHTML = "keep this!";
-        //$(this).parent().parent().remove();
-        $(this).parentsUntil("tbody").last().remove();
-        console.log("delete pressed")
-        //console.log($(this).parent().parent());
-        //console.log($(this).parentsUntil("tbody").last());
-        //console.log($(this)[0].innerHTML); 
-        
-        
-        var cache = $("input[name=tg-TOTAL_FORMS]").val();
-        $("input[name=tg-TOTAL_FORMS]").val(Number(cache)-1);
-    }
-
-    prepare_document(){
-        $("#add_trigger_btn").click(this.add_trigger_actions.bind(this));
-        
-        $(".delete-btn").click(this.delete_trigger_actions);
     }
 
 };
