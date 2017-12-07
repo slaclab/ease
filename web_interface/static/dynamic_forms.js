@@ -110,9 +110,7 @@ class df_controller{
      * default to the button element instead of the df_controller instance.
      *
      * @param {event} event this is the event of the button press, it is
-     * automatically sent when called from the click method
-     *
-     *
+     * automatically sent when called from the click method*
      */
     delete_trigger_actions(event){
         // reject deleting the last remaining entry, there must be at least one
@@ -129,7 +127,13 @@ class df_controller{
         var cache = $("input[name="+this.prefix+"-TOTAL_FORMS]").val();
         $("input[name="+this.prefix+"-TOTAL_FORMS]").val(Number(cache)-1);
     }
-
+    
+    /**
+     * After instantiating the class, this method must be run to initialize the
+     * HTML elements in the page
+     *
+     * @this {df_controller}
+     */
     prepare_document(){
         $(this.add_button).click(this.add_trigger_actions.bind(this));
         
