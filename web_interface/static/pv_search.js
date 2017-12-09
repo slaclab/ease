@@ -8,7 +8,7 @@ var viewerVars = {};// This is one of the integration points with the server.
 // To develop/debug, override this to a absolute URL of the server with the data you are going to use for debugging/developing.
 viewerVars.serverURL = "https://pswww.slac.stanford.edu/archiveviewer/retrieval";
 //Set up an ssh tunnel to pslogin -L 8700:pswww.slac.stanford.edu:80
-viewerVars.serverURL = "http://localhost:8700/archiveviewer/retrieval";//remote work with port forwarding
+//viewerVars.serverURL = "http://localhost:8700/archiveviewer/retrieval";//remote work with port forwarding
 
 // User typed a pattern, we search for PV's matching this pattern.
 function searchForPVsMatchingPattern(pvNamePattern) {
@@ -21,6 +21,7 @@ function searchForPVsMatchingPattern(pvNamePattern) {
 	var globp = /[\*\?]/;
 	if(!globp.test(pattern)) {
 		console.log(pattern + " is not a glob pattern");
+		$("#pvSearchWidget-container box1 info-container nameSearchMatchingError").html(pattern + " is not a glob pattern");
 		return;
 	}
 	if(pattern) {
@@ -28,7 +29,7 @@ function searchForPVsMatchingPattern(pvNamePattern) {
 		console.log("URL "+viewerVars.serverURL);
 		var list = $("#pvNameSearchMatchingList");
 		list.empty();
-		$("#pvNameSearchMatchingError").empty();
+		$("#pvSearchWidget-container box1 info-container nameSearchMatchingError").empty();
 		$.getJSON( viewerVars.serverURL + "/bpl/getMatchingPVs?limit=50&pv=" + pattern, function(matchingPVs){
 			
 			if(matchingPVs.length > 0) {
@@ -36,20 +37,52 @@ function searchForPVsMatchingPattern(pvNamePattern) {
 				$("#pvNameSearchMatchingList li").click(function() { $(this).toggleClass('list-group-item-info'); });
 				return;
 			} else {
-				$("#pvNameSearchMatchingError").html("No PV names matched your search. Search using GLOB patterns, for example, QUAD:*:BDES");
+				$("#pvSearchWidget-container box1 info-container nameSearchMatchingError").html("No PV names matched your search. Search using GLOB patterns, for example, QUAD:*:BDES");
 			}
 		});
 	}
 }
 
 function addSelectedSearchPVs(e) {
-	var selectedPVs = [];
-	$("#pvNameSearchMatchingList li.list-group-item-info").each(function(index) { selectedPVs.push($(this).text())});
-	if(selectedPVs.length > 0) { 
-		$("#"+pvTagId).val(selectedPVs)
-	 }
-	console.log("Selected PVs "+selectedPVs);
-	//$("#pvNameSearchMatchingList").empty();
+	var triggerPVList = $("#triggerPVList");
+	$("#pvNameSearchMatchingList li.list-group-item-info").each(function() { triggerPVList.append('<li class="list-group-item">' + $(this).text() + '</li>')});
+	$("#triggerPVList li").click(function() { $(this).toggleClass('list-group-item-info'); });
+	$("#pvNameSearchMatchingList li.list-group-item-info").each(function() { $(this).remove() });
 }
 
-//function populateSelectedPVs()
+function addAllSearchPVs() {
+	var triggerPVList = $("#triggerPVList");
+	$("#pvNameSearchMatchingList li").each(function() { triggerPVList.append('<li class="list-group-item">' + $(this).text() + '</li>')});
+	$("#pvNameSearchMatchingList").empty();
+}
+
+function removeSelectedTriggerPVs () {
+	$("#triggerPVList li.list-group-item-info").each(function() { $(this).remove() });
+}
+
+function removeAllTriggerPVs () {
+	$("#triggerPVList").empty();
+}
+
+function populateTriggerPVs() {
+
+}
+
+function saveTriggerPVs() {
+	var triggerPVList = $("#triggerPVList li");
+	var seen = {};
+	triggerPVList.each(function() {
+		var txt = $(this).text();
+		if (seen[txt])
+			$(this).remove();
+		else
+			seen[txt] = true;
+	});
+	//console.log(triggerPVList.length());
+	var list = [];
+	triggerPVList.each(function() { console.log(this.text()) });
+	if(triggerPVList.length > 0) { 
+		$("#"+pvTagId).val(list);
+	 }
+	 $("#triggerPVList").empty();
+}

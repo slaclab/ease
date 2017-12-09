@@ -35,14 +35,26 @@
 
 	$(
 		function () {
-			//$('#searchAndAddPVsModal').on('hidden.bs.modal', {pvTagId:pvTagId}, addSelectedSearchPVs);
+			
 			$('#searchAndAddPVsModal').on('show.bs.modal', function(e) {
 				var triggerId = $(e.relatedTarget).data('id');
+				//populateTriggerPVs();
 				console.log(triggerId);
 				pvTagId = triggerId.replace("new_modal", "new_pv");
 			});
+			$('#searchAndAddPVsModal').on('hidden.bs.modal', {pvTagId:pvTagId}, saveTriggerPVs);
+
 			$('#addSelectedSearchPVs').click(function(){
 				addSelectedSearchPVs();
+			})
+			$('#addAllSearchPVs').click(function(){
+				addAllSearchPVs();
+			})
+			$('#removeSelectedTriggerPVs').click(function(){
+				removeSelectedTriggerPVs();
+			})
+			$('#removeAllTriggerPVs').click(function(){
+				removeAllTriggerPVs();
 			})
 			$("#pvNameSearchIcon").click(function() {
 				searchForPVsMatchingPattern();
@@ -163,7 +175,7 @@
 							<div class="box1 col-md-6">
 								<label>Find PVs</label>
 								<span class="info-container">
-									<div id="pvNameSearchMatchingError"></div>
+									<div id="nameSearchMatchingError"></div>
 									<button type="button" class="btn clear1 pull-right"></button>
 								</span>
 								
@@ -174,7 +186,7 @@
 										</span>
 									</div>
 									<div class="btn-group buttons">
-										<button type="button" class="btn moveall">
+										<button type="button" class="btn moveall" id="addAllSearchPVs">
 											<i class="fa fa-arrow-right"></i>
 											<i class="fa fa-arrow-right"></i>
 										</button>
@@ -193,15 +205,15 @@
 									</span>
 										<input type="text" class="filter" id="selectedPVsFilter" placeholder="Filter Pattern"/>
 										<div class="btn-group buttons">
-											<button type="button" class="btn moveall">
+											<button type="button" class="btn moveall" id="removeAllTriggerPVs">
 												<i class="fa fa-arrow-left"></i>
 												<i class="fa fa-arrow-left"></i>
 											</button>
-											<button type="button" class="btn move">
+											<button type="button" class="btn move" id="removeSelectedTriggerPVs">
 													<i class="fa fa-arrow-left"></i>
 											</button>
 										</div>
-										<ul class="list-group" id="pvSelected">
+										<ul class="list-group" id="triggerPVList">
 										</ul>
 							</div>
 					</div>
@@ -223,7 +235,7 @@
 							</ul> {% endcomment %}
 				</div>
 				<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Save Trigger PVs</button>
 				</div>
 			</div>
 			</div>
