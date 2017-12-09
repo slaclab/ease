@@ -139,6 +139,7 @@ ALLOWED_HOSTS = [
 if DEBUG:
     ALLOWED_HOSTS.append("127.0.0.1")
     ALLOWED_HOSTS.append("192.168.205.3")
+    ALLOWED_HOSTS.append("192.168.56.101")
 
 if not DEBUG:
     FORCE_SCRIPT_NAME = '/ease'
