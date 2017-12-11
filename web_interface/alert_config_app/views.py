@@ -434,7 +434,6 @@ class alert_config(View):
             )
 
         return HttpResponseRedirect(reverse('alerts_page_all'))
-       
 
 
 @login_required()
