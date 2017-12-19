@@ -47,9 +47,9 @@
 			
 			$('#searchAndAddPVsModal').on('show.bs.modal', function(e) {
 				var triggerId = $(e.relatedTarget).data('id');
-				//populateTriggerPVs();
 				console.log(triggerId);
 				pvTagId = triggerId.replace("new_modal", "new_pv");
+				populateTriggerPVs();
 			});
 			$('#searchAndAddPVsModal').on('hidden.bs.modal', {pvTagId:pvTagId}, saveTriggerPVs);
 
