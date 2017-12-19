@@ -67,11 +67,14 @@ function removeAllTriggerPVs () {
 }
 
 function populateTriggerPVs() {
-
+	//Push selected triggers back to the list
 }
 
 function saveTriggerPVs() {
+	//Get all the selected triggers
 	var triggerPVList = $("#triggerPVList li");
+	
+	//Remove duplicates
 	var seen = {};
 	triggerPVList.each(function() {
 		var txt = $(this).text();
@@ -80,11 +83,18 @@ function saveTriggerPVs() {
 		else
 			seen[txt] = true;
 	});
-	//console.log(triggerPVList.length());
+
+	//Build the list of triggers
 	var list = [];
-	triggerPVList.each(function() { console.log(this.text()) });
+	triggerPVList.each(function() {
+		list.push($(this).text());
+	});
+
+	//Push the list to the hidden value field
 	if(triggerPVList.length > 0) { 
 		$("#"+pvTagId).val(list);
 	 }
+
+	 //Clear the list
 	 $("#triggerPVList").empty();
 }
