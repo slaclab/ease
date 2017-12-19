@@ -11,6 +11,8 @@ viewerVars.serverURL = "https://pswww.slac.stanford.edu/archiveviewer/retrieval"
 //viewerVars.serverURL = "http://localhost:8700/archiveviewer/retrieval";//remote work with port forwarding
 
 // User typed a pattern, we search for PV's matching this pattern.
+
+//Note pvTagId is a variable set when the modal is opened. It is defined for each "add PV" button, look at the alert_config.html
 function searchForPVsMatchingPattern(pvNamePattern) {
 	if (pvNamePattern == null){
 		var pattern = $("#pvNamePattern").val();
@@ -68,6 +70,14 @@ function removeAllTriggerPVs () {
 
 function populateTriggerPVs() {
 	//Push selected triggers back to the list
+	var restoreList = $("#"+pvTagId).val().split(',');
+	var triggerPVList = $("#triggerPVList");
+	restoreList.forEach(function(element){
+		//I am ashamed of this repeated code.
+		console.log(element);
+		triggerPVList.append('<li class="list-group-item">' + element + '</li>');
+		triggerPVList.children().last().click(function() { $(this).toggleClass('list-group-item-info') });
+	 });
 }
 
 function saveTriggerPVs() {
@@ -91,6 +101,7 @@ function saveTriggerPVs() {
 	});
 
 	//Push the list to the hidden value field
+	$("#"+pvTagId).val("");
 	if(triggerPVList.length > 0) { 
 		$("#"+pvTagId).val(list);
 	 }
