@@ -45,8 +45,10 @@ function searchForPVsMatchingPattern(pvNamePattern) {
 
 function addSelectedSearchPVs(e) {
 	var triggerPVList = $("#triggerPVList");
-	$("#pvNameSearchMatchingList li.list-group-item-info").each(function() { triggerPVList.append('<li class="list-group-item">' + $(this).text() + '</li>')});
-	$("#triggerPVList li").click(function() { $(this).toggleClass('list-group-item-info'); });
+	$("#pvNameSearchMatchingList li.list-group-item-info").each(function() {
+		triggerPVList.append('<li class="list-group-item">' + $(this).text() + '</li>');
+		triggerPVList.children().last().click(function() { $(this).toggleClass('list-group-item-info'); });
+	});
 	$("#pvNameSearchMatchingList li.list-group-item-info").each(function() { $(this).remove() });
 }
 
