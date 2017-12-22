@@ -193,6 +193,61 @@ class test_config_Alert_form(TestCase):
             "Profile not returned"
         )
 
+    def test_parse_usernames(self):
+        """Ensure that the parse_usernames method properly extracts usernames
+        from possible input strings
+        """
+        data = "username"
+        result = configAlert.parse_usernames(data)
+        self.assertEqual(
+            result,
+            set(["username"]),
+            "unable to handle single username-only entries"
+        )
+
+        data = "username1,username2,username3"
+        result = configAlert.parse_usernames(data)
+        self.assertEqual(
+            result,
+            set(["username1","username2","username3"]),
+            "unable to handle multiple, username-only entries"
+        )
+        
+        data = "username (first, last)"
+        result = configAlert.parse_usernames(data)
+        self.assertEqual(
+            result,
+            set(["username"]),
+            "unable to handle single username w/ name"
+        )
+
+        data = "user1(first,last),user2 (  first,last),user3 (first, last)"
+        result = configAlert.parse_usernames(data)
+        self.assertEqual(
+            result,
+            set(["user1","user2","user3"]),
+            "unable to handle multiple, username-only entries"
+        )
+
+        data = "user1(first, last   ),user2  ,user3 ( first, last)"
+        result = configAlert.parse_usernames(data)
+        self.assertEqual(
+            result,
+            set(["user1","user2","user3"]),
+            "unable to handle multiple, mixed-type entries"
+        )
+        
+        data = "user1(first, last   ),user2 , ,user3 ( first, last)"
+        result = configAlert.parse_usernames(data)
+        self.assertEqual(
+            result,
+            set(["user1","user2","user3"]),
+            "unable to scrub blank (bad) entires"
+        )
+
+
+
+
 class test_detail_Alert_form(TestCase):
     """Collection of tests inspecting the detail_alert form 
     """

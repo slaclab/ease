@@ -25,7 +25,7 @@ class LoginTests(TestCase):
         #self.c.login(username="test",password="testpass")
         with self.assertTemplateUsed(
                     template_name='registration/login.html'):
-            response = self.c.get('/acct/login/')
+            response = self.c.get('/accounts/login/')
             #alternative syntax
             #self.assertTemplateNotUsed(response, 'registration/login.html')
         self.c.logout()
