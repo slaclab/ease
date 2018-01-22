@@ -19,6 +19,7 @@ from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 
 from .widgets import HorizontalCheckbox
+import re
 
 
 class configTrigger(forms.Form):
@@ -199,9 +200,50 @@ class configAlert(forms.Form):#ModelForm
                 'rows':'5',
             }
         ),
-        help_text = "Users who can edit this alert"
+        help_text = "Users who can edit this alert. "
+            +"Separate with commas or semicolons"
     )
-    
+
+    @staticmethod
+    def parse_usernames(data):
+        """ Receive string of usernames separated by commas, first/last
+        optional and extract the username strings.
+
+        
+        Parameters
+        ----------
+        data : str
+            This takes a string containing the usernames. Usernames must be
+            comma separated and may optionally be followed by  '(last_name,
+            first_name'. The first and last names are not checked, they are
+            only present for user readability and will be removed
+
+        Returns
+        -------
+        :obj:`set` of :obj:`str`
+            List of username strings.
+            
+        """
+        pattern = "[^\(\),]+\([^\(\)]+\)|[^\(\),]+" 
+        # extract comma separated groups of 'username' and 'username (str,str)'
+        parsed_groups = re.findall(pattern, data)
+
+        parsed_names = []
+        for group in parsed_groups:
+            match = re.search(
+                "[^\(\),]+",
+                group
+            )
+            if match:
+                parsed_names.append(match.group())   
+
+        # remove trailing/leading whitespace
+        parsed_names = set([name.strip() for name in parsed_names])
+        parsed_names = parsed_names - set([''])
+
+        return parsed_names
+
+
     def clean_new_owners(self):
         """Receive input string for the new_owners field and return users list
 
@@ -216,9 +258,7 @@ class configAlert(forms.Form):#ModelForm
         data = self.cleaned_data['new_owners']
         
         # produce list of individual usernames from textbox
-        name_list = [name.strip() for name in data.split(",")]
-        name_set = set(name_list)
-        name_set = name_set - set(['',' '])
+        name_set = self.parse_usernames(data)
 
         # search database 
         profile_list = Profile.objects.filter(user__username__in=name_set)

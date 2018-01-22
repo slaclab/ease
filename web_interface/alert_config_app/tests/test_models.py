@@ -12,13 +12,13 @@ class AlertFieldsTests(TestCase):
     """
     @classmethod
     def setUpTestData(cls):
-        u = User.objects.create_user( "unittest_user", password="pass")
-        profile = u.profile
-        a = Alert.objects.create(
+        cls.u = User.objects.create_user( "unittest_user", password="pass")
+        cls.profile = cls.u.profile
+        cls.a = Alert.objects.create(
             name="unittest_alert",
         )
-        a.subscriber.add(profile)
-        a.owner.add(profile)
+        cls.a.subscriber.add(cls.profile)
+        cls.a.owner.add(cls.profile)
 
     def setUp(self):
         # print("setUp: Run once for every test method to setup clean data.")
@@ -59,8 +59,7 @@ class AlertFieldsTests(TestCase):
     
     @classmethod
     def tearDownClass(cls):
-        # super().tearDownClass()
-        pass
+        super().tearDownClass()
 
 class PVFieldsTests(TestCase):
     """Ensure that Alert Fields exist 
@@ -97,5 +96,5 @@ class PVFieldsTests(TestCase):
     
     @classmethod
     def tearDownClass(cls):
-        # super().tearDownClass()
+        super().tearDownClass()
         pass

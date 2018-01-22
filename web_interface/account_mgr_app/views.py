@@ -21,10 +21,6 @@ from django.core.mail import EmailMessage
 from email.mime.text import MIMEText
 import smtplib 
 
-# Create your views here.
-
-
-
 
 def signup(request):
     if request.method == 'POST':
@@ -58,8 +54,6 @@ def signup(request):
         # form = UserCreationForm()
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
-    
-    
     
     
 def activate(request, uidb64, token):
