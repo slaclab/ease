@@ -56,8 +56,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = True
 
 time_stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-logs_folder_base = "session_logs_" + time_stamp
-logs_folder = logs_folder_base 
+top_logs_folder = os.path.join(BASE_DIR, 'session_logs')
+if not os.path.exists(top_logs_folder):
+    os.mkdir(top_logs_folder)
+
+logs_folder_base = os.path.join(top_logs_folder, 'session_' + time_stamp)
+logs_folder = logs_folder_base
 idx = 0
 
 while os.path.exists(logs_folder):
