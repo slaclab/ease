@@ -258,11 +258,16 @@ STATICFILES_DIRS = (
 )
 STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 
-
-EMAIL_HOST = 'psmail'
-EMAIL_PORT = 25
-EMAIL_HOST_USER = 'EASE'
-DEFAULT_FROM_EMAIL = 'EASE'
+if not DEBUG:
+    EMAIL_HOST = 'psmail'
+    EMAIL_PORT = 25
+    EMAIL_HOST_USER = 'EASE'
+    DEFAULT_FROM_EMAIL = 'EASE'
+else:
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 2500
+    EMAIL_HOST_USER = 'EASE'
+    DEFAULT_FROM_EMAIL = 'EASE'
 
 
 if not DEBUG:
