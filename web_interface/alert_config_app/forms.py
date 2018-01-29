@@ -46,12 +46,8 @@ class configTrigger(forms.Form):
         """Constrct the object
         """
         super().__init__(*args,**kwargs)
-        self.fields['new_pv'] = forms.ChoiceField(
+        self.fields['new_pv'] = forms.CharField(
             label = 'PV name',
-            # use this to sort alphabetiaclly if necessary
-            # sorted([(np.random.random(),np.random.random()) for x in range(10)],key=lambda s: s[1])
-            #choices = [(-1,None)] + [ (x.pk,x.name) for x in Pv.objects.all()],
-            # choices = ["a,"b"],
             widget = forms.HiddenInput()
         )
     
@@ -126,8 +122,7 @@ class configTrigger(forms.Form):
         data = self.cleaned_data['new_pv']
         if data == str(-1):
             data = None
-        else:
-            data = Pv.objects.get(pk=int(data))
+        #add in some checks for a PV tag
 
         return data
 

@@ -106,14 +106,11 @@ class Trigger(models.Model):
     edited directly but through the alerts config page.
     """
     name_max_length = 100
+    val_src_max_length = 100
     name = models.CharField(max_length = name_max_length)
     alert = models.ForeignKey(Alert, on_delete=models.CASCADE)
-    pv = models.ForeignKey(
-        Pv,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-    )
+
+    value_src = models.CharField(max_length = val_src_max_length)
     
     value = models.FloatField(
         blank = True,
