@@ -14,8 +14,8 @@
 {% block script %}
 	var dfc_prefix = "tg"
 	var dfc_fields = ["new_name","new_pv","new_compare","new_value","new_modal"]
-	var dfc_replace = ["",-1,-1,""]
-	$(document).ready(dynamic_form_controller);
+	var dfc_replace = ["","",-1,"",""]
+	<!-- $(document).ready(dynamic_form_controller); -->
 
 	var name_list
 	$(
@@ -24,18 +24,18 @@
 				{% for name in usernames %}
 					'{{name}}',
 				{% endfor %}
-			];
+				];
 			var searcher = new search_helper(name_list,"id_new_owners");
 			searcher.prepare_document();
 
-			//var trigger_mgr = new df_controller(
-			//	dfc_prefix,
-			//	dfc_fields,
-			//	dfc_replace,
-			//	"#contents_section",
-			//	"#add_trigger_btn",
-			//	".delete-btn");
-			//trigger_mgr.prepare_document();
+			var trigger_mgr = new df_controller(
+				dfc_prefix,
+				dfc_fields,
+				dfc_replace,
+				"#contents_section",
+				"#add_trigger_btn",
+				".delete-btn");
+			trigger_mgr.prepare_document();
 		}
 	);
 
@@ -46,8 +46,8 @@
 		function () {
 			
 			$('#searchAndAddPVsModal').on('show.bs.modal', function(e) {
-				var triggerId = $(e.relatedTarget).data('id');
-				console.log(triggerId);
+				var triggerId = e.relatedTarget.id;
+				console.log(e.relatedTarget.id);
 				pvTagId = triggerId.replace("new_modal", "new_pv");
 				populateTriggerPVs();
 			});
@@ -151,7 +151,7 @@
 						<td class="w-30">{{ entry.new_name }}</td>
 						<td class="w-10">{{ entry.new_pv }}
 							<!--  Search and add PVs  -->
-							<button type="button" class="btn btn-info" data-toggle="modal" data-target="#searchAndAddPVsModal" data-id="id_tg-0-new_modal">Search and Add PVs</button>
+							<button type="button" class="btn btn-info" data-toggle="modal" data-target="#searchAndAddPVsModal" id="id_tg-0-new_modal">Search and Add PVs</button>
 						</td>
 						<td class="w-10">{{ entry.new_compare }}</td>
 						<td class="w-20">{{ entry.new_value }}</td>
