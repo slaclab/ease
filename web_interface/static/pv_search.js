@@ -8,7 +8,7 @@ var viewerVars = {};// This is one of the integration points with the server.
 // To develop/debug, override this to a absolute URL of the server with the data you are going to use for debugging/developing.
 viewerVars.serverURL = "https://pswww.slac.stanford.edu/archiveviewer/retrieval";
 //Set up an ssh tunnel to pslogin -L 8700:pswww.slac.stanford.edu:80
-//viewerVars.serverURL = "http://localhost:8700/archiveviewer/retrieval";//remote work with port forwarding
+viewerVars.serverURL = "http://localhost:8700/archiveviewer/retrieval";//remote work with port forwarding
 
 // User typed a pattern, we search for PV's matching this pattern.
 
@@ -69,15 +69,19 @@ function removeAllTriggerPVs () {
 }
 
 function populateTriggerPVs() {
-	//Push selected triggers back to the list
-	var restoreList = $("#"+pvTagId).val().split(',');
-	var triggerPVList = $("#triggerPVList");
-	restoreList.forEach(function(element){
-		//I am ashamed of this repeated code.
-		console.log(element);
-		triggerPVList.append('<li class="list-group-item">' + element + '</li>');
-		triggerPVList.children().last().click(function() { $(this).toggleClass('list-group-item-info') });
-	 });
+	//Get the values for restoration
+	var origVals = $("#"+pvTagId).val()
+    if (origVals){
+		//Push selected triggers back to the list
+		var restoreList = origVals.split(',');
+		var triggerPVList = $("#triggerPVList");
+		restoreList.forEach(function(element){
+			//I am ashamed of this repeated code.
+			console.log(element);
+			triggerPVList.append('<li class="list-group-item">' + element + '</li>');
+			triggerPVList.children().last().click(function() { $(this).toggleClass('list-group-item-info') });
+		});
+	}
 }
 
 function saveTriggerPVs() {
