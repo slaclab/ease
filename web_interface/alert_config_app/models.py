@@ -110,7 +110,11 @@ class Trigger(models.Model):
     name = models.CharField(max_length = name_max_length)
     alert = models.ForeignKey(Alert, on_delete=models.CASCADE)
 
-    value_src = models.CharField(max_length = val_src_max_length)
+    value_src = models.CharField(
+        max_length = val_src_max_length,
+        blank = True,
+        null = True,
+    )
     
     value = models.FloatField(
         blank = True,

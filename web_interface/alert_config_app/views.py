@@ -400,7 +400,7 @@ class alert_config(View):
                             name = single_trigger_form.cleaned_data.get(
                                 'new_name'),
                             alert = alert_inst,
-                            pv = single_trigger_form.cleaned_data.get(
+                            value_src = single_trigger_form.cleaned_data.get(
                                 'new_pv'),
                             compare = single_trigger_form.cleaned_data.get(
                                 'new_compare'),
