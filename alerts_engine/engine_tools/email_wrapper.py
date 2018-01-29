@@ -14,6 +14,8 @@ from email.mime.multipart import MIMEMultipart
                                
 import logging
 
+from django.conf import settings
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -67,7 +69,7 @@ class EmailWrapper:
         msg['To'] = to
                                                                                         
         # Send the message via our own SMTP server.                                     
-        s = smtplib.SMTP(self.host)                                                      
+        s = smtplib.SMTP(self.host, settings.EMAIL_PORT)                                                      
         s.send_message(msg)                                                             
         s.quit()
 
@@ -101,7 +103,7 @@ class EmailWrapper:
             msgRoot['To'] = to
 
         # Send the message via our own SMTP server.  
-        s = smtplib.SMTP(self.host)  
+        s = smtplib.SMTP(self.host, settings.EMAIL_PORT)  
         s.send_message(msgRoot)    
         s.quit()
 
@@ -134,7 +136,7 @@ class EmailWrapper:
             
  
         # Send the message via our own SMTP server.                                     
-        s = smtplib.SMTP(self.host)                                                      
+        s = smtplib.SMTP(self.host, settings.EMAIL_HOST)                                                      
         try:
             s.sendmail(self.host_email,to,msgRoot.as_string())
         except smtplib.SMTPRecipientsRefused:                                   
@@ -174,7 +176,7 @@ class EmailWrapper:
         return header + msg + footer
 
 if __name__ == '__main__':
-    u = EmailWrapper('psmail','EASE')
+    u = EmailWrapper(settings.EMAIL_HOST,'EASE')
     to = 'email@email.com'
     u.send_file(to,'file','ex.txt')
     u.send_text(to,'test_text','sample email contents')

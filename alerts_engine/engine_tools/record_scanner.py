@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 django_connect.prepare()
 from alert_config_app.models import *
 from account_mgr_app.models import *
+from django.conf import settings
 
 
 
@@ -61,7 +62,7 @@ class TriggerScan:
         #timing info etc probs useful
         self.arch = EpicsArchive(hostname=hostname)
         self.rep_t = rep_t
-        self.emailer = email_wrapper.EmailWrapper("psmail","EASE")
+        self.emailer = email_wrapper.EmailWrapper(settings.EMAIL_HOST, "EASE")
 
     def dbPvPull(self,live=True):
         """
