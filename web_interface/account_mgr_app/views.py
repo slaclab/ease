@@ -18,6 +18,7 @@ from django.template.loader import render_to_string
 from .tokens import account_activation_token
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
+from django.conf import settings
 from email.mime.text import MIMEText
 import smtplib 
 
@@ -40,7 +41,7 @@ def signup(request):
             msg['from'] = 'EASE'
             #email = EmailMessage(mail_subject, message, to=[to_email])
             #email.send()
-            s = smtplib.SMTP('psmail')
+            s = smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT)
             s.send_message(msg)
             s.quit()
             return redirect('account_activation_sent')                
