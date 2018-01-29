@@ -288,7 +288,7 @@ class alert_config(View):
             trigger_initial = [
                 {   
                     'new_name': l.name,
-                    'new_pv': None,
+                    'new_pv': l.value_src,
                     'new_value':l.value,
                     'new_compare':l.compare,
                 } 
