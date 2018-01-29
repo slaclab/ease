@@ -69,15 +69,19 @@ function removeAllTriggerPVs () {
 }
 
 function populateTriggerPVs() {
-	//Push selected triggers back to the list
-	var restoreList = $("#"+pvTagId).val().split(',');
-	var triggerPVList = $("#triggerPVList");
-	restoreList.forEach(function(element){
-		//I am ashamed of this repeated code.
-		console.log(element);
-		triggerPVList.append('<li class="list-group-item">' + element + '</li>');
-		triggerPVList.children().last().click(function() { $(this).toggleClass('list-group-item-info') });
-	 });
+	//Get the values for restoration
+	var origVals = $("#"+pvTagId).val()
+    if (origVals){
+		//Push selected triggers back to the list
+		var restoreList = origVals.split(',');
+		var triggerPVList = $("#triggerPVList");
+		restoreList.forEach(function(element){
+			//I am ashamed of this repeated code.
+			console.log(element);
+			triggerPVList.append('<li class="list-group-item">' + element + '</li>');
+			triggerPVList.children().last().click(function() { $(this).toggleClass('list-group-item-info') });
+		});
+	}
 }
 
 function saveTriggerPVs() {
