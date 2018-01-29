@@ -14,7 +14,7 @@
 {% block script %}
 	var dfc_prefix = "tg"
 	var dfc_fields = ["new_name","new_pv","new_compare","new_value","new_modal"]
-	var dfc_replace = ["","",-1,"",""]
+	var dfc_replace = ["",null,1,"",""]
 	<!-- $(document).ready(dynamic_form_controller); -->
 
 	var name_list
@@ -68,32 +68,6 @@
 				searchForPVsMatchingPattern();
 		});
 	});
-	$(
-		function(){
-			var managePVModal = $("#modalPVSelect").bootstrapDualListbox(
-				{
-					nonSelectedListLabel: 'Find PVs',
-					selectedListLabel: 'Selected PVs',
-					moveOnSelect: false
-				}
-			);
-			$(function () {
-				var dualListContainer = $('#modalPVSelect').bootstrapDualListbox('getContainer');
-				dualListContainer.find('.moveall i').removeClass().addClass('fa fa-arrow-right');
-				dualListContainer.find('.removeall i').removeClass().addClass('fa fa-arrow-left');
-				dualListContainer.find('.move i').removeClass().addClass('fa fa-arrow-right');
-				dualListContainer.find('.remove i').removeClass().addClass('fa fa-arrow-left');
-				});
-				$("#pvNamePattern").on('keydown', function(e) {
-				if (e.keyCode == 13) {
-					e.preventDefault();
-					console.log("Search string: "+$("#pvNamePattern").val());
-					var matchingPVs = [];
-					matchingPVs = searchForPVsMatchingPattern();
-				}
-			});
-		}
-	);
 
 	
 {% endblock %}
