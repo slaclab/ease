@@ -15,7 +15,6 @@
 	var dfc_prefix = "tg"
 	var dfc_fields = ["new_name","new_pv","new_compare","new_value","new_modal"]
 	var dfc_replace = ["",null,1,"",""]
-	<!-- $(document).ready(dynamic_form_controller); -->
 
 	var name_list
 	$(
@@ -46,8 +45,8 @@
 		function () {
 			
 			$('#searchAndAddPVsModal').on('show.bs.modal', function(e) {
-				var triggerId = e.relatedTarget.id;
-				pvTagId = triggerId.replace("new_modal", "new_pv");
+				pvTagId = "id_"+$(e.relatedTarget).data("id");
+				console.log(pvTagId)
 				populateTriggerPVs();
 			});
 			$("#pvNamePattern").on('keydown', function(e) {
@@ -132,7 +131,7 @@
 						<td class="w-30">{{ entry.new_name }}</td>
 						<td class="w-10">{{ entry.new_pv }}
 							<!--  Search and add PVs  -->
-							<button type="button" class="btn btn-info" data-toggle="modal" data-target="#searchAndAddPVsModal" id="id_tg-0-new_modal">Search and Add PVs</button>
+							<button type="button" class="btn btn-info" data-toggle="modal" data-target="#searchAndAddPVsModal" data-id={{ entry.new_pv.html_name }} >Search and Add PVs</button>
 						</td>
 						<td class="w-10">{{ entry.new_compare }}</td>
 						<td class="w-20">{{ entry.new_value }}</td>

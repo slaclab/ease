@@ -46,6 +46,7 @@ class configTrigger(forms.Form):
         """Constrct the object
         """
         super().__init__(*args,**kwargs)
+
         self.fields['new_pv'] = forms.CharField(
             label = 'PV name',
             widget = forms.HiddenInput()
