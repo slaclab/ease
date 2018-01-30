@@ -50,6 +50,14 @@
 				pvTagId = triggerId.replace("new_modal", "new_pv");
 				populateTriggerPVs();
 			});
+			$("#pvNamePattern").on('keydown', function(e) {
+				if (e.keyCode == 13) {
+					e.preventDefault();
+					console.log("Search string: "+$("#pvNamePattern").val());
+					var matchingPVs = [];
+					matchingPVs = searchForPVsMatchingPattern();
+				}
+			});
 			$('#searchAndAddPVsModal').on('hidden.bs.modal', {pvTagId:pvTagId}, saveTriggerPVs);
 
 			$('#addSelectedSearchPVs').click(function(){
