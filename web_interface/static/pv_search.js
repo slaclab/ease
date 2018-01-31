@@ -27,14 +27,15 @@ function searchForPVsMatchingPattern(pvNamePattern) {
 		list.empty();
 		$("#pvSearchWidget-container box1 info-container nameSearchMatchingError").empty();
 		$.getJSON( viewerVars.serverURL + "/bpl/getMatchingPVs?limit=50&pv=" + pattern, function(matchingPVs){
-			
+			//Add the pattern that was just searched for
+			list.append('<li class="list-group-item">' + pattern + '<span class="badge">'+ matchingPVs.length +'</span></li>')
 			if(matchingPVs.length > 0) {
 				matchingPVs.forEach(function(matchingPV) { list.append('<li class="list-group-item">' + matchingPV + '</li>') });
 				$("#pvNameSearchMatchingList li").click(function() { $(this).toggleClass('list-group-item-info'); });
-				return;
 			} else {
 				$("#pvSearchWidget-container box1 info-container nameSearchMatchingError").html("No PV names matched your search. Search using GLOB patterns, for example, QUAD:*:BDES");
 			}
+			return;
 		});
 	}
 }
