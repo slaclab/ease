@@ -20,12 +20,6 @@ function searchForPVsMatchingPattern(pvNamePattern) {
 	else{
 		var pattern = pvNamePattern;
 	}	
-	var globp = /[\*\?]/;
-	if(!globp.test(pattern)) {
-		console.log(pattern + " is not a glob pattern");
-		$("#pvSearchWidget-container box1 info-container nameSearchMatchingError").html(pattern + " is not a glob pattern");
-		return;
-	}
 	if(pattern) {
 		console.log("Search and add PVs for pattern " + pattern);
 		console.log("URL "+viewerVars.serverURL);
