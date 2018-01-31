@@ -30,7 +30,7 @@ function searchForPVsMatchingPattern(pvNamePattern) {
 			//Add the pattern that was just searched for if glob
 			testglobp = /[\*\?]/;
 			if(testglobp.test(pattern)){
-				list.append('<li class="list-group-item justify-content-between"><span>' + pattern + '</span><span class="badge badge-secondary badge-pill">'+ matchingPVs.length +'</span></li>');
+				list.append('<li class="list-group-item"><div class="d-flex justify-content-between">' + pattern + '<span class="badge badge-secondary badge-pill">Matches: '+ matchingPVs.length +'</span></div></li>');
 			}
 			//Adding the results
 			if(matchingPVs.length > 0) {
