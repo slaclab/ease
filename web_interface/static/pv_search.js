@@ -27,8 +27,12 @@ function searchForPVsMatchingPattern(pvNamePattern) {
 		list.empty();
 		$("#pvSearchWidget-container box1 info-container nameSearchMatchingError").empty();
 		$.getJSON( viewerVars.serverURL + "/bpl/getMatchingPVs?limit=50&pv=" + pattern, function(matchingPVs){
-			//Add the pattern that was just searched for
-			list.append('<li class="list-group-item">' + pattern + '<span class="badge">'+ matchingPVs.length +'</span></li>')
+			//Add the pattern that was just searched for if glob
+			testglobp = /[\*\?]/;
+			if(testglobp.test(pattern)){
+				list.append('<li class="list-group-item justify-content-between"><span>' + pattern + '</span><span class="badge badge-secondary badge-pill">'+ matchingPVs.length +'</span></li>');
+			}
+			//Adding the results
 			if(matchingPVs.length > 0) {
 				matchingPVs.forEach(function(matchingPV) { list.append('<li class="list-group-item">' + matchingPV + '</li>') });
 				$("#pvNameSearchMatchingList li").click(function() { $(this).toggleClass('list-group-item-info'); });
