@@ -74,8 +74,6 @@
 				searchForPVsMatchingPattern();
 			})
 		});
-	});
-
 	
 {% endblock %}
 {% block title %}
@@ -168,11 +166,11 @@
 									<button type="button" class="btn clear1 pull-right"></button>
 								</span>
 								
-									<div class="input-group">
-										<input type="text" id="pvNamePattern" placeholder="PV:Name:*" class="filter" />
-										<span class="input-group-addon filter" id="pvNameSearchaIcon">
-											<i class="fa fa-search"></i>
-										</span>
+									<div class="input-group search">
+										<input type="text" id="pvNamePattern" placeholder="PV:Name:*"  />
+										<div class="input-group-append" id="pvNameSearchIcon">
+											<button class="btn btn-outline-secondary"><i class="fa fa-search"></i></button>
+										</div>
 									</div>
 									<div class="btn-group buttons">
 										<button type="button" class="btn moveall" id="addAllSearchPVs">
