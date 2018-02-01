@@ -30,11 +30,11 @@ function searchForPVsMatchingPattern(pvNamePattern) {
 			//Add the pattern that was just searched for if glob
 			testglobp = /[\*\?]/;
 			if(testglobp.test(pattern)){
-				list.append('<li class="list-group-item"><div class="d-flex justify-content-between"><div>' + pattern + '</div><span class="badge badge-secondary badge-pill">Matches: '+ matchingPVs.length +'</span></div></li>');
+				list.append('<li class="list-group-item"><div class="d-flex justify-content-between"><div class"pv">' + pattern + '</div><span class="badge badge-secondary badge-pill">Matches: '+ matchingPVs.length +'</span></div></li>');
 			}
 			//Adding the results
 			if(matchingPVs.length > 0) {
-				matchingPVs.forEach(function(matchingPV) { list.append('<li class="list-group-item">' + matchingPV + '</li>') });
+				matchingPVs.forEach(function(matchingPV) { list.append('<li class="list-group-item"><div class="pv">' + matchingPV + '</div></li>') });
 				$("#pvNameSearchMatchingList li").click(function() { $(this).toggleClass('list-group-item-info'); });
 			} else {
 				$("#pvSearchWidget-container box1 info-container nameSearchMatchingError").html("No PV names matched your search. Search using GLOB patterns, for example, QUAD:*:BDES");
@@ -47,7 +47,7 @@ function searchForPVsMatchingPattern(pvNamePattern) {
 function addSelectedSearchPVs(e) {
 	var triggerPVList = $("#triggerPVList");
 	$("#pvNameSearchMatchingList li.list-group-item-info").each(function() {
-		triggerPVList.append('<li class="list-group-item">' + $(this).text() + '</li>');
+		triggerPVList.append('<li class="list-group-item">' + $(this).find("div.pv").text() + '</li>');
 		triggerPVList.children().last().click(function() { $(this).toggleClass('list-group-item-info'); });
 	});
 	$("#pvNameSearchMatchingList li.list-group-item-info").each(function() { $(this).remove() });
