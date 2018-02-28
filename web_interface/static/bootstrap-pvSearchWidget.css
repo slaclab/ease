@@ -11,6 +11,10 @@
   overflow-y: scroll;
 }
 
+.pvSearchWidget-container .fa.fa-search {
+  vertical-align: top;
+}
+
  .pvSearchWidget-container .buttons {
   width: 100%;
   margin-bottom: -1px;
