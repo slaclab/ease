@@ -153,7 +153,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'alert_config_app',
-    'account_mgr_app'
+    'account_mgr_app',
+    'bootstrap',
+    'fontawesome',
 ]
 
 MIDDLEWARE = [

@@ -81,4 +81,5 @@ dependencies:
   - urllib3==1.22
   - whitenoise==3.3.0
   - yarl==0.12.0
+  - django-bootstrap-static==4.0.0
 
