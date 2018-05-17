@@ -24,6 +24,7 @@ install:
 script:
   - cd web_interface
   - source activate ease-env
+  - conda list
   - ./manage.py migrate
   - coverage run --source '.' ./manage.py test
   - cd ../
