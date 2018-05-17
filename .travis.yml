@@ -16,15 +16,15 @@ install:
   - sudo apt-get update
   - chmod +x env-setup.sh
   - ./env-setup.sh
-  - cd web_interface
   - curl -L -O https://github.com/mozilla/geckodriver/releases/download/v0.18.0/geckodriver-v0.18.0-linux64.tar.gz
   - tar -vzxf geckodriver-v0.18.0-linux64.tar.gz
-  - ./manage.py migrate
-  - cd ../
+  - source activate ease-env
   - pip install coverage codecov
 
 script:
   - cd web_interface
+  - source activate ease-env
+  - ./manage.py migrate
   - coverage run --source '.' ./manage.py test
   - cd ../
   - cd alerts_engine
