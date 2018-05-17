@@ -2,24 +2,23 @@
 
 #################
 # Run unpriveleged for vagrant provisioning
+# Don't rely on rsynced folders
 #################
 
 if [ -z "$1" ]; then
-    echo usage: $0 top directory did you mean /vagrant?
+    echo usage: $0 provisioned file directory?
     echo "using ."
     $1="."
 fi
 
 TOP_LOC="$1"
 
-echo $(ls $2)
-
 wget "https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh" -O miniconda.sh
 bash miniconda.sh -b -p $HOME/miniconda
 
 MINICONDA_PATH_EXPORT_CMD='export PATH=$HOME/miniconda/bin:$PATH'
 
-if grep -q $MINICONDA_PATH_EXPORT_CMD "$HOME/.profile";
+if grep -q "$MINICONDA_PATH_EXPORT_CMD" "$HOME/.profile";
 then
     echo "Miniconda already exported to path in .profile, I will not add it again"
 else
