@@ -14,6 +14,7 @@ git:
 
 install:
   - sudo apt-get update
+  - chmod +x env-setup.sh
   - ./env-setup.sh
   - cd web_interface
   - curl -L -O https://github.com/mozilla/geckodriver/releases/download/v0.18.0/geckodriver-v0.18.0-linux64.tar.gz
