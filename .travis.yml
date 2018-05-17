@@ -1,4 +1,5 @@
-language: python 
+language: python
+cache: pip
 python: 
   - "3.6"
 
@@ -18,6 +19,8 @@ install:
   - ./env-setup.sh
   - curl -L -O https://github.com/mozilla/geckodriver/releases/download/v0.18.0/geckodriver-v0.18.0-linux64.tar.gz
   - tar -vzxf geckodriver-v0.18.0-linux64.tar.gz
+  - echo $PATH
+  - source $HOME/.profile
   - source activate ease-env
   - pip install coverage codecov
 
@@ -25,8 +28,8 @@ script:
   - cd web_interface
   - source activate ease-env
   - conda list
-  - ./manage.py migrate
-  - coverage run --source '.' ./manage.py test
+  - python manage.py migrate
+  - coverage run --source '.' python manage.py test
   - cd ../
   - cd alerts_engine
   - coverage run run_tests.py
