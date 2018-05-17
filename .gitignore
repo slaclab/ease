@@ -13,3 +13,8 @@ gecko*
 .coverage
 .cache
 web_interface/session_logs*
+
+.pytest*
+*.egg-info
+
+.vagrant
