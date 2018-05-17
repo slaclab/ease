@@ -8,7 +8,7 @@
 if [ -z "$1" ]; then
     echo usage: $0 provisioned file directory?
     echo "using ."
-    $1="."
+    1="."
 fi
 
 TOP_LOC="$1"
@@ -26,6 +26,14 @@ else
 fi
 source $HOME/.profile
 
+ENV_YML="$TOP_LOC/environment.yml"
+REQ_TXT="$TOP_LOC/requirements.txt"
+
+if [ ! -f $ENV_YML -a -f $REQ_TXT ];then
+ echo Cannot find environment.yml or requirements.txt
+ exit 1
+fi
+
 echo Configuring conda
 conda config --set always_yes yes --set changeps1 no
 echo Installing conda-build and anaconda-client
@@ -35,9 +43,9 @@ conda update -q conda
 echo conda info
 conda info -a
 echo Creating ease conda env
-conda env create -f "$TOP_LOC/environment.yml"
+conda env create -f $ENV_YML
 echo Activating ease-env
 source activate ease-env
 echo Installing extra requirements
-pip install -r "$TOP_LOC/requirements.txt"
+pip install -r $REQ_TXT
 
