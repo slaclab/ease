@@ -1,4 +1,4 @@
-name: ease-dev
+name: ease-env
 channels:
 - defaults
 dependencies:

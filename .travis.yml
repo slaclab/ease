@@ -1,4 +1,5 @@
-language: python 
+language: python
+cache: pip
 python: 
   - "3.6"
 
@@ -14,26 +15,19 @@ git:
 
 install:
   - sudo apt-get update
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - conda config --set always_yes yes --set changeps1 no
-  - conda install conda-build anaconda-client
-  - conda update -q conda
-  - conda info -a
-  - conda env create -f environment.yml -n ease-env
-  - source activate ease-env
-  - cd web_interface
+  - chmod +x env-setup.sh
+  - ./env-setup.sh
   - curl -L -O https://github.com/mozilla/geckodriver/releases/download/v0.18.0/geckodriver-v0.18.0-linux64.tar.gz
   - tar -vzxf geckodriver-v0.18.0-linux64.tar.gz
-  - ./manage.py migrate
-  - cd ../
+  - source $HOME/.profile
+  - source activate ease-env
   - pip install coverage codecov
-  - pip install -r requirements.txt
 
 script:
   - cd web_interface
-  - coverage run --source '.' ./manage.py test
+  - source activate ease-env
+  - python manage.py migrate
+  - coverage run manage.py test
   - cd ../
   - cd alerts_engine
   - coverage run run_tests.py
