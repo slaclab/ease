@@ -13,8 +13,10 @@ Epics remote alert system
 
 See the `docs <https://slaclab.github.io/ease/>`_ for info.
 
-Vagrant
--------
+Developing with Vagrant
+-----------------------
+Ease can be developed inside a virtual machine managed by the Vagrant utility. This offers the benefit of an isolated development environment. Vagrant can be automated to install all tools and dependencies for EASE using the vagrantfile.
+
 Setup:
 The vagrant getting started guide is an excellent way to get started.
 https://www.vagrantup.com/intro/getting-started/index.html
