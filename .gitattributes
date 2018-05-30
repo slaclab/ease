@@ -6,3 +6,9 @@ web_interface/static/dist-bootstrap-4.0.0/* linguist-vendored
 web_interface/static/dist-bootstrap-4.0.0-beta.2/* linguist-vendored
 web_interface/static/dist-tether-1.4.0/* linguist-vendored 
 
+#Always use linux line endings
+* text eol=lf
+
+*.png binary
+*.jpg binary
+*.sqlite3 binary

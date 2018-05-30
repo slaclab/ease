@@ -2,7 +2,7 @@
 
 #################
 # Run unpriveleged for vagrant provisioning
-# Don't rely on rsynced folders
+# Don't rely on shared folders
 #################
 
 if [ -z "$1" ]; then
@@ -13,8 +13,8 @@ else
     TOP_LOC="$1"
 fi
 
-wget "https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh" -O miniconda.sh
-bash miniconda.sh -b -p $HOME/miniconda
+wget "https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh" -O /tmp/miniconda.sh
+bash /tmp/miniconda.sh -b -p $HOME/miniconda
 
 MINICONDA_PATH_EXPORT_CMD='export PATH=$HOME/miniconda/bin:$PATH'
 
@@ -48,4 +48,5 @@ echo Activating ease-env
 source activate ease-env
 echo Installing extra requirements
 pip install -r $REQ_TXT
-
+echo Installing ease in debug mode
+pip install -e $TOP_LOC/.
