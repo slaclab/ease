@@ -48,4 +48,5 @@ echo Activating ease-env
 source activate ease-env
 echo Installing extra requirements
 pip install -r $REQ_TXT
-
+echo Installing ease in debug mode
+pip install -e $TOP_LOC/.
