@@ -2,7 +2,7 @@
 
 #################
 # Run unpriveleged for vagrant provisioning
-# Don't rely on rsynced folders
+# Don't rely on shared folders
 #################
 
 if [ -z "$1" ]; then
