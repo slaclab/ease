@@ -13,8 +13,8 @@ else
     TOP_LOC="$1"
 fi
 
-wget "https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh" -O miniconda.sh
-bash miniconda.sh -b -p $HOME/miniconda
+wget "https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh" -O /tmp/miniconda.sh
+bash /tmp/miniconda.sh -b -p $HOME/miniconda
 
 MINICONDA_PATH_EXPORT_CMD='export PATH=$HOME/miniconda/bin:$PATH'
 
