@@ -225,25 +225,7 @@
 				<button type="button" class="btn btn-default" data-dismiss="modal">Save Trigger PVs</button>
 				</div>
 			</div>
-		
 			</div>
 		</div>
-						</td>
-						<td class="w-10">{{ entry.new_compare }}</td>
-						<td class="w-20">{{ entry.new_value }}</td>
-						<td class="w-10">
-							<button class="btn btn-outline-warning delete-btn" type="button">Delete Row</button>
-						</td>
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-		<input class="btn btn-primary" type="submit" value="Submit"/>
-		{% if not create %}
-			<a href="{% url 'alert_delete' alert.pk %}" class="btn btn-danger">Delete</a>
-		{% endif %}
-	</form>
-	<br>
-
+	
 {% endblock %}
-
