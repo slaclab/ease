@@ -1,0 +1,102 @@
+/*  Original credit below, A. Wallace hacked.
+ *  Bootstrap Duallistbox - v3.0.6
+ *  A responsive dual listbox widget optimized for Twitter Bootstrap. It works on all modern browsers and on touch devices.
+ *  http://www.virtuosoft.eu/code/bootstrap-duallistbox/
+ *
+ *  Made by István Ujj-Mészáros
+ *  Under Apache License v2.0 License
+ */
+.pvSearchWidget-container .list-group {
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
+.pvSearchWidget-container .fa.fa-search {
+  vertical-align: top;
+}
+
+ .pvSearchWidget-container .buttons {
+  width: 100%;
+  margin-bottom: -1px;
+}
+
+.pvSearchWidget-container label {
+  display: block;
+}
+
+.pvSearchWidget-container .info {
+  /* display: inline-block; */
+  margin-bottom: 5px;
+  font-size: 11px;
+}
+
+.pvSearchWidget-container .clear1,
+.pvSearchWidget-container .clear2 {
+  display: none;
+  font-size: 10px;
+}
+
+.pvSearchWidget-container .box1.filtered .clear1,
+.pvSearchWidget-container .box2.filtered .clear2 {
+  display: inline-block;
+}
+
+.pvSearchWidget-container .move,
+.pvSearchWidget-container .remove {
+  width: 60%;
+}
+
+.pvSearchWidget-container .btn-group .btn {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.pvSearchWidget-container select {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.pvSearchWidget-container .moveall,
+.pvSearchWidget-container .removeall {
+  width: 40%;
+}
+
+.pvSearchWidget-container select {
+  width: 100%;
+  height: 300px;
+  padding: 0;
+}
+
+.pvSearchWidget-container .filter {
+  display: inline-block;
+  width: 100%;
+  height: 31px;
+  margin: 0 0 5px 0;
+  /* -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; */
+}
+
+.pvSearchWidget-container .input-group.search {
+  /* display: inline-block; */
+  width: 100%;
+  height: 31px;
+  margin: 0 0 5px 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+
+.pvSearchWidget-container .filter.placeholder {
+  color: #aaa;
+}
+
+.pvSearchWidget-container.moveonselect .move,
+.pvSearchWidget-container.moveonselect .remove {
+  display:none;
+}
+
+.pvSearchWidget-container.moveonselect .moveall,
+.pvSearchWidget-container.moveonselect .removeall {
+  width: 100%;
+}

@@ -134,11 +134,12 @@ ALLOWED_HOSTS = [
     "134.79.165.105",
     "pswww-dev.slac.stanford.edu",
     "198.129.113.193",
-    "127.0.0.1"    
+    "127.0.0.1"
 ]
 if DEBUG:
     ALLOWED_HOSTS.append("127.0.0.1")
-
+    ALLOWED_HOSTS.append("192.168.225.3")
+    ALLOWED_HOSTS.append("192.168.56.101")
 
 if not DEBUG:
     FORCE_SCRIPT_NAME = '/ease'
@@ -259,11 +260,16 @@ STATICFILES_DIRS = (
 )
 STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 
-
-EMAIL_HOST = 'psmail'
-EMAIL_PORT = 25
-EMAIL_HOST_USER = 'EASE'
-DEFAULT_FROM_EMAIL = 'EASE'
+if not DEBUG:
+    EMAIL_HOST = 'psmail'
+    EMAIL_PORT = 25
+    EMAIL_HOST_USER = 'EASE'
+    DEFAULT_FROM_EMAIL = 'EASE'
+else:
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 2500
+    EMAIL_HOST_USER = 'EASE'
+    DEFAULT_FROM_EMAIL = 'EASE'
 
 
 if not DEBUG:

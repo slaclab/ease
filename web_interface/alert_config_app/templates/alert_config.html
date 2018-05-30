@@ -1,16 +1,19 @@
 {% extends 'base.html' %}
 
+
+
 {% block head_extra %}
 	{% load static %}
 	<script src="{% static 'dynamic_forms.js' %}"></script>
 	<script src="{% static 'search_helper.js' %}"></script>
+	<script src="{% static 'pv_search.js' %}"></script>
+	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-pvSearchWidget.css' %}">
 {% endblock %}
 
 {% block script %}
 	var dfc_prefix = "tg"
-	var dfc_fields = ["new_name","new_pv","new_compare","new_value"]
-	var dfc_replace = ["",-1,-1,""]
-	$(document).ready(dynamic_form_controller);
+	var dfc_fields = ["new_name","new_pv","new_compare","new_value","new_modal"]
+	var dfc_replace = ["",null,1,"",""]
 
 	var name_list
 	$(
@@ -19,25 +22,62 @@
 				{% for name in usernames %}
 					'{{name}}',
 				{% endfor %}
-			];
+				];
 			var searcher = new search_helper(name_list,"id_new_owners");
 			searcher.prepare_document();
 
-			//var trigger_mgr = new df_controller(
-			//	dfc_prefix,
-			//	dfc_fields,
-			//	dfc_replace,
-			//	"#contents_section",
-			//	"#add_trigger_btn",
-			//	".delete-btn");
-			//trigger_mgr.prepare_document();
+			var trigger_mgr = new df_controller(
+				dfc_prefix,
+				dfc_fields,
+				dfc_replace,
+				"#contents_section",
+				"#add_trigger_btn",
+				".delete-btn");
+			trigger_mgr.prepare_document();
 		}
 	);
 
+	<!-- PV Searching Modal Widget -->
+	var pvTagId = "";
+
+	$(
+		function () {
+			
+			$('#searchAndAddPVsModal').on('show.bs.modal', function(e) {
+				pvTagId = "id_"+$(e.relatedTarget).data("id");
+				console.log(pvTagId)
+				populateTriggerPVs();
+			});
+			$("#pvNamePattern").on('keydown', function(e) {
+				if (e.keyCode == 13) {
+					e.preventDefault();
+					console.log("Search string: "+$("#pvNamePattern").val());
+					var matchingPVs = [];
+					matchingPVs = searchForPVsMatchingPattern();
+				}
+			});
+			$('#searchAndAddPVsModal').on('hidden.bs.modal', {pvTagId:pvTagId}, saveTriggerPVs);
+
+			$('#addSelectedSearchPVs').click(function(){
+				addSelectedSearchPVs();
+			})
+			$('#addAllSearchPVs').click(function(){
+				addAllSearchPVs();
+			})
+			$('#removeSelectedTriggerPVs').click(function(){
+				removeSelectedTriggerPVs();
+			})
+			$('#removeAllTriggerPVs').click(function(){
+				removeAllTriggerPVs();
+			})
+			$("#pvNameSearchIcon").click(function() {
+				searchForPVsMatchingPattern();
+			})
+		});
 	
 {% endblock %}
 {% block title %}
-	Alert Configuration Page
+	Alert Configuration
 {% endblock %}
 
 
@@ -77,7 +117,7 @@
 			<thead>
 				<tr>
 					<th class="w-30">Trigger Name</th>
-					<th class="w-10">Linked PV</th>
+					<th class="w-10">Trigger PVs</th>
 					<th class="w-10">Comparison</th>
 					<th class="w-20">Value</th>
 					<th class="w-10"></th>
@@ -87,7 +127,10 @@
 				{% for entry in triggerForm %}
 					<tr>
 						<td class="w-30">{{ entry.new_name }}</td>
-						<td class="w-10">{{ entry.new_pv }}</td>
+						<td class="w-10">{{ entry.new_pv }}
+							<!--  Search and add PVs  -->
+							<button type="button" class="btn btn-info" data-toggle="modal" data-target="#searchAndAddPVsModal" data-id={{ entry.new_pv.html_name }} >Search and Add PVs</button>
+						</td>
 						<td class="w-10">{{ entry.new_compare }}</td>
 						<td class="w-20">{{ entry.new_value }}</td>
 						<td class="w-10">
@@ -103,5 +146,86 @@
 		{% endif %}
 	</form>
 	<br>
-{% endblock %}
 
+	<!-- Trigger PV Modal -->
+	<div id="searchAndAddPVsModal" class="modal fade" role="dialog">
+			<div class="modal-dialog modal-lg">
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+						<h4 class="modal-title">Trigger PVs</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<div class="modal-body">
+					{% comment %} <select id="modalPVSelect"></select> {% endcomment %}
+					<div class="pvSearchWidget-container row">
+							<div class="box1 col-md-6">
+								<label>Find PVs</label>
+								<span class="info-container">
+									<div id="nameSearchMatchingError"></div>
+									<button type="button" class="btn clear1 pull-right"></button>
+								</span>
+								
+									<div class="input-group search">
+										<input type="text" id="pvNamePattern" placeholder="PV:Name:*"  />
+										<div class="input-group-append" id="pvNameSearchIcon">
+											<button class="btn btn-outline-secondary"><i class="fa fa-search"></i></button>
+										</div>
+									</div>
+									<div class="btn-group buttons">
+										<button type="button" class="btn moveall" id="addAllSearchPVs">
+											<i class="fa fa-arrow-right"></i>
+											<i class="fa fa-arrow-right"></i>
+										</button>
+										<button type="button" class="btn move" id="addSelectedSearchPVs">
+												<i class="fa fa-arrow-right"></i>
+										</button>
+									</div>
+										<ul class="list-group" id="pvNameSearchMatchingList">
+										</ul>
+							</div>
+							<div class="box2 col-md-6">
+									<label>Selected PVs</label>
+									<span class="info-container">
+										<span class="pvSearchReturnInfo"></span>
+										<button type="button" class="btn clear1 pull-left"></button>
+									</span>
+										<input type="text" class="filter" id="selectedPVsFilter" placeholder="Filter Pattern"/>
+										<div class="btn-group buttons">
+											<button type="button" class="btn moveall" id="removeAllTriggerPVs">
+												<i class="fa fa-arrow-left"></i>
+												<i class="fa fa-arrow-left"></i>
+											</button>
+											<button type="button" class="btn move" id="removeSelectedTriggerPVs">
+													<i class="fa fa-arrow-left"></i>
+											</button>
+										</div>
+										<ul class="list-group" id="triggerPVList">
+										</ul>
+							</div>
+					</div>
+
+
+					{% comment %} <form class="form-horizontal" role="form">
+							<div class="form-group">
+								<div class='input-group'>
+								<span class="input-group-addon">PV Name Pattern:</span>
+								<input type="text" class="form-control" id="pvNamePattern" placeholder="PV:Name:*"/>
+								<span class="input-group-addon">
+									<span class="fa fa-search" aria-hidden="true" id="pvNameSearchIcon"></span>
+								</span>
+								</div>
+							</div>
+							</form>
+							<div id="pvNameSearchMatchingError"></div>
+							<ul class="list-group" id="pvNameSearchMatchingList">
+							</ul> {% endcomment %}
+				</div>
+				<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Save Trigger PVs</button>
+				</div>
+			</div>
+			</div>
+		</div>
+	
+{% endblock %}

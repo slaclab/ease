@@ -288,7 +288,7 @@ class alert_config(View):
             trigger_initial = [
                 {   
                     'new_name': l.name,
-                    'new_pv': l.pv.pk if l.pv else None,
+                    'new_pv': l.value_src,
                     'new_value':l.value,
                     'new_compare':l.compare,
                 } 
@@ -400,7 +400,7 @@ class alert_config(View):
                             name = single_trigger_form.cleaned_data.get(
                                 'new_name'),
                             alert = alert_inst,
-                            pv = single_trigger_form.cleaned_data.get(
+                            value_src = single_trigger_form.cleaned_data.get(
                                 'new_pv'),
                             compare = single_trigger_form.cleaned_data.get(
                                 'new_compare'),
