@@ -8,6 +8,7 @@ web_interface/static/dist-tether-1.4.0/* linguist-vendored
 
 #Always use linux line endings
 * text eol=lf
+*.bat text eol=crlf
 
 *.png binary
 *.jpg binary
