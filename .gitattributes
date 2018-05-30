@@ -8,3 +8,8 @@ web_interface/static/dist-tether-1.4.0/* linguist-vendored
 
 #Always use linux line endings
 * text eol=lf
+#Do not modify binary files
+*.png binary
+*.jpg binary
+*.sqlite3 binary
+
